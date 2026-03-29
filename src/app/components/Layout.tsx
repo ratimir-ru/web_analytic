@@ -1,4 +1,4 @@
-import image_6d19dd7a1c06f38e92a17d43316b77621712beae from 'figma:asset/6d19dd7a1c06f38e92a17d43316b77621712beae.png'
+import image_6d19dd7a1c06f38e92a17d43316b77621712beae from '../../assets/6d19dd7a1c06f38e92a17d43316b77621712beae.png'
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import {
