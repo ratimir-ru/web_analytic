@@ -1,5 +1,5 @@
-import image_6d19dd7a1c06f38e92a17d43316b77621712beae from '../../assets/6d19dd7a1c06f38e92a17d43316b77621712beae.png'
-import image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df from '../../assets/57bc1ed8c53e14ed69b8d98b78f63b24a1f830df.png'
+import image_6d19dd7a1c06f38e92a17d43316b77621712beae from '../../../assets/6d19dd7a1c06f38e92a17d43316b77621712beae.png'
+import image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df from '../../../assets/57bc1ed8c53e14ed69b8d98b78f63b24a1f830df.png'
 import React, { useState } from "react";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import ratimirLogoOfficial from "../../../assets/ratimir-logo-official.svg";
