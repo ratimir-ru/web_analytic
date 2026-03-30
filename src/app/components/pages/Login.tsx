@@ -1,3 +1,5 @@
+import image_6d19dd7a1c06f38e92a17d43316b77621712beae from '../../../assets/6d19dd7a1c06f38e92a17d43316b77621712beae.png'
+import image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df from '../../../assets/57bc1ed8c53e14ed69b8d98b78f63b24a1f830df.png'
 import React, { useState } from "react";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import ratimirLogoOfficial from "../../../assets/ratimir-logo-official.svg";
@@ -33,7 +35,7 @@ export function Login({ onLogin }: LoginProps) {
       className="min-h-screen flex items-center justify-center p-4"
       style={{
         background:
-          "radial-gradient(ellipse at 20% 20%, rgba(204,0,0,0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(100,0,0,0.05) 0%, transparent 50%), #050b18",
+          "radial-gradient(ellipse at 20% 20%, rgba(158,35,59,0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(186,36,71,0.05) 0%, transparent 50%), #0f1419",
       }}
     >
       {/* Background decorations */}
@@ -44,14 +46,14 @@ export function Login({ onLogin }: LoginProps) {
         <div
           className="absolute top-10 left-10 w-72 h-72 rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(204,0,0,0.06) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(158,35,59,0.06) 0%, transparent 70%)",
             filter: "blur(60px)",
           }}
         />
         <div
           className="absolute bottom-10 right-10 w-64 h-64 rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(139,0,0,0.05) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(186,36,71,0.05) 0%, transparent 70%)",
             filter: "blur(50px)",
           }}
         />
@@ -62,21 +64,23 @@ export function Login({ onLogin }: LoginProps) {
         <div className="text-center mb-10">
           <div className="mx-auto mb-4 flex items-center justify-center">
             <img
-              src={ratimirLogoOfficial}
-              alt="Ратимир"
-              style={{ height: 80 }}
+              src={image_6d19dd7a1c06f38e92a17d43316b77621712beae}
+              alt="Логотип"
+              className="h-16"
+              style={{
+                filter: "drop-shadow(0 0 20px rgba(158,35,59,0.3))",
+              }}
             />
           </div>
-          <h1
-            className="text-4xl font-black tracking-widest"
+          <img
+            src={image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df}
+            alt="РАТИМИР"
+            className="mx-auto"
             style={{
-              color: "#CC0000",
-              letterSpacing: "0.25em",
-              textShadow: "0 0 30px rgba(204,0,0,0.35)",
+              maxHeight: "48px",
+              filter: "drop-shadow(0 0 30px rgba(158,35,59,0.4))",
             }}
-          >
-            РАТИМИР
-          </h1>
+          />
           <p className="text-sm mt-2" style={{ color: "rgba(255,255,255,0.35)" }}>
             Система корпоративной аналитики
           </p>
@@ -125,7 +129,7 @@ export function Login({ onLogin }: LoginProps) {
                   outline: "none",
                   transition: "border-color 0.2s",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "rgba(204,0,0,0.5)")}
+                onFocus={(e) => (e.target.style.borderColor = "rgba(186,36,71,0.5)")}
                 onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")}
               />
             </div>
@@ -155,7 +159,7 @@ export function Login({ onLogin }: LoginProps) {
                     outline: "none",
                     transition: "border-color 0.2s",
                   }}
-                  onFocus={(e) => (e.target.style.borderColor = "rgba(204,0,0,0.5)")}
+                  onFocus={(e) => (e.target.style.borderColor = "rgba(186,36,71,0.5)")}
                   onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")}
                 />
                 <button
@@ -173,8 +177,8 @@ export function Login({ onLogin }: LoginProps) {
               <div
                 className="rounded-xl px-4 py-3 text-sm"
                 style={{
-                  background: "rgba(204,0,0,0.1)",
-                  border: "1px solid rgba(204,0,0,0.25)",
+                  background: "rgba(186,36,71,0.1)",
+                  border: "1px solid rgba(186,36,71,0.25)",
                   color: "#ff8080",
                 }}
               >
@@ -188,9 +192,9 @@ export function Login({ onLogin }: LoginProps) {
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white transition-all mt-6"
               style={{
                 background: loading
-                  ? "rgba(100,0,0,0.6)"
-                  : "linear-gradient(135deg, #CC0000, #8B0000)",
-                boxShadow: loading ? "none" : "0 0 24px rgba(204,0,0,0.4)",
+                  ? "rgba(158,35,59,0.5)"
+                  : "linear-gradient(135deg, #ba2447, #9e233b)",
+                boxShadow: loading ? "none" : "0 0 24px rgba(186,36,71,0.4)",
                 cursor: loading ? "not-allowed" : "pointer",
               }}
             >
@@ -205,6 +209,28 @@ export function Login({ onLogin }: LoginProps) {
             </button>
           </form>
         </div>
+
+        {/* Feedback button */}
+        <button
+          className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-medium transition-all"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            color: "rgba(255,255,255,0.5)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+            e.currentTarget.style.borderColor = "rgba(186,36,71,0.3)";
+            e.currentTarget.style.color = "#ff6b8a";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.5)";
+          }}
+        >
+          💬 Нужна помощь? Свяжитесь с нами
+        </button>
 
         <p
           className="text-center text-xs mt-6"

@@ -70,6 +70,24 @@ export function Tasks() {
   const [newTask, setNewTask] = useState<Omit<Task, "id">>(emptyTask);
   const [sortKey, setSortKey] = useState<keyof Task>("deadline");
   const [sortAsc, setSortAsc] = useState(true);
+  const [expandedTaskIds, setExpandedTaskIds] = useState<Set<number>>(new Set());
+  
+  // States for custom dropdowns
+  const [openBlockDropdown, setOpenBlockDropdown] = useState(false);
+  const [openStatusDropdown, setOpenStatusDropdown] = useState(false);
+  const [openPriorityDropdown, setOpenPriorityDropdown] = useState(false);
+
+  const toggleExpand = (taskId: number) => {
+    setExpandedTaskIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(taskId)) {
+        newSet.delete(taskId);
+      } else {
+        newSet.add(taskId);
+      }
+      return newSet;
+    });
+  };
 
   const handleSort = (key: keyof Task) => {
     if (sortKey === key) setSortAsc(!sortAsc);
@@ -98,10 +116,10 @@ export function Tasks() {
 
   const statusStyle: Record<Status, React.CSSProperties> = {
     "В работе": { background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.25)", color: "#93c5fd" },
-    "Выполнено": { background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", color: "#34d399" },
-    "Просрочено": { background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", color: "#f87171" },
+    "Выполнено": { background: "rgba(26,141,122,0.1)", border: "1px solid rgba(26,141,122,0.25)", color: "#1A8D7A" },
+    "Просрочено": { background: "rgba(186,36,71,0.1)", border: "1px solid rgba(186,36,71,0.25)", color: "#ba2447" },
     "Отложено": { background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)", border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" },
-    "Новая": { background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.25)", color: "#c084fc" },
+    "Новая": { background: "rgba(164,125,212,0.1)", border: "1px solid rgba(164,125,212,0.25)", color: "#A47DD4" },
   };
 
   const SortIcon = ({ k }: { k: keyof Task }) => (
@@ -112,13 +130,16 @@ export function Tasks() {
   );
 
   const inputStyle: React.CSSProperties = {
-    background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
-    border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+    background: isDark ? "rgba(10,15,20,0.7)" : "rgba(255,255,255,0.9)",
+    border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
     borderRadius: 10,
     color: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
     fontSize: 13,
     padding: "8px 12px",
     outline: "none",
+    backdropFilter: "blur(80px)",
+    WebkitBackdropFilter: "blur(80px)",
+    cursor: "pointer",
   };
 
   return (
@@ -152,8 +173,8 @@ export function Tasks() {
       </div>
 
       {/* Filters */}
-      <GlassCard className="p-4 mb-4">
-        <div className="flex flex-wrap gap-3 items-center">
+      <GlassCard className="overflow-hidden">
+        <div className="p-4 flex flex-wrap gap-3 items-center" style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}>
           <div className="relative flex-1 min-w-48">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }} />
             <input
@@ -164,26 +185,332 @@ export function Tasks() {
               style={{ ...inputStyle, paddingLeft: 32, width: "100%" }}
             />
           </div>
-          {[
-            { label: "Все блоки", val: filterBlock, setter: setFilterBlock, opts: blocks },
-            { label: "Все статусы", val: filterStatus, setter: setFilterStatus, opts: statuses },
-            { label: "Все приоритеты", val: filterPriority, setter: setFilterPriority, opts: priorities },
-          ].map((f, i) => (
-            <select
-              key={i}
-              value={f.val}
-              onChange={e => f.setter(e.target.value)}
-              style={inputStyle}
+          
+          {/* Custom dropdown: Block */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setOpenBlockDropdown(!openBlockDropdown);
+                setOpenStatusDropdown(false);
+                setOpenPriorityDropdown(false);
+              }}
+              style={{
+                ...inputStyle,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                minWidth: 140,
+              }}
             >
-              <option value="Все">{f.label}</option>
-              {f.opts.map(o => <option key={o} value={o}>{o}</option>)}
-            </select>
-          ))}
+              {filterBlock === "Все" ? "Все блоки" : filterBlock}
+              <span style={{ marginLeft: "auto", color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>▾</span>
+            </button>
+            {openBlockDropdown && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  marginTop: 4,
+                  borderRadius: 12,
+                  overflow: "hidden",
+                  zIndex: 1000,
+                  minWidth: 140,
+                  maxHeight: 240,
+                  overflowY: "auto",
+                  background: isDark ? "rgba(10,15,20,0.95)" : "rgba(255,255,255,0.95)",
+                  border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.12)",
+                  backdropFilter: "blur(80px)",
+                  WebkitBackdropFilter: "blur(80px)",
+                  boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.6)" : "0 8px 32px rgba(0,0,0,0.25)",
+                }}
+              >
+                <button
+                  onClick={() => { setFilterBlock("Все"); setOpenBlockDropdown(false); }}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "8px 14px",
+                    fontSize: 12,
+                    fontWeight: 500,
+                    border: "none",
+                    background: filterBlock === "Все" ? "rgba(26,141,122,0.15)" : "transparent",
+                    color: filterBlock === "Все" ? "#1A8D7A" : isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (filterBlock !== "Все") {
+                      e.currentTarget.style.background = isDark ? "rgba(26,141,122,0.08)" : "rgba(26,141,122,0.06)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (filterBlock !== "Все") {
+                      e.currentTarget.style.background = "transparent";
+                    }
+                  }}
+                >
+                  Все блоки
+                </button>
+                {blocks.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => { setFilterBlock(opt); setOpenBlockDropdown(false); }}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "8px 14px",
+                      fontSize: 12,
+                      fontWeight: 500,
+                      border: "none",
+                      background: filterBlock === opt ? "rgba(26,141,122,0.15)" : "transparent",
+                      color: filterBlock === opt ? "#1A8D7A" : isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (filterBlock !== opt) {
+                        e.currentTarget.style.background = isDark ? "rgba(26,141,122,0.08)" : "rgba(26,141,122,0.06)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (filterBlock !== opt) {
+                        e.currentTarget.style.background = "transparent";
+                      }
+                    }}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Custom dropdown: Status */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setOpenStatusDropdown(!openStatusDropdown);
+                setOpenBlockDropdown(false);
+                setOpenPriorityDropdown(false);
+              }}
+              style={{
+                ...inputStyle,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                minWidth: 140,
+              }}
+            >
+              {filterStatus === "Все" ? "Все статусы" : filterStatus}
+              <span style={{ marginLeft: "auto", color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>▾</span>
+            </button>
+            {openStatusDropdown && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  marginTop: 4,
+                  borderRadius: 12,
+                  overflow: "hidden",
+                  zIndex: 1000,
+                  minWidth: 140,
+                  maxHeight: 240,
+                  overflowY: "auto",
+                  background: isDark ? "rgba(10,15,20,0.95)" : "rgba(255,255,255,0.95)",
+                  border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.12)",
+                  backdropFilter: "blur(80px)",
+                  WebkitBackdropFilter: "blur(80px)",
+                  boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.6)" : "0 8px 32px rgba(0,0,0,0.25)",
+                }}
+              >
+                <button
+                  onClick={() => { setFilterStatus("Все"); setOpenStatusDropdown(false); }}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "8px 14px",
+                    fontSize: 12,
+                    fontWeight: 500,
+                    border: "none",
+                    background: filterStatus === "Все" ? "rgba(26,141,122,0.15)" : "transparent",
+                    color: filterStatus === "Все" ? "#1A8D7A" : isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (filterStatus !== "Все") {
+                      e.currentTarget.style.background = isDark ? "rgba(26,141,122,0.08)" : "rgba(26,141,122,0.06)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (filterStatus !== "Все") {
+                      e.currentTarget.style.background = "transparent";
+                    }
+                  }}
+                >
+                  Все статусы
+                </button>
+                {statuses.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => { setFilterStatus(opt); setOpenStatusDropdown(false); }}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "8px 14px",
+                      fontSize: 12,
+                      fontWeight: 500,
+                      border: "none",
+                      background: filterStatus === opt ? "rgba(26,141,122,0.15)" : "transparent",
+                      color: filterStatus === opt ? "#1A8D7A" : isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (filterStatus !== opt) {
+                        e.currentTarget.style.background = isDark ? "rgba(26,141,122,0.08)" : "rgba(26,141,122,0.06)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (filterStatus !== opt) {
+                        e.currentTarget.style.background = "transparent";
+                      }
+                    }}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Custom dropdown: Priority */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setOpenPriorityDropdown(!openPriorityDropdown);
+                setOpenBlockDropdown(false);
+                setOpenStatusDropdown(false);
+              }}
+              style={{
+                ...inputStyle,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                minWidth: 160,
+              }}
+            >
+              {filterPriority === "Все" ? "Все приоритеты" : filterPriority}
+              <span style={{ marginLeft: "auto", color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>▾</span>
+            </button>
+            {openPriorityDropdown && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  marginTop: 4,
+                  borderRadius: 12,
+                  overflow: "hidden",
+                  zIndex: 1000,
+                  minWidth: 160,
+                  maxHeight: 240,
+                  overflowY: "auto",
+                  background: isDark ? "rgba(10,15,20,0.95)" : "rgba(255,255,255,0.95)",
+                  border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.12)",
+                  backdropFilter: "blur(80px)",
+                  WebkitBackdropFilter: "blur(80px)",
+                  boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.6)" : "0 8px 32px rgba(0,0,0,0.25)",
+                }}
+              >
+                <button
+                  onClick={() => { setFilterPriority("Все"); setOpenPriorityDropdown(false); }}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "8px 14px",
+                    fontSize: 12,
+                    fontWeight: 500,
+                    border: "none",
+                    background: filterPriority === "Все" ? "rgba(26,141,122,0.15)" : "transparent",
+                    color: filterPriority === "Все" ? "#1A8D7A" : isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (filterPriority !== "Все") {
+                      e.currentTarget.style.background = isDark ? "rgba(26,141,122,0.08)" : "rgba(26,141,122,0.06)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (filterPriority !== "Все") {
+                      e.currentTarget.style.background = "transparent";
+                    }
+                  }}
+                >
+                  Все приоритеты
+                </button>
+                {priorities.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => { setFilterPriority(opt); setOpenPriorityDropdown(false); }}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "8px 14px",
+                      fontSize: 12,
+                      fontWeight: 500,
+                      border: "none",
+                      background: filterPriority === opt ? "rgba(26,141,122,0.15)" : "transparent",
+                      color: filterPriority === opt ? "#1A8D7A" : isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (filterPriority !== opt) {
+                        e.currentTarget.style.background = isDark ? "rgba(26,141,122,0.08)" : "rgba(26,141,122,0.06)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (filterPriority !== opt) {
+                        e.currentTarget.style.background = "transparent";
+                      }
+                    }}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {(filterBlock !== "Все" || filterStatus !== "Все" || filterPriority !== "Все" || search) && (
             <button
               onClick={() => { setFilterBlock("Все"); setFilterStatus("Все"); setFilterPriority("Все"); setSearch(""); }}
-              className="flex items-center gap-1 text-xs"
-              style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}
+              className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-medium transition-all"
+              style={{
+                background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
+                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
+                color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = isDark ? "rgba(186,36,71,0.12)" : "rgba(186,36,71,0.08)";
+                e.currentTarget.style.borderColor = "rgba(186,36,71,0.3)";
+                e.currentTarget.style.color = "#ba2447";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)";
+                e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+                e.currentTarget.style.color = isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)";
+              }}
             >
               <X size={12} /> Сбросить
             </button>
@@ -192,17 +519,15 @@ export function Tasks() {
             onClick={() => setShowModal(true)}
             className="ml-auto flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all"
             style={{
-              background: "linear-gradient(135deg, #3b82f6, #a855f7)",
-              boxShadow: "0 0 20px rgba(59,130,246,0.3)",
+              background: "linear-gradient(135deg, #1A8D7A, #156b5f)",
+              boxShadow: "0 0 20px rgba(26,141,122,0.4)",
             }}
           >
             <Plus size={15} /> Новая задача
           </button>
         </div>
-      </GlassCard>
 
       {/* Table */}
-      <GlassCard className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[920px]">
             <thead>
@@ -237,51 +562,65 @@ export function Tasks() {
                   </td>
                 </tr>
               )}
-              {filtered.map(t => (
-                <tr
-                  key={t.id}
-                  className="transition-colors"
-                  style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(186,36,71,0.08)")}
-                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                >
-                  <td className="px-4 py-3 text-sm whitespace-nowrap" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}>{t.executor}</td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded-lg text-xs font-medium"
-                      style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)", color: "#93c5fd" }}>
-                      {t.block}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-sm max-w-xs" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.75)" }}>
-                    <span className="line-clamp-2">{t.task}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded-lg text-xs font-semibold" style={priorityStyle[t.priority]}>
-                      {t.priority}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.4)" }}>{t.dateSet}</td>
-                  <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>{t.deadline}</td>
-                  <td className="px-4 py-3 text-center">
-                    {t.daysOverdue > 0 ? (
-                      <span className="text-xs font-bold px-2 py-0.5 rounded-md"
-                        style={{ background: "rgba(239,68,68,0.1)", color: "#f87171" }}>
-                        +{t.daysOverdue} дн.
-                      </span>
-                    ) : (
-                      <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)" }}>—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded-lg text-xs font-semibold" style={statusStyle[t.status]}>
-                      {t.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-center text-xs font-medium" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
-                    {t.transfers}
-                  </td>
-                </tr>
-              ))}
+              {filtered.map(t => {
+                const isExpanded = expandedTaskIds.has(t.id);
+                return (
+                  <React.Fragment key={t.id}>
+                    <tr
+                      className="transition-colors"
+                      style={{ borderBottom: isExpanded ? "none" : `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}
+                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(186,36,71,0.08)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <td className="px-4 py-3 text-sm whitespace-nowrap" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}>{t.executor}</td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-0.5 rounded-lg text-xs font-medium"
+                          style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)", color: "#93c5fd" }}>
+                          {t.block}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm max-w-lg" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.75)" }}>
+                        <div className="flex items-start gap-2">
+                          <span className={isExpanded ? "" : "line-clamp-2"}>{t.task}</span>
+                          <button
+                            onClick={() => toggleExpand(t.id)}
+                            className="shrink-0 transition-transform"
+                            style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)", transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
+                          >
+                            <ChevronDown size={16} />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-0.5 rounded-lg text-xs font-semibold" style={priorityStyle[t.priority]}>
+                          {t.priority}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.4)" }}>{t.dateSet}</td>
+                      <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>{t.deadline}</td>
+                      <td className="px-4 py-3 text-center">
+                        {t.daysOverdue > 0 ? (
+                          <span className="text-xs font-bold px-2 py-0.5 rounded-md"
+                            style={{ background: "rgba(239,68,68,0.1)", color: "#f87171" }}>
+                            +{t.daysOverdue} дн.
+                          </span>
+                        ) : (
+                          <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)" }}>—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-0.5 rounded-lg text-xs font-semibold" style={statusStyle[t.status]}>
+                          {t.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center text-xs font-medium" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
+                        {t.transfers}
+                      </td>
+                    </tr>
+                    {/* Removed expanded row with technical description */}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -301,7 +640,7 @@ export function Tasks() {
           <div
             className="w-full max-w-lg rounded-2xl p-6"
             style={{
-              background: isDark ? "rgba(10,18,40,0.95)" : "rgba(255,255,255,0.98)",
+              background: isDark ? "#0f1419" : "#f8f9fa",
               border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
               backdropFilter: "blur(24px)",
               boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
@@ -368,7 +707,7 @@ export function Tasks() {
               <button
                 onClick={() => setShowModal(false)}
                 className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
-                style={{ background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)", border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}
+                style={{ background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)", border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`, color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}
               >
                 Отмена
               </button>
@@ -376,8 +715,8 @@ export function Tasks() {
                 onClick={addTask}
                 className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all"
                 style={{
-                  background: "linear-gradient(135deg, #3b82f6, #a855f7)",
-                  boxShadow: "0 0 20px rgba(59,130,246,0.3)",
+                  background: "linear-gradient(135deg, #1A8D7A, #156b5f)",
+                  boxShadow: "0 0 20px rgba(26,141,122,0.4)",
                 }}
               >
                 Добавить

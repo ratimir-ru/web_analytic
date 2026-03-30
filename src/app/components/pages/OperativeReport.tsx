@@ -120,7 +120,7 @@ export function OperativeReport() {
           { label: "Логистика", sublabel: "Утилизация 87%", status: "green" as const },
           { label: "Дебиторка", sublabel: "+12.4% к лимиту", status: "red" as const },
         ].map((item, i) => (
-          <GlassCard key={i} className="p-4 flex items-center gap-3">
+          <GlassCard key={i} className="p-4 my-4 flex items-center gap-3">
             <TrafficLight status={item.status} size="md" />
             <div>
               <p className="text-sm font-bold" style={{ color: textPrimary }}>{item.label}</p>
@@ -131,7 +131,7 @@ export function OperativeReport() {
       </div>
 
       {/* Main KPI table */}
-      <GlassCard className="mb-5">
+      <GlassCard className="my-5">
         <div className="p-5 pb-3">
           <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: textMuted }}>
             Ключевые показатели
@@ -191,7 +191,7 @@ export function OperativeReport() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
         {/* Sales by category */}
-        <GlassCard>
+        <GlassCard className="my-4">
           <div className="p-5 pb-3">
             <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: textMuted }}>
               Продажи по категориям, тн
@@ -253,7 +253,7 @@ export function OperativeReport() {
         </GlassCard>
 
         {/* Logistics by territory */}
-        <GlassCard>
+        <GlassCard className="my-4">
           <div className="p-5 pb-3">
             <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: textMuted }}>
               Логистика по территориям
@@ -299,7 +299,7 @@ export function OperativeReport() {
       </div>
 
       {/* Commentary block */}
-      <GlassCard className="p-5">
+      <GlassCard className="p-5 my-4">
         <h3 className="text-sm font-bold uppercase tracking-wider mb-3" style={{ color: textMuted }}>
           AI-комментарий к отчёту
         </h3>
@@ -319,7 +319,7 @@ export function OperativeReport() {
           >
             <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: "#f59e0b" }} />
             <p className="text-sm" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}>
-              Отставание по объёму продаж составляет 3.1%. Крити��еские блоки: «Мясной проект» (−9.2%) и «Охлажденные ПФ» (−7.1%).
+              Отставание по объёму п��одаж составляет 3.1%. Крити��еские блоки: «Мясной проект» (−9.2%) и «Охлажденные ПФ» (−7.1%).
             </p>
           </div>
           <div

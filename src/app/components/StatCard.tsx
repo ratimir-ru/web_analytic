@@ -87,7 +87,7 @@ export function StatCard({
         {subtitle && <div className="text-xs opacity-50">{subtitle}</div>}
         {change !== undefined && (
           <div className="flex items-center gap-1 text-xs mt-1">
-            <span style={{ color: change >= 0 ? "#10b981" : "#ef4444" }}>
+            <span style={{ color: change >= 0 ? "#1A8D7A" : "#ba2447" }}>
               {change >= 0 ? "+" : ""}
               {change}%
             </span>
@@ -161,7 +161,7 @@ export function GlassCard({ children, className = "", glow, onClick, style }: Gl
 
   return (
     <div
-      className={`rounded-2xl relative overflow-hidden transition-all duration-300 hover-card ${onClick ? "cursor-pointer" : ""} ${className} px-[20px] py-[25px] mx-[0px] mt-[11px] mb-[12px]`}
+      className={`rounded-2xl relative overflow-hidden transition-all duration-300 hover-card ${onClick ? "cursor-pointer" : ""} ${className} px-[18px] py-[15px] mx-[0px] mt-[16px] mb-[10px]`}
       style={{
         background: cardBg,
         backdropFilter: "blur(20px)",
@@ -177,7 +177,7 @@ export function GlassCard({ children, className = "", glow, onClick, style }: Gl
           style={{ background: glow }}
         />
       )}
-      <div className="relative z-10">{children}</div>
+      {children}
     </div>
   );
 }
@@ -185,7 +185,7 @@ export function GlassCard({ children, className = "", glow, onClick, style }: Gl
 // ── ChartTitle Component ─────────────────────────────────────────────────────
 
 export function ChartTitle({ children }: ChartTitleProps) {
-  return <div className="text-sm opacity-70 mb-3">{children}</div>;
+  return <div className="text-sm opacity-70 text-center px-[0px] py-[20px] mx-[0px] mt-[-1px] mb-[12px]">{children}</div>;
 }
 
 // ── Chart Props Configurations ───────────────────────────────────────────────
@@ -208,12 +208,12 @@ export function CustomChartTooltip({ active, payload, label }: CustomTooltipProp
     <div
       className="rounded-xl p-3 text-xs"
       style={{
-        background: isDark ? "rgba(15,20,41,0.95)" : "rgba(255,255,255,0.95)",
+        background: isDark ? "rgba(15,20,25,0.95)" : "rgba(255,255,255,0.95)",
         backdropFilter: "blur(20px)",
         border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
         color: isDark ? "white" : "black",
         boxShadow: isDark 
-          ? "0 8px 32px rgba(0,0,0,0.4)" 
+          ? "0 8px 32px rgba(0,0,0,0.5)" 
           : "0 8px 32px rgba(0,0,0,0.15)",
       }}
     >
@@ -292,9 +292,9 @@ export function chartProps(isDark: boolean = false) {
       axisLine: false,
     },
     legend: {
-      iconSize: 10,
+      iconSize: 8,
       wrapperStyle: {
-        fontSize: "11px",
+        fontSize: "10px",
         opacity: 0.7,
       },
     },
@@ -318,5 +318,12 @@ export const darkChartProps = {
     tick: { fill: "rgba(148, 163, 184, 0.5)", fontSize: 11 },
     tickLine: false,
     axisLine: false,
+  },
+  legend: {
+    iconSize: 8,
+    wrapperStyle: {
+      fontSize: "10px",
+      opacity: 0.7,
+    },
   },
 };

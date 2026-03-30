@@ -1,6 +1,7 @@
 import image_6d19dd7a1c06f38e92a17d43316b77621712beae from '../../assets/6d19dd7a1c06f38e92a17d43316b77621712beae.png'
+import image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df from '../../assets/57bc1ed8c53e14ed69b8d98b78f63b24a1f830df.png'
 import React, { useState, useRef, useEffect } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router";
 import {
   LayoutDashboard,
   TrendingUp,
@@ -55,6 +56,7 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
   const [collapsed, setCollapsed] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -62,10 +64,38 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  
+  // Scroll position storage for each route
+  const scrollPositions = useRef<Record<string, number>>({});
+  const mainRef = useRef<HTMLElement>(null);
 
   const isDark = theme === "dark";
 
   const sidebarWidth = collapsed ? 64 : 240;
+
+  // Save and restore scroll position per route
+  useEffect(() => {
+    const mainEl = mainRef.current;
+    if (!mainEl) return;
+
+    // Save current scroll position for previous location
+    return () => {
+      scrollPositions.current[location.pathname] = mainEl.scrollTop;
+    };
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const mainEl = mainRef.current;
+    if (!mainEl) return;
+
+    // Restore scroll position for current route, or scroll to top if new route
+    const savedPosition = scrollPositions.current[location.pathname];
+    if (savedPosition !== undefined) {
+      mainEl.scrollTop = savedPosition;
+    } else {
+      mainEl.scrollTop = 0;
+    }
+  }, [location.pathname]);
 
   // Close notifications on outside click
   useEffect(() => {
@@ -159,11 +189,12 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
           backdropFilter: isDark ? "blur(24px)" : "none",
           WebkitBackdropFilter: isDark ? "blur(24px)" : "none",
           borderRight: sidebarBorder,
+          fontSize: "16px",
         }}
       >
         {/* Logo */}
         <div
-          className="flex items-center h-16 flex-shrink-0 px-[12px] py-[3px] mx-[0px] my-[1px]"
+          className="flex items-center h-16 flex-shrink-0 px-[12px] py-[7px] mx-[0px] my-[-9px]"
           style={{ borderBottom: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.07)" }}
         >
           <img
@@ -177,7 +208,7 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
                 className="font-black text-sm tracking-widest"
                 style={{ color: "#9e233b", letterSpacing: "0.15em" }}
               >РАТИМИР</p>
-              <p className="text-xs" style={{ color: isDark ? "rgba(13,255,255,0.3)" : "rgba(0,0,0,0.35)" }}>
+              <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
                 Аналитика
               </p>
             </div>
@@ -358,11 +389,13 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
                   <div
                     className="absolute top-full mt-1 left-0 right-0 rounded-xl overflow-hidden z-50"
                     style={{
-                      background: isDark ? "rgba(10,22,40,0.97)" : "rgba(255,255,255,0.99)",
-                      border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
-                      backdropFilter: "blur(20px)",
-                      WebkitBackdropFilter: "blur(20px)",
-                      boxShadow: "0 12px 40px rgba(0,0,0,0.3)",
+                      background: isDark ? "rgba(10,15,20,0.9)" : "rgba(255,255,255,0.9)",
+                      border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
+                      backdropFilter: "blur(80px)",
+                      WebkitBackdropFilter: "blur(80px)",
+                      boxShadow: isDark 
+                        ? "0 8px 32px rgba(0,0,0,0.6)" 
+                        : "0 8px 32px rgba(0,0,0,0.25)",
                     }}
                   >
                     {filteredNavItems.map((item) => (
@@ -374,7 +407,7 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
                           borderBottom: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.05)",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = isDark ? "rgba(204,0,0,0.1)" : "rgba(204,0,0,0.06)";
+                          e.currentTarget.style.background = isDark ? "rgba(186,36,71,0.1)" : "rgba(186,36,71,0.06)";
                           e.currentTarget.style.color = "#e57373";
                         }}
                         onMouseLeave={(e) => {
@@ -395,16 +428,15 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
                 )}
               </div>
             ) : (
-              <span
-                className="font-black text-lg tracking-widest select-none"
+              <img
+                src={image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df}
+                alt="РАТИМИР"
+                className="select-none mx-[15px] my-[-16px]"
                 style={{
-                  color: "#ba2447",
-                  letterSpacing: "0.2em",
-                  textShadow: isDark ? "0 0 20px rgba(186,36,71,0.4)" : "none",
+                  maxHeight: "29px",
+                  filter: isDark ? "drop-shadow(0 0 20px rgba(186,36,71,0.4))" : "none",
                 }}
-              >
-                РАТИМИР
-              </span>
+              />
             )}
           </div>
 
@@ -567,6 +599,7 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
         <main
           className="flex-1 overflow-y-auto p-5"
           style={{ background: "transparent" }}
+          ref={mainRef}
         >
           <Outlet />
         </main>

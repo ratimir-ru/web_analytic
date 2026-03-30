@@ -25,14 +25,80 @@ import {
 import { ShoppingCart, TrendingUp, Star, Package, Users, Bot, ChevronDown, ChevronUp, ExternalLink, ArrowUp } from "lucide-react";
 
 // ── Palette ──────────────────────────────────────────────────────────────────
-const GREEN = "#10b981";
+const GREEN = "#1A8D7A";
 const YELLOW = "#f59e0b";
-const RED = "#ef4444";
+const RED = "#BA2447";
+const BLUE = "#1A8D7A";
 
 function hexToRgb(hex: string): string {
-  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  const r = /^#?([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$/i.exec(hex);
   if (!r) return "59,130,246";
   return `${parseInt(r[1], 16)},${parseInt(r[2], 16)},${parseInt(r[3], 16)}`;
+}
+
+// ── Sales KPI Card Component ──────────────────────────────────────────────────
+function SalesKpiCard({ 
+  title, 
+  fact, 
+  plan, 
+  bottomInfo, 
+  icon, 
+  color,
+  customContent
+}: {
+  title: React.ReactNode;
+  fact: string;
+  plan: string;
+  bottomInfo: React.ReactNode;
+  icon: React.ReactNode;
+  color: string;
+  customContent?: React.ReactNode;
+}) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  return (
+    <div
+      className="rounded-2xl relative overflow-hidden transition-all hover-card px-[20px] py-[21px]"
+      style={{
+        background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)",
+        backdropFilter: "blur(20px)",
+        border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`,
+        boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.3)" : "0 8px 32px rgba(0,0,0,0.08)",
+      }}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-semibold uppercase tracking-widest mx-[0px] my-[-2px]" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>
+          {title}
+        </p>
+        <div
+          className="w-7 h-7 rounded-md flex items-center justify-center"
+          style={{ 
+            background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+            color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
+          }}
+        >
+          {icon}
+        </div>
+      </div>
+      {customContent ? (
+        customContent
+      ) : (
+        <>
+          <div className="mx-[0px] my-[5px]">
+            <span className="text-xs block mx-[0px] mt-[28px] mb-[-22px]" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
+              план: {plan}
+            </span>
+            <div className="flex items-center justify-between mx-[0px] mt-[26px] mb-[-4px]">
+              <span className="text-2xl font-semibold" style={{ color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)" }}>
+                {fact}
+              </span>
+              {bottomInfo}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 // ── Data ─────────────────────────────────────────────────────────────────────
@@ -53,31 +119,31 @@ const overallData = [
 
 const categories = [
   {
-    id: "kolbasy", label: "Колбасы", color: "#3b82f6",
+    id: "kolbasy", label: "Колбасы", color: "#BA2447",
     plan: 320, fact: 298, price_plan: 195, price_fact: 192,
     margin_plan: 32, margin_fact: 29, service: 95, status: "yellow" as const,
     trend: [0,1,2,3,4,5].map(i => ({ month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i], план: [85,88,90,82,86,90][i], факт: [82,87,89,79,85,88][i] })),
   },
   {
-    id: "zamorozka", label: "Заморозка", color: "#22d3ee",
+    id: "zamorozka", label: "Заморозка", color: "#A47DD4",
     plan: 180, fact: 175, price_plan: 142, price_fact: 145,
     margin_plan: 28, margin_fact: 29, service: 97, status: "green" as const,
     trend: [0,1,2,3,4,5].map(i => ({ month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i], план: [46,48,50,44,47,50][i], факт: [45,47,49,43,47,49][i] })),
   },
   {
-    id: "delikatesy", label: "Деликатесы", color: "#a855f7",
+    id: "delikatesy", label: "Деликатесы", color: "#4F709D",
     plan: 150, fact: 162, price_plan: 380, price_fact: 395,
     margin_plan: 42, margin_fact: 45, service: 96, status: "green" as const,
     trend: [0,1,2,3,4,5].map(i => ({ month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i], план: [38,40,42,37,40,42][i], факт: [39,41,44,39,43,46][i] })),
   },
   {
-    id: "oxl_pf", label: "Охлажденные ПФ", color: "#f59e0b",
+    id: "oxl_pf", label: "Охлажденные ПФ", color: "#6BF0AE",
     plan: 210, fact: 195, price_plan: 128, price_fact: 124,
     margin_plan: 22, margin_fact: 19, service: 91, status: "red" as const,
     trend: [0,1,2,3,4,5].map(i => ({ month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i], план: [54,56,58,52,55,58][i], факт: [50,53,55,48,51,54][i] })),
   },
   {
-    id: "myasnoy", label: "Мясной проект", color: "#ef4444",
+    id: "myasnoy", label: "Мясной проект", color: "#008183",
     plan: 130, fact: 118, price_plan: 165, price_fact: 158,
     margin_plan: 18, margin_fact: 15, service: 88, status: "red" as const,
     trend: [0,1,2,3,4,5].map(i => ({ month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i], план: [33,35,37,32,34,37][i], факт: [31,33,34,29,32,33][i] })),
@@ -88,7 +154,15 @@ const categories = [
 const lflMonths = ["Сен", "Окт", "Ноя", "Дек", "Янв", "Фев", "Мар"];
 const lflValues = [-1.2, 2.3, 4.5, -0.8, 3.2, 6.1, 5.4];
 const lflPrevYear = [-2.1, 1.8, 3.2, -1.5, 2.1, 4.8, 3.9];
-const lflData = lflMonths.map((m, i) => ({ month: m, текущий: lflValues[i], прошлый: lflPrevYear[i] }));
+const lflCurrentVolumes = [845, 892, 935, 880, 910, 965, 948];
+const lflPrevVolumes = [853, 873, 895, 887, 882, 910, 899];
+const lflData = lflMonths.map((m, i) => ({ 
+  month: m, 
+  текущий: lflValues[i], 
+  прошлый: lflPrevYear[i],
+  текущийОбъем: lflCurrentVolumes[i],
+  прошлыйОбъем: lflPrevVolumes[i]
+}));
 
 // SKU data for Top SKU block
 const bestSKU = [
@@ -123,41 +197,46 @@ function seededMock(seed: string, min: number, max: number, count: number): numb
 // ── Components ────────────────────────────────────────────────────────────────
 function AIPlaceholder({ lines = 3, linkLabel, isDark }: { lines?: number; linkLabel?: string; isDark: boolean }) {
   return (
-    <div
-      className="rounded-2xl p-4 flex gap-3"
-      style={{ background: "rgba(59,130,246,0.04)", border: "1px solid rgba(59,130,246,0.12)" }}
+    <GlassCard 
+      className="p-4 mb-4"
+      style={{
+        background: "rgba(59,130,246,0.04)",
+        border: "1px solid rgba(59,130,246,0.12)",
+      }}
     >
-      <Bot size={16} style={{ color: "#60a5fa", flexShrink: 0, marginTop: 2 }} />
-      <div className="flex-1">
-        <p className="text-xs font-semibold mb-2" style={{ color: "#93c5fd" }}>ИИ-аналитик</p>
-        <div className="space-y-2">
-          {Array.from({ length: lines }).map((_, i) => (
-            <div key={i} className="h-2.5 rounded-full"
-              style={{ background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)", width: i === lines - 1 ? "55%" : "100%" }} />
-          ))}
-        </div>
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)" }}>
-            Текст ИИ-аналитика будет отображён здесь
-          </p>
-          {linkLabel && (
-            <a
-              href="#"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ml-4"
-              style={{
-                background: "rgba(59,130,246,0.15)",
-                border: "1px solid rgba(59,130,246,0.25)",
-                color: "#60a5fa",
-                textDecoration: "none",
-              }}
-            >
-              <ExternalLink size={12} />
-              {linkLabel}
-            </a>
-          )}
+      <div className="flex gap-3">
+        <Bot size={16} style={{ color: "#60a5fa", flexShrink: 0, marginTop: 2 }} />
+        <div className="flex-1">
+          <p className="text-xs font-semibold mb-2" style={{ color: "#93c5fd" }}>ИИ-аналитик</p>
+          <div className="space-y-2">
+            {Array.from({ length: lines }).map((_, i) => (
+              <div key={i} className="h-2.5 rounded-full"
+                style={{ background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)", width: i === lines - 1 ? "55%" : "100%" }} />
+            ))}
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)" }}>
+              Текст ИИ-аналитика будет отображён здесь
+            </p>
+            {linkLabel && (
+              <a
+                href="#"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ml-4"
+                style={{
+                  background: "rgba(59,130,246,0.15)",
+                  border: "1px solid rgba(59,130,246,0.25)",
+                  color: "#60a5fa",
+                  textDecoration: "none",
+                }}
+              >
+                <ExternalLink size={12} />
+                {linkLabel}
+              </a>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </GlassCard>
   );
 }
 
@@ -172,7 +251,7 @@ function Dropdown<T extends string>({ label, value, options, onChange, disabled,
         className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
         style={{
           background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
-          border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.12)",
+          border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
           color: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
           opacity: disabled ? 0.4 : 1,
           cursor: disabled ? "not-allowed" : "pointer",
@@ -185,9 +264,13 @@ function Dropdown<T extends string>({ label, value, options, onChange, disabled,
       {open && !disabled && (
         <div className="absolute top-full left-0 mt-1 rounded-xl overflow-hidden z-50 min-w-max"
           style={{
-            background: isDark ? "rgba(10,18,40,0.97)" : "rgba(255,255,255,0.97)",
-            border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.12)",
-            backdropFilter: "blur(20px)",
+            background: isDark ? "rgba(10,15,20,0.9)" : "rgba(255,255,255,0.9)",
+            border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
+            backdropFilter: "blur(80px)",
+            WebkitBackdropFilter: "blur(80px)",
+            boxShadow: isDark 
+              ? "0 8px 32px rgba(0,0,0,0.6)" 
+              : "0 8px 32px rgba(0,0,0,0.25)",
           }}>
           {options.map(opt => (
             <button
@@ -195,8 +278,10 @@ function Dropdown<T extends string>({ label, value, options, onChange, disabled,
               onClick={() => { onChange(opt); setOpen(false); }}
               className="block w-full text-left px-4 py-2 text-xs transition-all"
               style={{
-                color: opt === value ? "#93c5fd" : isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
-                background: opt === value ? "rgba(59,130,246,0.1)" : "transparent",
+                color: opt === value
+                  ? "#e57373"
+                  : isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
+                background: opt === value ? "rgba(204,0,0,0.15)" : "transparent",
               }}
               onMouseEnter={e => { if (opt !== value) (e.target as HTMLElement).style.background = "rgba(186,36,71,0.1)"; }}
               onMouseLeave={e => { if (opt !== value) (e.target as HTMLElement).style.background = "transparent"; }}
@@ -223,12 +308,12 @@ function PctTooltip({ active, payload, label }: any) {
     <div 
       className="rounded-xl p-3 text-xs"
       style={{ 
-        background: isDark ? "rgba(15,20,41,0.95)" : "rgba(255,255,255,0.95)",
+        background: isDark ? "rgba(15,20,25,0.95)" : "rgba(255,255,255,0.95)",
         backdropFilter: "blur(20px)",
         border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
         color: isDark ? "white" : "black",
         boxShadow: isDark 
-          ? "0 8px 32px rgba(0,0,0,0.4)" 
+          ? "0 8px 32px rgba(0,0,0,0.5)" 
           : "0 8px 32px rgba(0,0,0,0.15)",
       }}
     >
@@ -239,6 +324,38 @@ function PctTooltip({ active, payload, label }: any) {
       {factItem && planItem && (
         <p style={{ color: YELLOW }}>Факт/План: {((factItem.value / planItem.value) * 100).toFixed(1)}%</p>
       )}
+    </div>
+  );
+}
+
+// Custom tooltip for LFL chart
+function LflTooltip({ active, payload, label }: any) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  
+  if (!active || !payload || !payload[0]) return null;
+  const data = payload[0].payload;
+  const currentVolume = data.текущийОбъем;
+  const prevVolume = data.прошлыйОбъем;
+  const volumeRatio = ((prevVolume / currentVolume) * 100).toFixed(1);
+  
+  return (
+    <div 
+      className="rounded-xl p-3 text-xs"
+      style={{ 
+        background: isDark ? "rgba(15,20,25,0.95)" : "rgba(255,255,255,0.95)",
+        backdropFilter: "blur(20px)",
+        border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+        color: isDark ? "white" : "black",
+        boxShadow: isDark 
+          ? "0 8px 32px rgba(0,0,0,0.5)" 
+          : "0 8px 32px rgba(0,0,0,0.15)",
+      }}
+    >
+      <p className="font-bold mb-1">{label}</p>
+      <p style={{ color: "#1A8D7A" }}>Текущий объем: {currentVolume} т</p>
+      <p style={{ color: "#4F709D" }}>Прошлый объем: {prevVolume} т</p>
+      <p style={{ color: YELLOW }}>Прошлый/Текущий объем: {volumeRatio}%</p>
     </div>
   );
 }
@@ -317,84 +434,60 @@ export function Sales() {
       />
 
       {/* 5 KPI cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-        <div
-          className="rounded-2xl p-4 relative overflow-hidden group transition-all"
-          style={{ background: cardBg, backdropFilter: "blur(20px)", border: `1px solid ${cardBorder}` }}
-        >
-          <div className="absolute -top-5 -left-5 w-14 h-14 rounded-full opacity-20 pointer-events-none"
-            style={{ background: "radial-gradient(circle, #f59e0b 0%, transparent 70%)", filter: "blur(10px)" }} />
-          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: textSecondary }}>Объём продаж тн</p>
-          <p className="text-2xl font-black mb-1" style={{ color: textPrimary }}>948 т</p>
-          <div className="grid grid-cols-2 gap-1 mt-1">
-            <div><p className="text-xs" style={{ color: textMuted }}>План</p><p className="text-xs font-bold" style={{ color: textMedium }}>980 т</p></div>
-            <div><p className="text-xs" style={{ color: textMuted }}>% плана</p>
-              <p className="text-xs font-bold" style={{ color: YELLOW }}>96.7%</p>
-            </div>
-          </div>
-          <span className="inline-block mt-2 text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(239,68,68,0.12)", color: RED, border: "1px solid rgba(239,68,68,0.2)" }}>▼ 3.1%</span>
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+        <SalesKpiCard
+          title={<>Объём<br />продаж</>}
+          fact="948 т"
+          plan="980 т"
+          bottomInfo={<span className="inline-block text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(186,36,71,0.12)", color: RED, border: "1px solid rgba(186,36,71,0.2)" }}>▼ 3.1%</span>}
+          icon={<ShoppingCart size={16} />}
+          color="#f59e0b"
+        />
 
-        <div className="rounded-2xl p-4 relative overflow-hidden group transition-all"
-          style={{ background: cardBg, backdropFilter: "blur(20px)", border: `1px solid ${cardBorder}` }}>
-          <div className="absolute -top-5 -left-5 w-14 h-14 rounded-full opacity-20 pointer-events-none"
-            style={{ background: "radial-gradient(circle, #3b82f6 0%, transparent 70%)", filter: "blur(10px)" }} />
-          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: textSecondary }}>Прогноз продаж</p>
-          <p className="text-2xl font-black mb-1" style={{ color: "#60a5fa" }}>960 т</p>
-          <div className="grid grid-cols-2 gap-1 mt-1">
-            <div><p className="text-xs" style={{ color: textMuted }}>План</p><p className="text-xs font-bold" style={{ color: textMedium }}>980 т</p></div>
-            <div><p className="text-xs" style={{ color: textMuted }}>% плана</p>
-              <p className="text-xs font-bold" style={{ color: YELLOW }}>98.0%</p>
-            </div>
-          </div>
-          <span className="inline-block mt-2 text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(16,185,129,0.12)", color: GREEN, border: "1px solid rgba(16,185,129,0.2)" }}>▲ 1.3%</span>
-        </div>
+        <SalesKpiCard
+          title="Прогноз продаж"
+          fact="960 т"
+          plan="980 т"
+          bottomInfo={<span className="inline-block text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>▲ 1.3%</span>}
+          icon={<TrendingUp size={16} />}
+          color="#3b82f6"
+        />
 
-        <div className="rounded-2xl p-4 relative overflow-hidden group transition-all"
-          style={{ background: cardBg, backdropFilter: "blur(20px)", border: `1px solid ${cardBorder}` }}>
-          <div className="absolute -top-5 -left-5 w-14 h-14 rounded-full opacity-20 pointer-events-none"
-            style={{ background: "radial-gradient(circle, #a855f7 0%, transparent 70%)", filter: "blur(10px)" }} />
-          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: textSecondary }}>Кол-во SKU</p>
-          <p className="text-2xl font-black mb-1" style={{ color: textPrimary }}>842</p>
-          <div className="grid grid-cols-2 gap-1 mt-1">
-            <div><p className="text-xs" style={{ color: textMuted }}>Пред. мес.</p><p className="text-xs font-bold" style={{ color: textMedium }}>821</p></div>
-            <div><p className="text-xs" style={{ color: textMuted }}>Δ SKU</p>
-              <span className="inline-flex items-center gap-0.5 text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ color: GREEN, border: `1px solid rgba(16,185,129,0.35)`, background: "rgba(16,185,129,0.08)" }}>
-                <ArrowUp size={10} /> +21
-              </span>
-            </div>
-          </div>
-          <span className="inline-block mt-2 text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(16,185,129,0.12)", color: GREEN, border: "1px solid rgba(16,185,129,0.2)" }}>▲ 2.6%</span>
-        </div>
+        <SalesKpiCard
+          title="Кол-во SKU"
+          fact="842"
+          plan="821"
+          bottomInfo={<span className="inline-block text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ color: GREEN, border: "1px solid rgba(26,141,122,0.2)", background: "rgba(26,141,122,0.12)" }}>▲ +21</span>}
+          icon={<Package size={16} />}
+          color="#a855f7"
+        />
 
-        <div className="rounded-2xl p-4 relative overflow-hidden group transition-all"
-          style={{ background: cardBg, backdropFilter: "blur(20px)", border: `1px solid ${cardBorder}` }}>
-          <div className="absolute -top-5 -left-5 w-14 h-14 rounded-full opacity-20 pointer-events-none"
-            style={{ background: "radial-gradient(circle, #10b981 0%, transparent 70%)", filter: "blur(10px)" }} />
-          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: textSecondary }}>Кол-во клиентов</p>
-          <p className="text-2xl font-black mb-1" style={{ color: textPrimary }}>1 248</p>
-          <div className="grid grid-cols-2 gap-1 mt-1">
-            <div><p className="text-xs" style={{ color: textMuted }}>Пред. мес.</p><p className="text-xs font-bold" style={{ color: textMedium }}>1 210</p></div>
-            <div><p className="text-xs" style={{ color: textMuted }}>Δ</p>
-              <p className="text-xs font-bold" style={{ color: GREEN }}>+38</p>
-            </div>
-          </div>
-          <span className="inline-block mt-2 text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(16,185,129,0.12)", color: GREEN, border: "1px solid rgba(16,185,129,0.2)" }}>▲ 3.1%</span>
-        </div>
+        <SalesKpiCard
+          title="Кол-во клиентов"
+          fact="1 248"
+          plan="1 210"
+          bottomInfo={<span className="inline-block text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>▲ +38</span>}
+          icon={<Users size={16} />}
+          color="#1A8D7A"
+        />
 
-        <div className="rounded-2xl p-4 relative overflow-hidden group transition-all"
-          style={{ background: cardBg, backdropFilter: "blur(20px)", border: `1px solid ${cardBorder}` }}>
-          <div className="absolute -top-5 -left-5 w-14 h-14 rounded-full opacity-20 pointer-events-none"
-            style={{ background: "radial-gradient(circle, #f59e0b 0%, transparent 70%)", filter: "blur(10px)" }} />
-          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: textSecondary }}>Уровень сервиса</p>
-          <div className="flex justify-center">
-            <Gauge value={94} label="OTIF (цель ≥ 97%)" unit="%" size={130} />
-          </div>
-        </div>
+        <SalesKpiCard
+          title="Уровень сервиса"
+          fact=""
+          plan=""
+          bottomInfo={null}
+          icon={<Star size={16} />}
+          color="#f59e0b"
+          customContent={
+            <div className="flex justify-center -mt-2">
+              <Gauge value={94} label="OTIF (цель ≥ 97%)" unit="%" size={100} />
+            </div>
+          }
+        />
       </div>
 
       {/* ── Analytical Dashboard Block ───────────────────────────────────── */}
-      <GlassCard className="mb-6 p-5" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+      <GlassCard className="mb-4 p-5" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
         {/* Filters */}
         <div className="flex gap-3 mb-4 flex-wrap">
           <Dropdown label="Группа подразделений" value={analyticGroup} options={ГРУППЫ_ПОДРАЗДЕЛЕНИЙ} onChange={setAnalyticGroup} isDark={isDark} />
@@ -411,16 +504,11 @@ export function Sales() {
                 <CartesianGrid {...(chartProps(isDark).cartesianGrid)} />
                 <XAxis dataKey="month" {...(chartProps(isDark).xAxis)} />
                 <YAxis {...(chartProps(isDark).yAxis)} domain={[-3, 8]} unit="%" />
-                <Tooltip content={<CustomChartTooltip />} />
-                <Legend
-                  {...(chartProps(isDark).legend)}
-                  formatter={(value: string) => value === "текущий" ? "Текущий год" : "Прошлый год"}
-                />
+                <Tooltip content={<LflTooltip />} />
                 <ReferenceLine y={0} stroke={isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.15)"} />
-                <Bar dataKey="прошлый" name="прошлый" fill={isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)"} radius={[4, 4, 0, 0]} />
-                <Bar dataKey="текущий" name="текущий" radius={[4, 4, 0, 0]}>
-                  {lflData.map((entry, idx) => (
-                    <Cell key={idx} fill={entry.текущий >= 0 ? GREEN : RED} />
+                <Bar dataKey="текущий" radius={[4, 4, 0, 0]}>
+                  {lflData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.текущий >= 0 ? "#1A8D7A" : "#ba2447"} />
                   ))}
                 </Bar>
               </BarChart>
@@ -429,18 +517,18 @@ export function Sales() {
 
           {/* CENTER: horizontal bar — divisions */}
           <div className="rounded-xl p-4" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
-            <p className="text-xs font-semibold mb-3" style={{ color: textSecondary }}>
+            <p className="text-sm font-semibold mb-3" style={{ color: textSecondary }}>
               Объём продаж — {analyticGroup}
             </p>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={divisionChartData} layout="vertical" margin={{ left: 10, right: 10 }}>
                 <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                 <XAxis type="number" {...darkChartProps.xAxis} />
-                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={100} tick={{ fontSize: 10 }} />
+                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={100} tick={{ fontSize: 12 }} />
                 <Tooltip content={<CustomChartTooltip />} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                  {divisionChartData.map((_, idx) => (
-                    <Cell key={idx} fill={idx === 0 ? RED : "#3b82f6"} />
+                  {divisionChartData.map((entry, idx) => (
+                    <Cell key={idx} fill={entry.value >= 0 ? "#1A8D7A" : "#ba2447"} />
                   ))}
                 </Bar>
               </BarChart>
@@ -449,18 +537,18 @@ export function Sales() {
 
           {/* RIGHT: horizontal bar — product groups */}
           <div className="rounded-xl p-4" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
-            <p className="text-xs font-semibold mb-3" style={{ color: textSecondary }}>
+            <p className="text-sm font-semibold mb-3" style={{ color: textSecondary }}>
               Объём продаж — {analyticBusiness}
             </p>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={productGroupChartData} layout="vertical" margin={{ left: 10, right: 10 }}>
                 <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                 <XAxis type="number" {...darkChartProps.xAxis} />
-                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={120} tick={{ fontSize: 10 }} />
+                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={120} tick={{ fontSize: 12 }} />
                 <Tooltip content={<CustomChartTooltip />} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {productGroupChartData.map((_, idx) => (
-                    <Cell key={idx} fill={idx === 0 ? RED : "#3b82f6"} />
+                    <Cell key={idx} fill="#1A8D7A" />
                   ))}
                 </Bar>
               </BarChart>
@@ -475,7 +563,7 @@ export function Sales() {
       </div>
 
       {/* Overall chart with % overlay */}
-      <GlassCard className="p-5 mb-6" glow="#3b82f6" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+      <GlassCard className="p-5 mb-4" glow={BLUE} style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
         <ChartTitle>Общий объём продаж — план vs факт + % от плана</ChartTitle>
         <ResponsiveContainer width="100%" height={240}>
           <BarChart data={overallData}>
@@ -485,8 +573,8 @@ export function Sales() {
             <YAxis yAxisId="right" orientation="right" domain={[90, 105]} {...darkChartProps.yAxis} unit="%" />
             <Tooltip content={<PctTooltip />} />
             <Legend {...darkChartProps.legend} />
-            <Bar yAxisId="left" dataKey="план" name="План (т)" fill="rgba(59,130,246,0.2)" radius={[4, 4, 0, 0]} />
-            <Bar yAxisId="left" dataKey="факт" name="Факт (т)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+            <Bar yAxisId="left" dataKey="план" name="План (т)" fill="#4F709D" radius={[4, 4, 0, 0]} />
+            <Bar yAxisId="left" dataKey="факт" name="Факт (т)" fill={BLUE} radius={[4, 4, 0, 0]} />
             <Line yAxisId="right" type="monotone" dataKey="pct" name="% от плана" stroke={YELLOW} strokeWidth={2} dot={{ r: 3, fill: YELLOW, strokeWidth: 0 }} />
             <ReferenceLine yAxisId="right" y={100} stroke="rgba(16,185,129,0.4)" strokeDasharray="4 4" />
           </BarChart>
@@ -495,7 +583,7 @@ export function Sales() {
 
       {/* ── Top SKU по выполнению плана ───────────────────────────────── */}
       <div
-        className="rounded-2xl mb-6 overflow-hidden"
+        className="rounded-2xl mb-4 overflow-hidden"
         style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)", border: `1px solid ${cardBorder}` }}
       >
         {/* Header */}
@@ -598,7 +686,7 @@ export function Sales() {
                   <span className="text-xs" style={{ color: textMuted }}>план: {m.plan}</span>
                 </div>
                 <div className="h-1.5 rounded-full" style={{ background: barBg }}>
-                  <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(m.pct, 100)}%`, background: filteredCategory.color, boxShadow: `0 0 8px ${filteredCategory.color}` }} />
+                  <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(m.pct, 100)}%`, background: filteredCategory.color }} />
                 </div>
               </div>
             ))}
@@ -624,19 +712,21 @@ export function Sales() {
                   <YAxis {...darkChartProps.yAxis} />
                   <Tooltip content={<CustomChartTooltip />} />
                   <Legend {...darkChartProps.legend} />
-                  <Line type="monotone" dataKey="план" name="План" stroke={isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"} strokeWidth={2} strokeDasharray="5 5" dot={false} />
-                  <Line type="monotone" dataKey="факт" name="Факт" stroke={filteredCategory.color} strokeWidth={2.5} dot={{ r: 4, fill: filteredCategory.color, strokeWidth: 0 }} />
+                  <Line type="monotone" dataKey="план" name="План" stroke="#4F709D" strokeWidth={2} strokeDasharray="5 5" dot={false} />
+                  <Line type="monotone" dataKey="факт" name="Факт" stroke="#1A8D7A" strokeWidth={2.5} dot={{ r: 4, fill: "#1A8D7A", strokeWidth: 0 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
         </div>
 
-        {/* AI inside last block */}
-        <div className="mt-5">
-          <AIPlaceholder lines={2} isDark={isDark} />
-        </div>
+        {/* AI inside last block - REMOVE THIS SECTION */}
       </GlassCard>
+
+      {/* AI Analyst blocks - separate cards */}
+      <div className="mb-4">
+        <AIPlaceholder lines={1} isDark={isDark} linkLabel="Power BI — Продажи" />
+      </div>
     </div>
   );
 }

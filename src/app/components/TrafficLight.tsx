@@ -4,9 +4,9 @@ export type Status = "red" | "yellow" | "green";
 
 const cfg = {
   red: {
-    active: "#ef4444",
-    glow: "rgba(239,68,68,0.7)",
-    dim: "rgba(239,68,68,0.1)",
+    active: "#ba2447",
+    glow: "rgba(186,36,71,0.7)",
+    dim: "rgba(186,36,71,0.1)",
     label: "Критично",
     labelColor: "#f87171",
   },
@@ -18,9 +18,9 @@ const cfg = {
     labelColor: "#fbbf24",
   },
   green: {
-    active: "#10b981",
-    glow: "rgba(16,185,129,0.7)",
-    dim: "rgba(16,185,129,0.1)",
+    active: "#1A8D7A",
+    glow: "rgba(26,141,122,0.7)",
+    dim: "rgba(26,141,122,0.1)",
     label: "Норма",
     labelColor: "#34d399",
   },

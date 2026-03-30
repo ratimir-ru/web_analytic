@@ -34,7 +34,7 @@ const categories: Category[] = ["Все", "Финансы", "Продажи", "�
 
 const catStyle: Record<string, React.CSSProperties> = {
   Финансы: { background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)", color: "#93c5fd" },
-  Продажи: { background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)", color: "#34d399" },
+  Продажи: { background: "rgba(26,141,122,0.1)", border: "1px solid rgba(26,141,122,0.2)", color: "#34d399" },
   Доставка: { background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)", color: "#fbbf24" },
   Система: { background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.2)", color: "#c084fc" },
   HR: { background: "rgba(236,72,153,0.1)", border: "1px solid rgba(236,72,153,0.2)", color: "#f9a8d4" },
@@ -72,7 +72,7 @@ export function Instructions() {
           const count = instructions.filter(i => i.type === t).length;
           const tc = typeConfig[t];
           return (
-            <GlassCard key={t} className="p-4 flex items-center gap-4">
+            <GlassCard key={t} className="p-4 flex items-center gap-4 my-4">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: `rgba(${tc.color === "#93c5fd" ? "59,130,246" : tc.color === "#f87171" ? "239,68,68" : "168,85,247"},0.15)`, color: tc.color }}
@@ -144,9 +144,8 @@ export function Instructions() {
           return (
             <GlassCard
               key={ins.id}
-              className="p-5 transition-all duration-200"
-              style={{}}
-            >
+              className="p-5 my-4 transition-all duration-200"
+              style={{}}>
               {/* Top row */}
               <div className="flex items-start gap-4">
                 <div

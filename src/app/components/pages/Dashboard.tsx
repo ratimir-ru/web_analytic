@@ -35,9 +35,9 @@ import {
 } from "../filtersData";
 
 // ── Palette ──────────────────────────────────────────────────────────────────
-const GREEN = "#10b981";
+const GREEN = "#1A8D7A";
 const YELLOW = "#f59e0b";
-const RED = "#ef4444";
+const RED = "#ba2447";
 
 // Muted/softer variants for summary text and decorative elements
 const MUTED_GREEN = "#86efac";
@@ -49,24 +49,28 @@ const months = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "И�
 
 const marginChartData = months.map((m, i) => ({
   month: m,
+  id: `margin-${i}`,
   факт: [22.1, 23.5, 26.1, 24.8, 25.3, 27.0, 26.4, 27.8, 26.9, 25.1, 25.8, 27.2][i],
   план: [24.0, 25.0, 27.5, 26.0, 27.0, 28.5, 28.0, 29.0, 28.0, 27.0, 27.5, 28.5][i],
 }));
 
 const priceChartData = months.map((m, i) => ({
   month: m,
+  id: `price-${i}`,
   факт: [146.3, 151.0, 153.4, 149.8, 152.1, 155.3, 153.8, 156.2, 154.7, 142.5, 145.8, 148.2][i],
   план: [148.0, 150.0, 152.0, 150.0, 151.0, 154.0, 153.0, 155.0, 153.0, 144.0, 147.0, 149.0][i],
 }));
 
 const volumeChartData = months.map((m, i) => ({
   month: m,
+  id: `volume-${i}`,
   факт: [820, 870, 948, 910, 940, 980, 960, 990, 970, 920, 940, 980][i],
   план: [850, 880, 980, 930, 960, 1000, 980, 1010, 990, 950, 970, 1000][i],
 }));
 
 const serviceChartData = months.map((m, i) => ({
   month: m,
+  id: `service-${i}`,
   факт: [93.1, 94.2, 94.2, 95.1, 95.8, 96.2, 95.9, 96.5, 96.0, 94.8, 95.3, 96.1][i],
   план: [97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97][i],
 }));
@@ -76,17 +80,20 @@ const breakdownByРазрез: Record<string, { name: string; значение: 
   "Территории": ТЕРРИТОРИИ.map((t, i) => ({
     name: t,
     значение: [310, 280, 142, 112, 104, 68, 55][i],
-    цвет: ["#60a5fa", "#6ee7b7", "#fcd34d", "#c4b5fd", "#fca5a5", "#f9a8d4", "#67e8f9"][i],
+    цвет: ["#008183", "#00B19F", "#6BF0AE", "#E0DCD0", "#4F709D", "#A47DD4", "#E05A85"][i],
   })),
-  "Подразделения": ПОДРАЗДЕЛЕНИЯ.slice(0, 8).map((p, i) => ({
-    name: p,
-    значение: [290, 178, 262, 218, 95, 88, 75, 110][i],
-    цвет: ["#60a5fa", "#c4b5fd", "#6ee7b7", "#fcd34d", "#fca5a5", "#f9a8d4", "#67e8f9", "#bef264"][i],
-  })),
+  "Подразделения": ПОДРАЗДЕЛЕНИЯ.map((p, i) => {
+    const colors = ["#008183", "#00B19F", "#6BF0AE", "#E0DCD0", "#4F709D", "#A47DD4", "#E05A85", "#BA2447", "#9e233b", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899"];
+    return {
+      name: p,
+      значение: Math.floor(Math.random() * 250) + 50, // Random values between 50-300
+      цвет: colors[i % colors.length],
+    };
+  }),
   "Вид бизнеса": ВИДЫ_БИЗНЕСА.map((v, i) => ({
     name: v,
     значение: [298, 195, 118, 162, 175][i],
-    цвет: ["#60a5fa", "#6ee7b7", "#fca5a5", "#c4b5fd", "#fcd34d"][i],
+    цвет: ["#008183", "#00B19F", "#6BF0AE", "#E0DCD0", "#4F709D"][i],
   })),
 };
 
@@ -95,7 +102,7 @@ const breakdownByРазрез: Record<string, { name: string; значение: 
 // Use top-N subdivisions for readability
 const TOP_SUBDIVISIONS = ПОДРАЗДЕЛЕНИЯ.slice(0, 8);
 const SUBDIVISION_COLORS: Record<string, string> = {};
-const SUB_COLOR_PALETTE = ["#60a5fa", "#6ee7b7", "#fcd34d", "#c4b5fd", "#fca5a5", "#f9a8d4", "#67e8f9", "#bef264"];
+const SUB_COLOR_PALETTE = ["#008183", "#00B19F", "#6BF0AE", "#E0DCD0", "#4F709D", "#A47DD4", "#E05A85", "#BA2447"];
 TOP_SUBDIVISIONS.forEach((s, i) => { SUBDIVISION_COLORS[s] = SUB_COLOR_PALETTE[i]; });
 
 function seededRandom(seed: string): number {
@@ -163,9 +170,13 @@ function Dropdown<T extends string>({
         <div
           className="absolute top-full left-0 mt-1 rounded-xl overflow-hidden z-50 min-w-max"
           style={{
-            background: isDark ? "rgba(10,18,40,0.97)" : "rgba(255,255,255,0.97)",
+            background: isDark ? "rgba(10,15,20,0.9)" : "rgba(255,255,255,0.9)",
             border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
-            backdropFilter: "blur(20px)",
+            backdropFilter: "blur(80px)",
+            WebkitBackdropFilter: "blur(80px)",
+            boxShadow: isDark 
+              ? "0 8px 32px rgba(0,0,0,0.6)" 
+              : "0 8px 32px rgba(0,0,0,0.25)",
           }}
         >
           {options.map(opt => (
@@ -191,44 +202,61 @@ function Dropdown<T extends string>({
   );
 }
 
-// ── AI Placeholder ────────────────────────────────────────────────────────────
-function AIPlaceholder({ lines = 3 }: { lines?: number }) {
+// ── AI Placeholder ─────────────────────�������──────────────────────────────────────
+function AIPlaceholder({ lines = 3, linkLabel }: { lines?: number; linkLabel?: string }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   return (
-    <div
-      className="rounded-2xl p-4 flex gap-3 hover-card"
+    <GlassCard 
+      className="p-4 my-4"
       style={{
         background: "rgba(59,130,246,0.04)",
         border: "1px solid rgba(59,130,246,0.12)",
-        backdropFilter: "blur(20px)",
-        boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.3)" : "0 8px 32px rgba(0,0,0,0.08)",
       }}
     >
-      <div className="flex-shrink-0 mt-0.5">
-        <Bot size={16} style={{ color: "#60a5fa" }} />
-      </div>
-      <div className="flex-1">
-        <p className="text-xs font-semibold mb-2" style={{ color: "#93c5fd" }}>
-          ИИ-аналитик
-        </p>
-        <div className="space-y-2">
-          {Array.from({ length: lines }).map((_, i) => (
-            <div
-              key={i}
-              className="h-2.5 rounded-full"
-              style={{
-                background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)",
-                width: i === lines - 1 ? "60%" : "100%",
-              }}
-            />
-          ))}
+      <div className="flex gap-3">
+        <div className="flex-shrink-0 mt-0.5">
+          <Bot size={16} style={{ color: "#60a5fa" }} />
         </div>
-        <p className="text-xs mt-2" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)" }}>
-          Текст ИИ-аналитика будет отображён здесь
-        </p>
+        <div className="flex-1">
+          <p className="text-xs font-semibold mb-2" style={{ color: "#93c5fd" }}>
+            ИИ-аналитик
+          </p>
+          <div className="space-y-2">
+            {Array.from({ length: lines }).map((_, i) => (
+              <div
+                key={i}
+                className="h-2.5 rounded-full"
+                style={{
+                  background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)",
+                  width: i === lines - 1 ? "60%" : "100%",
+                }}
+              />
+            ))}
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)" }}>
+              Текст ИИ-аналитика будет отображён здесь
+            </p>
+            {linkLabel && (
+              <a
+                href="#"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ml-4"
+                style={{
+                  background: "rgba(59,130,246,0.15)",
+                  border: "1px solid rgba(59,130,246,0.25)",
+                  color: "#60a5fa",
+                  textDecoration: "none",
+                }}
+              >
+                <ExternalLink size={12} />
+                {linkLabel}
+              </a>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </GlassCard>
   );
 }
 
@@ -292,9 +320,9 @@ function KpiBlock({ title, fact, plan, pct, dynamic, accentColor, icon }: KpiBlo
         <span
           className="text-xs font-bold px-1.5 py-0.5 rounded-md"
           style={{
-            background: dynamic >= 0 ? "rgba(16,185,129,0.12)" : "rgba(239,68,68,0.12)",
+            background: dynamic >= 0 ? "rgba(26,141,122,0.12)" : "rgba(186,36,71,0.12)",
             color: dynamic >= 0 ? GREEN : RED,
-            border: `1px solid ${dynamic >= 0 ? "rgba(16,185,129,0.2)" : "rgba(239,68,68,0.2)"}`,
+            border: `1px solid ${dynamic >= 0 ? "rgba(26,141,122,0.2)" : "rgba(186,36,71,0.2)"}`,
           }}
         >
           {dynamic >= 0 ? "▲" : "▼"} {Math.abs(dynamic)}%
@@ -372,7 +400,7 @@ function TaskBlock() {
   );
 }
 
-// ── Bottom row KPI Block ─────────────────────────────────────────────────────
+// �����─ Bottom row KPI Block ─────────────────────────────────────────────────────
 function KpiBlockBottom({ title, fact, planTarget, accentColor, icon }: {
   title: string; fact: string; planTarget: string; accentColor: string; icon: React.ReactNode;
 }) {
@@ -406,32 +434,43 @@ function KpiBlockBottom({ title, fact, planTarget, accentColor, icon }: {
 }
 
 // ── Custom tooltip for stacked volume bars ──────────────────────────────────
-function StackedVolumeTooltip({ active, payload, label }: any) {
+function StackedVolumeTooltip({ active, payload, label, coordinate }: any) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   if (!active || !payload?.length) return null;
+  
   const total = payload.reduce((s: number, p: any) => s + (p.value || 0), 0);
+  
   return (
     <div
       className="rounded-xl p-3 text-xs"
       style={{
-        background: isDark ? "rgba(15,20,41,0.95)" : "rgba(255,255,255,0.95)",
+        background: isDark ? "rgba(15,20,25,0.95)" : "rgba(255,255,255,0.95)",
         backdropFilter: "blur(20px)",
         border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
         color: isDark ? "white" : "black",
         boxShadow: isDark 
-          ? "0 8px 32px rgba(0,0,0,0.4)" 
+          ? "0 8px 32px rgba(0,0,0,0.5)" 
           : "0 8px 32px rgba(0,0,0,0.15)",
       }}
     >
-      <p className="font-bold mb-1.5">{label}</p>
-      {payload.map((p: any) => (
-        <div key={p.dataKey} className="flex items-center gap-1.5 mb-0.5">
-          <div className="w-2 h-2 rounded-sm" style={{ background: p.fill }} />
-          <span>{p.name}: {p.value} т ({total > 0 ? Math.round((p.value / total) * 100) : 0}%)</span>
-        </div>
-      ))}
-      <p className="mt-1 font-semibold" style={{ color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)" }}>Итого: {total} т</p>
+      <p className="font-bold mb-2">{label}</p>
+      {payload.map((p: any, idx: number) => {
+        if (!p.value || p.value === 0) return null;
+        return (
+          <div key={idx} className="flex items-center gap-2 mb-1">
+            <div className="w-3 h-3 rounded-sm" style={{ background: p.fill }} />
+            <span className="font-semibold">{p.name}:</span>
+            <span>{p.value} т ({total > 0 ? Math.round((p.value / total) * 100) : 0}%)</span>
+          </div>
+        );
+      })}
+      <p className="text-xs font-semibold mt-2 pt-2" style={{ 
+        color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+        borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`
+      }}>
+        Всего по группе: {total} т
+      </p>
     </div>
   );
 }
@@ -460,7 +499,7 @@ export function Dashboard() {
   };
 
   const chartColorMap: Record<ПоказательDash, string> = {
-    "Маржа": "#10b981",
+    "Маржа": "#1A8D7A",
     "Цена": "#a855f7",
     "Объём": "#3b82f6",
     "УС": "#f59e0b",
@@ -490,7 +529,7 @@ export function Dashboard() {
       />
 
       {/* Summary text block and Tasks - on one line, aligned with KPI grid */}
-      <div className="grid gap-3 mb-3" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+      <div className="grid gap-3 mb-4" style={{ gridTemplateColumns: "repeat(4, 1fr)", gridAutoRows: "auto" }}>
         <div style={{ gridColumn: "span 3" }}>
           <AlertBlock 
             variant="green" 
@@ -500,9 +539,18 @@ export function Dashboard() {
         </div>
 
         {/* Tasks Block - spans 3 rows */}
-        <GlassCard className="p-4 flex flex-col justify-between" style={{ gridRow: "span 3" }}>
+        <div 
+          className="rounded-2xl relative overflow-hidden transition-all duration-300 hover-card p-5 flex flex-col justify-between h-full"
+          style={{ 
+            gridRow: "span 3",
+            background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.01)",
+            backdropFilter: "blur(20px)",
+            border: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}`,
+            boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.3)" : "0 8px 32px rgba(0,0,0,0.08)",
+          }}
+        >
           <div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-6">
               <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>
                 Задачи
               </p>
@@ -510,7 +558,7 @@ export function Dashboard() {
                 <ClipboardList size={14} />
               </div>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>Всего задач</span>
                 <span className="text-2xl font-semibold" style={{ color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)" }}>38</span>
@@ -520,7 +568,7 @@ export function Dashboard() {
                 <span className="text-2xl font-semibold" style={{ color: RED, textShadow: `0 0 12px rgba(239,68,68,0.5)` }}>6</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>Просрочено приоритетных</span>
+                <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)", maxWidth: "120px", lineHeight: "1.3" }}>Просрочено приоритетных</span>
                 <span className="text-xl font-semibold" style={{ color: RED }}>2</span>
               </div>
             </div>
@@ -537,7 +585,7 @@ export function Dashboard() {
               />
             </div>
           </div>
-        </GlassCard>
+        </div>
 
         <div style={{ gridColumn: "span 3" }}>
           <AlertBlock 
@@ -557,7 +605,7 @@ export function Dashboard() {
       </div>
 
       {/* KPI Grid: 8 blocks in 2 rows, 4 blocks each */}
-      <div className="grid gap-3 mb-3 px-[0px] py-[8px]" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+      <div className="grid gap-3 mb-4" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
         <div
           className="rounded-2xl p-4 relative overflow-hidden transition-all hover-card"
           style={{
@@ -584,10 +632,9 @@ export function Dashboard() {
             <p className="text-sm" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>План: 98.5 млн</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(16,185,129,0.12)", color: GREEN, border: "1px solid rgba(16,185,129,0.2)" }}>
-              98.9%
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>
+              ▲ +5.2%
             </span>
-            <span className="text-xs font-bold" style={{ color: GREEN }}>▲ 5.2%</span>
           </div>
         </div>
 
@@ -683,8 +730,8 @@ export function Dashboard() {
             <p className="text-sm" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>План: 152.0 ₽</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(16,185,129,0.12)", color: GREEN, border: "1px solid rgba(16,185,129,0.2)" }}>
-              100.9%
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>
+              ▲ +0.9%
             </span>
             <span className="text-xs font-bold" style={{ color: GREEN }}>▲ 2.3%</span>
           </div>
@@ -780,8 +827,8 @@ export function Dashboard() {
             <p className="text-sm" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>Цель: ≥ 85%</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(16,185,129,0.12)", color: GREEN, border: "1px solid rgba(16,185,129,0.2)" }}>
-              В норме
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>
+              ▲ +1.2%
             </span>
           </div>
         </div>
@@ -820,12 +867,10 @@ export function Dashboard() {
       </div>
 
       {/* AI placeholder */}
-      <div className="mb-3">
-        <AIPlaceholder lines={3} />
-      </div>
+      <AIPlaceholder lines={3} />
 
       {/* Charts section — single chart based on selected Показатель */}
-      <GlassCard className="mb-3 p-5">
+      <GlassCard className="p-5 my-4">
         {/* Filters */}
         <div className="flex items-center gap-3 mb-5 flex-wrap">
           <Dropdown label="Показатель" value={показатель} options={ПОКАЗАТЕЛИ_DASHBOARD} onChange={setПоказатель} />
@@ -864,7 +909,7 @@ export function Dashboard() {
             <p className="text-xs font-semibold mb-2 uppercase tracking-wider" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>
               {разрез}
             </p>
-            <div className="space-y-2">
+            <div className="space-y-2 overflow-y-auto pr-2" style={{ height: "290px" }}>
               {rightBars.map(item => {
                 const maxVal = Math.max(...rightBars.map(b => b.значение));
                 const pct = (item.значение / maxVal) * 100;
@@ -888,23 +933,25 @@ export function Dashboard() {
         </div>
       </GlassCard>
 
-      {/* Структура объёма — filters above the card */}
-      <div className="flex items-center gap-3 mb-3 flex-wrap">
-        <Dropdown
-          label="Вид бизнеса"
-          value={видБизнеса || "—"}
-          options={ВИДЫ_БИЗНЕСА as unknown as string[]}
-          onChange={(v) => { setВидБизнеса(v); setГруппаТоваров("Все"); }}
-        />
-        <Dropdown
-          label="Группа товаров"
-          value={группаТоваров}
-          options={productGroupOptions}
-          onChange={setГруппаТоваров}
-          disabled={!видБизнеса}
-        />
-      </div>
-      <GlassCard className="mb-3 p-5">
+      {/* Структура объёма */}
+      <GlassCard className="p-5 my-4">
+        {/* Filters */}
+        <div className="flex items-center gap-3 mb-5 flex-wrap">
+          <Dropdown
+            label="Вид бизнеса"
+            value={видБизнеса || "—"}
+            options={ВИДЫ_БИЗНЕСА as unknown as string[]}
+            onChange={(v) => { setВидБизнеса(v); setГруппаТоваров("Все"); }}
+          />
+          <Dropdown
+            label="Группа товаров"
+            value={группаТоваров}
+            options={productGroupOptions}
+            onChange={setГруппаТоваров}
+            disabled={!видБизнеса}
+          />
+        </div>
+
         <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>
           Структура объёма
         </p>
@@ -948,19 +995,17 @@ export function Dashboard() {
       </GlassCard>
 
       {/* AI placeholder 2 */}
-      <div className="mb-3">
-        <AIPlaceholder lines={4} />
-      </div>
+      <AIPlaceholder lines={4} />
 
       {/* Links block */}
-      <GlassCard className="p-5">
+      <GlassCard className="p-5 my-4">
         <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>
           Ресурсы и отчёты
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             { label: "Power BI — Финансы", desc: "Дашборд финансовых показателей", color: "#f59e0b", href: "#" },
-            { label: "Power BI — Продажи", desc: "Анализ продаж по регионам и блокам", color: "#3b82f6", href: "#" },
+            { label: "Power BI — Продажи", desc: "Анализ продаж по ��егионам и блокам", color: "#3b82f6", href: "#" },
             { label: "Power BI — Логистика", desc: "Утилизация ТС и маршруты", color: "#10b981", href: "#" },
           ].map(link => (
             <a
@@ -984,6 +1029,9 @@ export function Dashboard() {
           ))}
         </div>
       </GlassCard>
+
+      {/* AI Analyst block at the end */}
+      <AIPlaceholder lines={3} linkLabel="Все дашборды" />
     </div>
   );
 }

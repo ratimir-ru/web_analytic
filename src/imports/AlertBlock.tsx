@@ -22,11 +22,11 @@ const variantStyles = {
     descColor: 'rgba(255,245,212,0.55)',
   },
   red: {
-    bg: 'rgba(239,68,68,0.04)',
-    border: 'rgba(239,68,68,0.15)',
-    dotBg: '#ef4444',
-    dotShadow: '#ef4444',
-    textColor: '#ef4444',
+    bg: 'rgba(186,36,71,0.04)',
+    border: 'rgba(186,36,71,0.15)',
+    dotBg: '#ba2447',
+    dotShadow: '#ba2447',
+    textColor: '#ba2447',
     descColor: 'rgba(255,255,255,0.55)',
   },
 };
@@ -66,7 +66,7 @@ export default function AlertBlock({ variant, title, description }: AlertBlockPr
         </div>
         <div className="relative shrink-0 w-full" data-name="Paragraph">
           <p 
-            className="font-normal leading-[15px] not-italic text-[11px] px-[0px] py-[11px]" 
+            className="font-normal leading-[15px] not-italic px-[0px] py-[11px] text-[12px]" 
             style={{ color: styles.descColor }}
           >
             {description}

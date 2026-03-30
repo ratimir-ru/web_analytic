@@ -11,9 +11,9 @@ interface GaugeProps {
 }
 
 function getColor(pct: number): { solid: string; glow: string } {
-  if (pct < 0.4) return { solid: "#ef4444", glow: "rgba(239,68,68,0.5)" };
+  if (pct < 0.4) return { solid: "#ba2447", glow: "rgba(186,36,71,0.5)" };
   if (pct < 0.72) return { solid: "#f59e0b", glow: "rgba(245,158,11,0.5)" };
-  return { solid: "#10b981", glow: "rgba(16,185,129,0.5)" };
+  return { solid: "#1A8D7A", glow: "rgba(26,141,122,0.5)" };
 }
 
 export function Gauge({
@@ -71,7 +71,7 @@ export function Gauge({
 
   return (
     <div className="flex flex-col items-center">
-      <svg width={size} height={svgH} viewBox={`0 0 ${size} ${svgH + 8}`}>
+      <svg className="mx-[0px] my-[-15px]" width={size} height={svgH} viewBox={`0 0 ${size} ${svgH + 8}`}>
         <defs>
           <filter id={`glow-${value}`} x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur stdDeviation="3" result="coloredBlur" />
@@ -95,7 +95,7 @@ export function Gauge({
         <path
           d={arcPath(startAngle, startAngle + totalSpan * 0.4, r)}
           fill="none"
-          stroke="rgba(239,68,68,0.18)"
+          stroke="rgba(186,36,71,0.18)"
           strokeWidth="7"
           strokeLinecap="round"
         />
@@ -109,7 +109,7 @@ export function Gauge({
         <path
           d={arcPath(startAngle + totalSpan * 0.72, startAngle + totalSpan, r)}
           fill="none"
-          stroke="rgba(16,185,129,0.15)"
+          stroke="rgba(26,141,122,0.15)"
           strokeWidth="7"
           strokeLinecap="round"
         />
@@ -164,7 +164,7 @@ export function Gauge({
       </svg>
       {label && (
         <p
-          className="text-center text-xs leading-tight mt-0.5 px-2"
+          className="text-center text-xs leading-tight mt-0.5 px-2 mx-[0px] mt-[13px] mb-[0px]"
           style={{ color: labelColor }}
         >
           {label}

@@ -104,7 +104,7 @@ export function Profile() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
         {/* Photo + quick info */}
-        <GlassCard className="p-6 flex flex-col items-center text-center">
+        <GlassCard className="p-6 my-4 flex flex-col items-center text-center">
           {/* Photo placeholder */}
           <div className="relative mb-4">
             <div
@@ -189,7 +189,7 @@ export function Profile() {
         </GlassCard>
 
         {/* Info display (read-only) */}
-        <GlassCard className="lg:col-span-2 p-6">
+        <GlassCard className="lg:col-span-2 p-6 my-4">
           <h4
             className="font-bold text-sm uppercase tracking-wider mb-5"
             style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}
@@ -236,7 +236,7 @@ export function Profile() {
       </div>
 
       {/* My tasks table */}
-      <GlassCard>
+      <GlassCard className="my-4">
         <div className="p-5 pb-3">
           <h4
             className="font-bold text-sm uppercase tracking-wider"

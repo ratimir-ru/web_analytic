@@ -3,7 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend, LineChart, Line,
 } from "recharts";
-import { SectionHeader, StatCard, GlassCard, ChartTitle, darkChartProps, CustomChartTooltip } from "../StatCard";
+import { SectionHeader, GlassCard, ChartTitle, darkChartProps, CustomChartTooltip } from "../StatCard";
 import { Gauge } from "../Gauge";
 import { useTheme } from "../ThemeProvider";
 import {
@@ -14,9 +14,64 @@ import {
 import { Truck, Package, Star, Bot, ExternalLink } from "lucide-react";
 
 // ── Palette ──────────────────────────────────────────────────────────────────
-const GREEN = "#10b981";
+const GREEN = "#1A8D7A";
 const YELLOW = "#f59e0b";
-const RED = "#ef4444";
+const RED = "#ba2447";
+
+// ── Delivery KPI Card Component ──────────────────────────────────────────────
+function DeliveryKpiCard({ 
+  title, 
+  fact, 
+  plan, 
+  bottomInfo, 
+  icon
+}: {
+  title: React.ReactNode;
+  fact: string;
+  plan: string;
+  bottomInfo: React.ReactNode;
+  icon: React.ReactNode;
+}) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  return (
+    <div
+      className="rounded-2xl relative overflow-hidden transition-all hover-card px-[20px] py-[21px]"
+      style={{
+        background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)",
+        backdropFilter: "blur(20px)",
+        border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`,
+        boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.3)" : "0 8px 32px rgba(0,0,0,0.08)",
+      }}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-semibold uppercase tracking-widest mx-[0px] my-[-2px]" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>
+          {title}
+        </p>
+        <div
+          className="w-7 h-7 rounded-md flex items-center justify-center"
+          style={{ 
+            background: isDark ? "rgba(100,100,100,0.5)" : "rgba(150,150,150,0.5)",
+            color: "#ffffff"
+          }}
+        >
+          {icon}
+        </div>
+      </div>
+      <div className="mx-[0px] my-[5px]">
+        <span className="text-xs block mx-[0px] mt-[28px] mb-[-22px]" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
+          {plan}
+        </span>
+        <div className="flex items-center justify-between mx-[0px] mt-[26px] mb-[-4px]">
+          <span className="text-2xl font-semibold" style={{ color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)" }}>
+            {fact}
+          </span>
+          {bottomInfo}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── Seed-based mock ──────────────────────────────────────────────────────────
 function seededValue(seed: string, base: number, range: number): number {
@@ -44,14 +99,44 @@ const utilWeekdayBase = [
   { day: "Вс", values: [62, 58, 55, 48] },
 ];
 
+const utilMonthlyBase = [
+  { month: "Янв", values: [88, 85, 82, 78] },
+  { month: "Фев", values: [90, 87, 84, 80] },
+  { month: "Мар", values: [92, 89, 86, 82] },
+  { month: "Апр", values: [91, 88, 85, 81] },
+  { month: "Май", values: [93, 90, 87, 83] },
+  { month: "Июн", values: [89, 86, 83, 79] },
+  { month: "Июл", values: [87, 84, 81, 77] },
+  { month: "Авг", values: [90, 87, 84, 80] },
+  { month: "Сен", values: [92, 89, 86, 82] },
+  { month: "Окт", values: [91, 88, 85, 81] },
+  { month: "Ноя", values: [89, 86, 83, 79] },
+  { month: "Дек", values: [88, 85, 82, 78] },
+];
+
 const serviceWeekdayBase = [
-  { day: "Пн", OTIF: 95.2, "Доставка в срок": 96.1, "Полнота заказа": 98.2 },
-  { day: "Вт", OTIF: 94.8, "Доставка в срок": 95.8, "Полнота заказа": 97.9 },
-  { day: "Ср", OTIF: 95.5, "Доставка в срок": 96.4, "Полнота заказа": 98.5 },
-  { day: "Чт", OTIF: 94.1, "Доставка в срок": 95.2, "Полнота заказа": 97.6 },
-  { day: "Пт", OTIF: 93.8, "Доставка в срок": 94.9, "Полнота заказа": 97.2 },
-  { day: "Сб", OTIF: 92.4, "Доставка в срок": 93.5, "Полнота заказа": 96.8 },
-  { day: "Вс", OTIF: 90.1, "Доставка в срок": 91.2, "Полнота заказа": 95.4 },
+  { day: "Пн", OTIF: 93.5, "Доставка в срок": 95.8, "Полнота заказа": 98.2 },
+  { day: "Вт", OTIF: 92.8, "Доставка в срок": 95.2, "Полнота заказа": 97.8 },
+  { day: "Ср", OTIF: 94.2, "Доставка в срок": 96.1, "Полнота заказа": 98.6 },
+  { day: "Чт", OTIF: 91.5, "Доставка в срок": 94.8, "Полнота заказа": 97.3 },
+  { day: "Пт", OTIF: 90.8, "Доставка в срок": 94.2, "Полнота заказа": 96.9 },
+  { day: "Сб", OTIF: 89.2, "Доставка в срок": 92.8, "Полнота заказа": 96.2 },
+  { day: "Вс", OTIF: 87.5, "Доставка в срок": 90.5, "Полнота заказа": 94.8 },
+];
+
+const serviceMonthlyBase = [
+  { month: "Янв", OTIF: 92.8, "Доставка в срок": 95.2, "Полнота заказа": 97.6 },
+  { month: "Фев", OTIF: 93.2, "Доставка в срок": 95.5, "Полнота заказа": 97.9 },
+  { month: "Мар", OTIF: 94.1, "Доставка в срок": 96.2, "Полнота заказа": 98.4 },
+  { month: "Апр", OTIF: 93.5, "Доставка в срок": 95.8, "Полнота заказа": 98.0 },
+  { month: "Май", OTIF: 94.8, "Доставка в срок": 96.5, "Полнота заказа": 98.7 },
+  { month: "Июн", OTIF: 91.9, "Доставка в срок": 94.8, "Полнота заказа": 97.4 },
+  { month: "Июл", OTIF: 90.5, "Доставка в срок": 93.9, "Полнота заказа": 96.8 },
+  { month: "Авг", OTIF: 92.3, "Доставка в срок": 95.0, "Полнота заказа": 97.5 },
+  { month: "Сен", OTIF: 93.8, "Доставка в срок": 96.0, "Полнота заказа": 98.3 },
+  { month: "Окт", OTIF: 93.1, "Доставка в срок": 95.4, "Полнота заказа": 97.8 },
+  { month: "Ноя", OTIF: 92.0, "Доставка в срок": 94.6, "Полнота заказа": 97.2 },
+  { month: "Дек", OTIF: 91.2, "Доставка в срок": 94.0, "Полнота заказа": 96.8 },
 ];
 
 const tabKeys = ["utilization", "service", "powerbi"] as const;
@@ -60,37 +145,45 @@ const tabLabels = ["Утилизация ТС", "Уровень сервиса",
 // ── Components ────────────────────────────────────────────────────────────────
 function AIPlaceholder({ lines = 3, linkLabel, isDark }: { lines?: number; linkLabel?: string; isDark: boolean }) {
   return (
-    <div className="rounded-2xl p-4 flex gap-3" style={{ background: "rgba(59,130,246,0.04)", border: "1px solid rgba(59,130,246,0.12)" }}>
-      <Bot size={16} style={{ color: "#60a5fa", flexShrink: 0, marginTop: 2 }} />
-      <div className="flex-1">
-        <p className="text-xs font-semibold mb-2" style={{ color: "#93c5fd" }}>ИИ-аналитик</p>
-        <div className="space-y-2">
-          {Array.from({ length: lines }).map((_, i) => (
-            <div key={i} className="h-2.5 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)", width: i === lines - 1 ? "55%" : "100%" }} />
-          ))}
-        </div>
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)" }}>
-            Текст ИИ-аналитика будет отображён здесь
-          </p>
-          {linkLabel && (
-            <a
-              href="#"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ml-4"
-              style={{
-                background: "rgba(59,130,246,0.15)",
-                border: "1px solid rgba(59,130,246,0.25)",
-                color: "#60a5fa",
-                textDecoration: "none",
-              }}
-            >
-              <ExternalLink size={12} />
-              {linkLabel}
-            </a>
-          )}
+    <GlassCard 
+      className="p-4 my-4"
+      style={{
+        background: "rgba(59,130,246,0.04)",
+        border: "1px solid rgba(59,130,246,0.12)",
+      }}
+    >
+      <div className="flex gap-3">
+        <Bot size={16} style={{ color: "#60a5fa", flexShrink: 0, marginTop: 2 }} />
+        <div className="flex-1">
+          <p className="text-xs font-semibold mb-2" style={{ color: "#93c5fd" }}>ИИ-аналитик</p>
+          <div className="space-y-2">
+            {Array.from({ length: lines }).map((_, i) => (
+              <div key={i} className="h-2.5 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)", width: i === lines - 1 ? "55%" : "100%" }} />
+            ))}
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)" }}>
+              Текст ИИ-аналитика будет отображён здесь
+            </p>
+            {linkLabel && (
+              <a
+                href="#"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ml-4"
+                style={{
+                  background: "rgba(59,130,246,0.15)",
+                  border: "1px solid rgba(59,130,246,0.25)",
+                  color: "#60a5fa",
+                  textDecoration: "none",
+                }}
+              >
+                <ExternalLink size={12} />
+                {linkLabel}
+              </a>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </GlassCard>
   );
 }
 
@@ -98,40 +191,31 @@ function Dropdown<T extends string>({ label, value, options, onChange, isDark }:
   label: string; value: T; options: readonly T[]; onChange: (v: T) => void; isDark: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const borderColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)";
-  const labelColor = isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)";
-  const bgColor = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)";
   return (
     <div className="relative">
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-2 pl-3 pr-2.5 pt-4 pb-1.5 rounded-lg text-xs font-semibold transition-all relative"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
         style={{
-          background: bgColor,
-          border: `1.5px solid ${borderColor}`,
-          color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)",
-          minWidth: 120,
+          background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
+          border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
+          color: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
         }}
       >
-        <span
-          className="absolute left-2.5 -top-2 px-1 text-[10px] font-medium"
-          style={{
-            color: labelColor,
-            background: isDark ? "#0d1117" : "#ffffff",
-            lineHeight: "1",
-          }}
-        >
-          {label}
-        </span>
-        <span className="flex-1 text-left">{value}</span>
+        <span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>{label}:</span>
+        <span>{value}</span>
         <span style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>▾</span>
       </button>
       {open && (
         <div className="absolute top-full left-0 mt-1 rounded-xl overflow-hidden z-50 min-w-max"
           style={{
-            background: isDark ? "rgba(10,18,40,0.97)" : "rgba(255,255,255,0.97)",
+            background: isDark ? "rgba(10,15,20,0.9)" : "rgba(255,255,255,0.9)",
             border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.12)",
-            backdropFilter: "blur(20px)",
+            backdropFilter: "blur(80px)",
+            WebkitBackdropFilter: "blur(80px)",
+            boxShadow: isDark 
+              ? "0 8px 32px rgba(0,0,0,0.6)" 
+              : "0 8px 32px rgba(0,0,0,0.25)",
           }}>
           {options.map(opt => (
             <button
@@ -243,6 +327,21 @@ export function Delivery() {
     return result;
   }, [divisions, filterSeed]);
 
+  // Monthly utilization data  slightly varied
+  const utilMonthly = useMemo(() => {
+    const offset = seededValue(filterSeed + "monthutil", -3, 6) - 3;
+    const topDivs = divisions.slice(0, 4);
+    if (topDivs.length === 0) return utilMonthlyBase.map(d => ({ month: d.month, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
+    const result = utilMonthlyBase.map(d => {
+      const row: Record<string, any> = { month: d.month };
+      topDivs.forEach((div, i) => {
+        row[div] = Math.min(99, Math.max(40, (d.values[i % 4] || 70) + offset));
+      });
+      return row;
+    });
+    return result;
+  }, [divisions, filterSeed]);
+
   const weekdayLineKeys = useMemo(() => {
     const topDivs = divisions.slice(0, 4);
     if (topDivs.length === 0) return ["Линия 1", "Линия 2", "Линия 3"];
@@ -260,7 +359,7 @@ export function Delivery() {
     const groups = [
       { name: "Колбасы", base: 95.2 },
       { name: "Заморозка", base: 97.4 },
-      { name: "Охл. ПФ", base: 91.8 },
+      { name: "Охл. Ф", base: 91.8 },
       { name: "Мясной", base: 88.3 },
     ];
     const offset = (seededValue(filterSeed + "pgserv", 0, 6) - 3) * 0.5;
@@ -291,6 +390,17 @@ export function Delivery() {
     }));
   }, [filterSeed]);
 
+  // Service monthly data — slightly varied
+  const serviceMonthly = useMemo(() => {
+    const offset = (seededValue(filterSeed + "monthserv", 0, 4) - 2) * 0.3;
+    return serviceMonthlyBase.map(d => ({
+      month: d.month,
+      OTIF: +(d.OTIF + offset).toFixed(1),
+      "Доставка в срок": +(d["Доставка в срок"] + offset).toFixed(1),
+      "Полнота заказа": +(d["Полнота заказа"] + offset).toFixed(1),
+    }));
+  }, [filterSeed]);
+
   const activeTabStyle = {
     background: "rgba(204,0,0,0.15)",
     color: "#e57373",
@@ -310,255 +420,315 @@ export function Delivery() {
       />
 
       {/* KPI cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        <StatCard title="Утилизация ТС" value={`${overallUtil}%`} change={2.4} changeLabel="к прошл. мес." icon={<Truck size={15} />} accentColor={GREEN} />
-        <StatCard title="Объём доставки" value="948 т" change={-0.2} changeLabel="к плану" icon={<Package size={15} />} accentColor="#3b82f6" />
-        <div className="rounded-2xl p-4 relative overflow-hidden" style={{ background: cardBg, backdropFilter: "blur(20px)", border: `1px solid ${cardBorder}` }}>
-          <div className="absolute -top-6 -left-6 w-20 h-20 rounded-full opacity-20 pointer-events-none"
-            style={{ background: "radial-gradient(circle, #a855f7 0%, transparent 70%)", filter: "blur(12px)" }} />
-          <p className="text-xs font-medium uppercase tracking-widest mb-2" style={{ color: textSecondary }}>Маршрутов за месяц</p>
-          <p className="text-2xl font-black" style={{ color: textPrimary }}>3 847</p>
-          <p className="text-xs mt-1" style={{ color: textSecondary }}>активных на сегодня: 184</p>
-          <div className="flex items-center gap-1.5 mt-2">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+        {/* Утилизация ТС */}
+        <DeliveryKpiCard
+          title="Утилизация ТС"
+          fact={`${overallUtil}%`}
+          plan="Цел: ≥ 85%"
+          bottomInfo={
             <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
-              style={{ background: "rgba(16,185,129,0.12)", color: GREEN, border: "1px solid rgba(16,185,129,0.2)" }}>
-              ▲ 4.2% к прош. мес.
+              style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>
+              ▲ +2.4%
             </span>
-          </div>
-        </div>
-        <StatCard title="Уровень сервиса" value={`${overallService}%`} change={-2.8} changeLabel="к целевому" icon={<Star size={15} />} accentColor={YELLOW} />
+          }
+          icon={<Truck size={14} />}
+        />
+
+        {/* Объём доставки */}
+        <DeliveryKpiCard
+          title="Объём доставки"
+          fact="948 т"
+          plan="План: 950 т"
+          bottomInfo={
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
+              style={{ background: "rgba(186,36,71,0.12)", color: RED, border: "1px solid rgba(186,36,71,0.2)" }}>
+              ▼ 0.2%
+            </span>
+          }
+          icon={<Package size={14} />}
+        />
+
+        {/* Маршрутов за месяц */}
+        <DeliveryKpiCard
+          title="Маршрутов за месяц"
+          fact="3 847"
+          plan="Активных: 184"
+          bottomInfo={
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
+              style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>
+              ▲ +1.9%
+            </span>
+          }
+          icon={<Package size={14} />}
+        />
+
+        {/* Уровень сервиса */}
+        <DeliveryKpiCard
+          title="Уровень сервиса"
+          fact={`${overallService}%`}
+          plan="Целевой: 97%"
+          bottomInfo={
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
+              style={{ background: overallService >= 97 ? "rgba(26,141,122,0.12)" : "rgba(186,36,71,0.12)", color: overallService >= 97 ? GREEN : RED, border: `1px solid ${overallService >= 97 ? "rgba(26,141,122,0.2)" : "rgba(186,36,71,0.2)"}` }}>
+              {overallService >= 97 ? '▲' : '▼'} {overallService >= 97 ? '+0.5%' : '-2.1%'}
+            </span>
+          }
+          icon={<Star size={14} />}
+        />
       </div>
 
-      {/* Tabs + shared filters on the same row */}
-      <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <div className="flex gap-1 p-1 rounded-xl w-fit" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}>
-          {tabKeys.map((key, i) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
-              style={activeTab === key ? activeTabStyle : inactiveTabStyle}
-            >
-              {key === "powerbi" ? (
-                <span className="flex items-center gap-1.5">
-                  <ExternalLink size={12} />
-                  {tabLabels[i]}
-                </span>
-              ) : tabLabels[i]}
-            </button>
-          ))}
-        </div>
-        {activeTab !== "powerbi" && (
-          <div className="flex gap-2 flex-wrap">
-            <Dropdown label="Группа подразделений" value={группаПодразделений} options={ГРУППЫ_ПОДРАЗДЕЛЕНИЙ} onChange={setГруппаПодразделений} isDark={isDark} />
-            <Dropdown label="Вид бизнеса" value={видБизнеса} options={ВИДЫ_БИЗНЕСА} onChange={setВидБизнеса} isDark={isDark} />
+      {/* Main Logistics Block - Unified Card */}
+      <GlassCard className="p-5 my-4" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+        {/* Tabs + shared filters on the same row */}
+        <div className="flex items-center gap-3 mb-6 flex-wrap px-[10px] py-[8px]">
+          <div className="flex gap-1 p-1 rounded-xl w-fit" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}>
+            {tabKeys.map((key, i) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                style={activeTab === key ? activeTabStyle : inactiveTabStyle}
+              >
+                {key === "powerbi" ? (
+                  <span className="flex items-center gap-1.5">
+                    <ExternalLink size={12} />
+                    {tabLabels[i]}
+                  </span>
+                ) : tabLabels[i]}
+              </button>
+            ))}
           </div>
-        )}
-      </div>
-
-      {/* ── UTILIZATION TAB ──────────────────────────────────────────────── */}
-      {activeTab === "utilization" && (
-        <>
-          {/* Gauge + territories */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <GlassCard className="p-4 flex flex-col items-center" glow={GREEN} style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-              <ChartTitle>Общая утилизация ТС</ChartTitle>
-              <Gauge value={overallUtil} label={`Средняя (цель ≥ 85%) · ${группаПодразделений}`} unit="%" size={190} />
-              <div className="w-full mt-3 grid grid-cols-3 gap-2 text-center">
-                {[
-                  ["Мин.", `${Math.min(...territoriesUtil.map(t => t.utilization))}%`, RED],
-                  ["Ср.", `${overallUtil}%`, YELLOW],
-                  ["Макс.", `${Math.max(...territoriesUtil.map(t => t.utilization))}%`, GREEN],
-                ].map(([lbl, val, col]) => (
-                  <div key={lbl as string} className="rounded-lg p-2" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
-                    <p className="text-xs" style={{ color: textSecondary }}>{lbl}</p>
-                    <p className="text-sm font-black" style={{ color: col as string }}>{val}</p>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
-
-            <GlassCard className="p-4" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-              <ChartTitle>Утилизация по территориям</ChartTitle>
-              <BarRows
-                items={territoriesUtil.map(t => ({ name: t.name, value: t.utilization }))}
-                colorFn={utilColor}
-                isDark={isDark}
-              />
-            </GlassCard>
-          </div>
-
-          {/* Subdivisions */}
-          {subdivisionsUtil.length > 0 && (
-            <GlassCard className="p-4 mb-4" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-              <ChartTitle>Утилизация по подразделениям — {группаПодразделений}</ChartTitle>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {subdivisionsUtil.map(s => (
-                  <div key={s.name} className="rounded-xl p-3 text-center"
-                    style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
-                    <p className="text-xs mb-1.5" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>{s.name}</p>
-                    <p className="text-xl font-black" style={{ color: utilColor(s.utilization) }}>{s.utilization}%</p>
-                    <div className="mt-1.5 h-1.5 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)" }}>
-                      <div className="h-full rounded-full" style={{ width: `${s.utilization}%`, background: utilColor(s.utilization) }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
-          )}
-
-          {/* Weekday chart */}
-          <GlassCard className="p-4 mb-4" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-            <ChartTitle>Утилизация по дням недели (%)</ChartTitle>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={utilWeekday}>
-                <CartesianGrid {...darkChartProps.cartesianGrid} />
-                <XAxis dataKey="day" {...darkChartProps.xAxis} />
-                <YAxis domain={[40, 100]} {...darkChartProps.yAxis} />
-                <Tooltip content={<CustomChartTooltip />} />
-                <Legend {...darkChartProps.legend} />
-                {weekdayLineKeys.map((key, i) => (
-                  <Line key={key} type="monotone" dataKey={key} stroke={lineColors[i % lineColors.length]} strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </GlassCard>
-
-          <div className="flex gap-4 items-stretch">
-            <div className="flex-1">
-              <AIPlaceholder lines={3} isDark={isDark} />
+          {activeTab !== "powerbi" && (
+            <div className="flex gap-2 flex-wrap">
+              <Dropdown label="Группа подразделений" value={группаПодразделений} options={ГРУППЫ_ПОДРАЗДЕЛЕНИЙ} onChange={setГруппаПодразделений} isDark={isDark} />
+              <Dropdown label="Вид бизнеса" value={видБизнеса} options={ВИДЫ_БИЗНЕСА} onChange={setВидБизнеса} isDark={isDark} />
             </div>
-            <a
-              href="#"
-              className="flex flex-col items-center justify-center gap-2 px-5 rounded-2xl transition-all shrink-0"
-              style={{
-                background: "rgba(245,158,11,0.06)",
-                border: "1px solid rgba(245,158,11,0.2)",
-                textDecoration: "none",
-                minWidth: 160,
-              }}
-            >
-              <ExternalLink size={20} style={{ color: YELLOW }} />
-              <span className="text-xs font-semibold text-center" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.75)" }}>
-                Power BI — Логистика
-              </span>
-            </a>
-          </div>
-        </>
-      )}
+          )}
+        </div>
 
-      {/* ── SERVICE TAB ───────────────────────────────────────────────────── */}
-      {activeTab === "service" && (
-        <>
-          {/* Gauge + groups + subdivisions */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            <GlassCard className="p-4 flex flex-col items-center" glow="#a855f7" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-              <ChartTitle>Общий уровень сервиса (OTIF)</ChartTitle>
-              <Gauge value={overallService} label={`Факт: ${overallService}% · Цель: 97%`} unit="%" size={185} />
-            </GlassCard>
+        {/* ── UTILIZATION TAB ──────────────────────────────────────────────── */}
+        {activeTab === "utilization" && (
+          <>
+            {/* Gauge + territories */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="p-6 rounded-xl flex flex-col items-center" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <ChartTitle>Общая утилизация ТС</ChartTitle>
+                <Gauge value={overallUtil} label={`Средняя (цель ≥ 85%) · ${группаПодразделений}`} unit="%" size={200} />
+                <div className="w-full mt-4 grid grid-cols-3 gap-3 text-center">
+                  {[
+                    ["Минимум", `${Math.min(...territoriesUtil.map(t => t.utilization))}%`, RED],
+                    ["Среднее", `${overallUtil}%`, YELLOW],
+                    ["Максимум", `${Math.max(...territoriesUtil.map(t => t.utilization))}%`, GREEN],
+                  ].map(([lbl, val, col]) => (
+                    <div key={lbl as string} className="rounded-xl p-3" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)", border: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}>
+                      <p className="text-xs font-semibold mb-1" style={{ color: textSecondary }}>{lbl}</p>
+                      <p className="text-lg font-bold" style={{ color: col as string }}>{val}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-            <GlassCard className="p-4" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-              <ChartTitle>Уровень сервиса по группам товаров</ChartTitle>
-              <BarRows
-                items={productGroupsService.map(p => ({ name: p.name, value: p.service }))}
-                colorFn={servColor}
-                isDark={isDark}
-              />
-            </GlassCard>
-
-            <GlassCard className="p-4" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-              <ChartTitle>Уровень сервиса по подразделениям</ChartTitle>
-              {subdivisionsService.length > 0 ? (
+              <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <ChartTitle>Утилизация по территориям</ChartTitle>
                 <BarRows
-                  items={subdivisionsService.map(s => ({ name: s.name, value: s.service }))}
+                  items={territoriesUtil.map(t => ({ name: t.name, value: t.utilization }))}
+                  colorFn={utilColor}
+                  isDark={isDark}
+                />
+              </div>
+            </div>
+
+            {/* Subdivisions */}
+            {subdivisionsUtil.length > 0 && (
+              <div className="p-4 mb-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <ChartTitle>Утилизация по подразделениям — {группаПодразделений}</ChartTitle>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  {subdivisionsUtil.map(s => (
+                    <div key={s.name} className="rounded-xl p-3 text-center"
+                      style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)", border: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}>
+                      <p className="text-xs mb-1.5" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>{s.name}</p>
+                      <p className="text-xl font-bold" style={{ color: GREEN }}>{s.utilization}%</p>
+                      <div className="mt-1.5 h-1.5 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)" }}>
+                        <div className="h-full rounded-full" style={{ width: `${s.utilization}%`, background: GREEN }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Weekday and Monthly charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <ChartTitle>Утилизация по дням недели (%)</ChartTitle>
+                <ResponsiveContainer width="100%" height={280}>
+                  <LineChart data={utilWeekday}>
+                    <CartesianGrid {...darkChartProps.cartesianGrid} />
+                    <XAxis dataKey="day" {...darkChartProps.xAxis} />
+                    <YAxis domain={[40, 100]} {...darkChartProps.yAxis} />
+                    <Tooltip content={<CustomChartTooltip />} />
+                    <Legend {...darkChartProps.legend} />
+                    {weekdayLineKeys.map((key, i) => {
+                      const chartLineColors = ["#008183", "#00B19F", "#6BF0AE", "#E0DCD0", "#4F709D", "#A47DD4", "#E05A85", "#E05A85", "#BA2447"];
+                      // Назначаем фирменные цвета для конкретных подразделений
+                      let lineColor = chartLineColors[i % chartLineColors.length];
+                      if (key === "Восточная Сибирь") {
+                        lineColor = "#E05A85";
+                      } else if (key === "Магадан") {
+                        lineColor = "#BA2447";
+                      }
+                      return <Line key={`weekday-${key}-${i}`} type="monotone" dataKey={key} stroke={lineColor} strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />;
+                    })}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <ChartTitle>Утилизация по месяцам (%)</ChartTitle>
+                <ResponsiveContainer width="100%" height={280}>
+                  <LineChart data={utilMonthly}>
+                    <CartesianGrid {...darkChartProps.cartesianGrid} />
+                    <XAxis dataKey="month" {...darkChartProps.xAxis} />
+                    <YAxis domain={[40, 100]} {...darkChartProps.yAxis} />
+                    <Tooltip content={<CustomChartTooltip />} />
+                    <Legend {...darkChartProps.legend} />
+                    {weekdayLineKeys.map((key, i) => {
+                      const chartLineColors = ["#008183", "#00B19F", "#6BF0AE", "#E0DCD0", "#4F709D", "#A47DD4", "#E05A85", "#E05A85", "#BA2447"];
+                      // Назначаем фирменные цвета для конкретных подразделений
+                      let lineColor = chartLineColors[i % chartLineColors.length];
+                      if (key === "Восточная Сибирь") {
+                        lineColor = "#E05A85";
+                      } else if (key === "Магадан") {
+                        lineColor = "#BA2447";
+                      }
+                      return <Line key={`month-${key}-${i}`} type="monotone" dataKey={key} stroke={lineColor} strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />;
+                    })}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            
+          </>
+        )}
+
+        {/* ── SERVICE TAB ───────────────────────────────────────────────────── */}
+        {activeTab === "service" && (
+          <>
+            {/* Gauge + groups + subdivisions */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+              <div className="p-4 rounded-xl flex flex-col items-center" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <ChartTitle>Общий уровень сервиса (OTIF)</ChartTitle>
+                <Gauge value={overallService} label={`Факт: ${overallService}% · Цель: 97%`} unit="%" size={185} />
+              </div>
+
+              <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <ChartTitle>Уровень сервиса по группам товаров</ChartTitle>
+                <BarRows
+                  items={productGroupsService.map(p => ({ name: p.name, value: p.service }))}
                   colorFn={servColor}
                   isDark={isDark}
                 />
-              ) : (
-                <p className="text-xs" style={{ color: textMuted }}>Нет подразделений для выбранной группы</p>
-              )}
-            </GlassCard>
-          </div>
+              </div>
 
-          {/* Weekday service chart */}
-          <GlassCard className="p-4 mb-4" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-            <ChartTitle>Уровень сервиса по дням недели (%)</ChartTitle>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={serviceWeekday}>
-                <CartesianGrid {...darkChartProps.cartesianGrid} />
-                <XAxis dataKey="day" {...darkChartProps.xAxis} />
-                <YAxis domain={[88, 100]} {...darkChartProps.yAxis} />
-                <Tooltip content={<CustomChartTooltip />} />
-                <Legend {...darkChartProps.legend} />
-                <Line type="monotone" dataKey="OTIF" stroke="#a855f7" strokeWidth={2.5} dot={{ r: 4, fill: "#a855f7", strokeWidth: 0 }} />
-                <Line type="monotone" dataKey="Доставка в срок" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
-                <Line type="monotone" dataKey="Полнота заказа" stroke={GREEN} strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </GlassCard>
+              <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <ChartTitle>Уровень сервиса по подразделениям</ChartTitle>
+                {subdivisionsService.length > 0 ? (
+                  <BarRows
+                    items={subdivisionsService.map(s => ({ name: s.name, value: s.service }))}
+                    colorFn={servColor}
+                    isDark={isDark}
+                  />
+                ) : (
+                  <p className="text-xs" style={{ color: textMuted }}>Нет подразделений для выбранной группы</p>
+                )}
+              </div>
+            </div>
 
-          <div className="flex gap-4 items-stretch">
-            <div className="flex-1">
-              <AIPlaceholder lines={3} isDark={isDark} />
-            </div>
-            <a
-              href="#"
-              className="flex flex-col items-center justify-center gap-2 px-5 rounded-2xl transition-all shrink-0"
-              style={{
-                background: "rgba(245,158,11,0.06)",
-                border: "1px solid rgba(245,158,11,0.2)",
-                textDecoration: "none",
-                minWidth: 160,
-              }}
-            >
-              <ExternalLink size={20} style={{ color: YELLOW }} />
-              <span className="text-xs font-semibold text-center" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.75)" }}>
-                Power BI — Логистика
-              </span>
-            </a>
-          </div>
-        </>
-      )}
+            {/* Weekday and Monthly service charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <ChartTitle>Уровень сервиса по дням недели (%)</ChartTitle>
+                <ResponsiveContainer width="100%" height={280}>
+                  <LineChart data={serviceWeekday}>
+                    <CartesianGrid {...darkChartProps.cartesianGrid} />
+                    <XAxis dataKey="day" {...darkChartProps.xAxis} />
+                    <YAxis domain={[88, 100]} {...darkChartProps.yAxis} />
+                    <Tooltip content={<CustomChartTooltip />} />
+                    <Legend {...darkChartProps.legend} />
+                    <Line type="monotone" dataKey="OTIF" stroke="#a855f7" strokeWidth={2.5} dot={{ r: 4, fill: "#a855f7", strokeWidth: 0 }} />
+                    <Line type="monotone" dataKey="Доставка в срок" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
+                    <Line type="monotone" dataKey="Полнота заказа" stroke={GREEN} strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
 
-      {/* ── POWER BI TAB ─────────────────────────────────────────────────── */}
-      {activeTab === "powerbi" && (
-        <GlassCard className="p-8 text-center" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
-              style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}>
-              <ExternalLink size={28} style={{ color: YELLOW }} />
+              <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <ChartTitle>Уровень сервиса по месяцам (%)</ChartTitle>
+                <ResponsiveContainer width="100%" height={280}>
+                  <LineChart data={serviceMonthly}>
+                    <CartesianGrid {...darkChartProps.cartesianGrid} />
+                    <XAxis dataKey="month" {...darkChartProps.xAxis} />
+                    <YAxis domain={[88, 100]} {...darkChartProps.yAxis} />
+                    <Tooltip content={<CustomChartTooltip />} />
+                    <Legend {...darkChartProps.legend} />
+                    <Line type="monotone" dataKey="OTIF" stroke="#a855f7" strokeWidth={2.5} dot={{ r: 4, fill: "#a855f7", strokeWidth: 0 }} />
+                    <Line type="monotone" dataKey="Доставка в срок" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
+                    <Line type="monotone" dataKey="Полнота заказа" stroke={GREEN} strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-            <div>
-              <p className="text-lg font-black mb-2" style={{ color: textPrimary }}>Power BI — Логистика</p>
-              <p className="text-sm mb-4" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
-                Интерактивный дашборд в Power BI с детализацией маршрутов, водителей и транспортных средств.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
-              {[
-                { label: "Power BI — Утилизация ТС", color: YELLOW },
-                { label: "Power BI — Маршруты", color: "#3b82f6" },
-                { label: "Power BI — OTIF", color: GREEN },
-              ].map(link => (
-                <a
-                  key={link.label}
-                  href="#"
-                  className="flex items-center gap-2 p-3 rounded-xl transition-all"
-                  style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", border: `1px solid ${cardBorder}`, textDecoration: "none" }}
-                >
-                  <ExternalLink size={14} style={{ color: link.color }} />
-                  <span className="text-xs font-semibold" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}>{link.label}</span>
-                </a>
-              ))}
-            </div>
-            <div className="w-full rounded-xl mt-2" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", border: `1px solid ${innerCardBorder}`, padding: "2rem" }}>
-              <p className="text-sm" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)" }}>
-                Iframe с Power BI отчётом будет встроен здесь после настройки embed-ссылки
-              </p>
+
+            
+          </>
+        )}
+
+        {/* ── POWER BI TAB ─────────────────────────────────────────────────── */}
+        {activeTab === "powerbi" && (
+          <div className="p-8 text-center rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}>
+                <ExternalLink size={28} style={{ color: YELLOW }} />
+              </div>
+              <div>
+                <p className="text-lg font-black mb-2" style={{ color: textPrimary }}>Power BI — Логистика</p>
+                <p className="text-sm mb-4" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
+                  Интерактивный дашборд в Power BI с детализацией маршрутов, водителей и транспортных средств.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
+                {[
+                  { label: "Power BI — Утилизация ТС", color: YELLOW },
+                  { label: "Power BI — Маршруты", color: "#3b82f6" },
+                  { label: "Power BI — OTIF", color: GREEN },
+                ].map(link => (
+                  <a
+                    key={link.label}
+                    href="#"
+                    className="flex items-center gap-2 p-3 rounded-xl transition-all"
+                    style={{ 
+                      background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", 
+                      border: `1px solid ${innerCardBorder}`, 
+                      textDecoration: "none",
+                      minWidth: "fit-content"
+                    }}
+                  >
+                    <ExternalLink size={14} style={{ color: link.color, flexShrink: 0 }} />
+                    <span className="text-xs font-semibold" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)", whiteSpace: "nowrap" }}>{link.label}</span>
+                  </a>
+                ))}
+              </div>
+              
             </div>
           </div>
-        </GlassCard>
-      )}
+        )}
+      </GlassCard>
+
+      {/* AI Analyst block at the end */}
+      <AIPlaceholder lines={3} linkLabel="Power BI — Логистика" isDark={isDark} />
     </div>
   );
 }
