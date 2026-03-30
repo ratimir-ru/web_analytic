@@ -10,6 +10,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  base: '/web_analytic/',
   resolve: {
     alias: {
       // Alias @ to the src directory
