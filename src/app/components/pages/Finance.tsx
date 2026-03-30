@@ -24,6 +24,8 @@ import {
   ПОДРАЗДЕЛЕНИЯ,
   ВИДЫ_БИЗНЕСА,
   businessTypeToProductGroups,
+  ГРУППЫ_ПОДРАЗДЕЛЕНИЙ,
+  divisionGroupToDivisions,
 } from "../filtersData";
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
@@ -46,36 +48,6 @@ function filterFactor(filterValue: string): number {
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
-const revenueMonthlyBase = [
-  { month: "Янв", выручка: 84.1, маржа: 21.9 },
-  { month: "Фев", выручка: 95.0, маржа: 25.3 },
-  { month: "Мар", выручка: 97.4, маржа: 26.1 },
-  { month: "Апр", выручка: 91.2, маржа: 23.5 },
-  { month: "Май", выручка: 94.8, маржа: 24.8 },
-  { month: "Июн", выручка: 99.1, маржа: 27.0 },
-  { month: "Июл", выручка: 96.3, маржа: 25.9 },
-  { month: "Авг", выручка: 101.2, маржа: 28.1 },
-  { month: "Сен", выручка: 98.7, маржа: 26.8 },
-  { month: "Окт", выручка: 81.2, маржа: 22.4 },
-  { month: "Ноя", выручка: 86.5, маржа: 23.1 },
-  { month: "Дек", выручка: 92.3, маржа: 24.8 },
-];
-
-const priceDataBase = [
-  { month: "Янв", цена: 146.3, себестоимость: 108.2 },
-  { month: "Фев", цена: 151.0, себестоимость: 111.4 },
-  { month: "Мар", цена: 153.4, себестоимость: 113.2 },
-  { month: "Апр", цена: 149.8, себестоимость: 110.5 },
-  { month: "Май", цена: 152.1, себестоимость: 112.8 },
-  { month: "Июн", цена: 155.3, себестоимость: 113.4 },
-  { month: "Июл", цена: 153.8, себестоимость: 113.9 },
-  { month: "Авг", цена: 156.2, себестоимость: 112.5 },
-  { month: "Сен", цена: 154.7, себестоимость: 113.1 },
-  { month: "Окт", цена: 142.5, себестоимость: 105.8 },
-  { month: "Ноя", цена: 145.8, себестоимость: 107.2 },
-  { month: "Дек", цена: 148.2, себестоимость: 109.4 },
-];
-
 const receivables = [
   { контрагент: "ООО Ромашка", сумма: 4.2, срок: 45, статус: "red" as const, доля: "28.6%" },
   { контрагент: "ИП Сидоров А.В.", сумма: 2.8, срок: 38, статус: "red" as const, доля: "19.0%" },
@@ -100,6 +72,38 @@ const agingData = [
   { period: "60-90 дн.", сумма: 0.8, доля: 5.4 },
   { period: "90+ дн.", сумма: 0.5, доля: 3.4 },
 ];
+
+// Data for Dashboard charts (from Dashboard.tsx)
+const revenueMarginDataBase = [
+  { month: "Янв", выручка: 84.1, маржа: 21.9 },
+  { month: "Фев", выручка: 95.0, маржа: 25.3 },
+  { month: "Мар", выручка: 97.4, маржа: 26.1 },
+  { month: "Апр", выручка: 91.2, маржа: 23.5 },
+  { month: "Май", выручка: 94.8, маржа: 24.8 },
+  { month: "Июн", выручка: 99.1, маржа: 27.0 },
+  { month: "Июл", выручка: 96.3, маржа: 25.9 },
+  { month: "Авг", выручка: 101.2, маржа: 28.1 },
+  { month: "Сен", выручка: 98.7, маржа: 26.8 },
+  { month: "Окт", выручка: 81.2, маржа: 22.4 },
+  { month: "Ноя", выручка: 86.5, маржа: 23.1 },
+  { month: "Дек", выручка: 92.3, маржа: 24.8 },
+];
+
+const priceCostDataBase = [
+  { month: "Янв", цена: 146.3, себестоимость: 108.2 },
+  { month: "Фев", цена: 151.0, себестоимость: 111.4 },
+  { month: "Мар", цена: 153.4, себестоимость: 113.2 },
+  { month: "Апр", цена: 149.8, себестоимость: 110.5 },
+  { month: "Май", цена: 152.1, себестоимость: 112.8 },
+  { month: "Июн", цена: 155.3, себестоимость: 113.4 },
+  { month: "Июл", цена: 153.8, себестоимость: 113.9 },
+  { month: "Авг", цена: 156.2, себестоимость: 112.5 },
+  { month: "Сен", цена: 154.7, себестоимость: 113.1 },
+  { month: "Окт", цена: 142.5, себестоимость: 105.8 },
+  { month: "Ноя", цена: 145.8, себестоимость: 107.2 },
+  { month: "Дек", цена: 148.2, себестоимость: 109.4 },
+];
+
 
 // Stacked aging: single row with all periods as keys - using absolute values
 const agingStackedData = [
@@ -152,7 +156,7 @@ const PIE_DATA_BY_BUSINESS = {
       { name: "КОЛБАСНЫЕ ИЗДЕЛИЯ", value: 25.6, rawValue: 28.4, color: "#008183" },
       { name: "ЗАМОРОЖЕННЫЕ ПОЛУФАБРИКАТЫ", value: 24.2, rawValue: 26.8, color: "#00B19F" },
       { name: "ДЕЛИКАТЕСЫ", value: 28.1, rawValue: 31.2, color: "#6BF0AE" },
-      { name: "ОХЛАЖДЕННЫЕ ПОЛУФАБРИКАТЫ", value: 22.1, rawValue: 24.5, color: "#E0DCD0" },
+      { name: "ОХЛАЖДЕННЫЕ ПОЛУФАБ����ИКАТЫ", value: 22.1, rawValue: 24.5, color: "#E0DCD0" },
     ],
   },
   "Агроптица": {
@@ -665,14 +669,11 @@ export function Finance() {
   // Tab state: 3 tabs
   const [activeTab, setActiveTab] = useState<"overview" | "receivables" | "powerbi">("overview");
 
-  // Chart filters
-  const [chartTerritory, setChartTerritory] = useState<string>("Все");
-  const [chartDivision, setChartDivision] = useState<string>("Все");
-  const [chartBusinessType, setChartBusinessType] = useState<string>("Все");
-  const [chartProductGroup, setChartProductGroup] = useState<string>("Все");
-
   // Pie filters
+  const [pieTerritory, setPieTerritory] = useState<string>("Все");
   const [pieBusinessType, setPieBusinessType] = useState<string>("Все");
+  const [pieProductGroup, setPieProductGroup] = useState<string>("Все");
+  const [pieDivisionGroup, setPieDivisionGroup] = useState<string>("—");
   const [pieDivision, setPieDivision] = useState<string>("Все");
 
   // Collapse state for detail table
@@ -687,9 +688,27 @@ export function Finance() {
   const [sortKey, setSortKey] = useState<CounterpartySortKey>("сумма");
   const [sortAsc, setSortAsc] = useState(false);
 
-  const chartProductGroups = chartBusinessType !== "Все" ? businessTypeToProductGroups[chartBusinessType] || [] : [];
-  const chartProductGroupOptions = ["Все", ...chartProductGroups];
-  const territoryOptions = ["Все", ...ТЕРРИТОРИИ];
+  // Dashboard charts filters
+  const [territoriyaDash, setTeritoriyaDash] = useState<string>("Все");
+  const [vidBiznesaDash, setVidBiznesaDash] = useState<string>("");
+  const [gruppaTovarovDash, setGruppaTovarovDash] = useState<string>("");
+  const [gruppaPodrazdeleniyDash, setGruppaPodrazdeleniyDash] = useState<string>("");
+  const [podrazdelenieDash, setPodrazdelenieDash] = useState<string>("");
+
+  // Dashboard chart options
+  const territoriiOptionsDash = ТЕРРИТОРИИ;
+  const produkt2OptionsDash = vidBiznesaDash ? ["Все", ...(businessTypeToProductGroups[vidBiznesaDash] || [])] : ["Все"];
+  const podrazdeleniya1OptionsDash = gruppaPodrazdeleniyDash ? ["Все", ...(divisionGroupToDivisions[gruppaPodrazdeleniyDash] || [])] : ["Все"];
+
+  // Options for Pie charts and counterparty filters
+  const pieTerritoryOptions = ТЕРРИТОРИИ;
+  const pieProductGroupOptions = pieBusinessType && pieBusinessType !== "Все" 
+    ? ["Все", ...(businessTypeToProductGroups[pieBusinessType] || [])] 
+    : ["Все"];
+  const pieDivisionOptions = pieDivisionGroup && pieDivisionGroup !== "—" 
+    ? ["Все", ...(divisionGroupToDivisions[pieDivisionGroup] || [])] 
+    : ["Все"];
+  const territoryOptions = ТЕРРИТОРИИ;
   const divisionOptions = ["Все", ...ПОДРАЗДЕЛЕНИЯ];
   const businessTypeOptions = ["Все", ...ВИДЫ_БИЗНЕСА];
 
@@ -699,42 +718,48 @@ export function Finance() {
     else { setSortKey(key); setSortAsc(false); }
   };
 
-  // 4c: Compute combined filter factor for charts
-  const combinedFactor = useMemo(() => {
-    return filterFactor(chartTerritory) * filterFactor(chartDivision) * filterFactor(chartBusinessType) * filterFactor(chartProductGroup);
-  }, [chartTerritory, chartDivision, chartBusinessType, chartProductGroup]);
+  // Dashboard charts data (no filtering, just raw data)
+  const revenueMarginData = revenueMarginDataBase;
+  const priceCostData = priceCostDataBase;
 
-  const filtersApplied = chartTerritory !== "Все" || chartDivision !== "Все" || chartBusinessType !== "Все" || chartProductGroup !== "Все";
-
-  // Filtered chart data
-  const revenueMonthly = useMemo(() => {
-    return revenueMonthlyBase.map(d => ({
-      ...d,
-      выручка: Math.round(d.выручка * combinedFactor * 10) / 10,
-      маржа: Math.round(d.маржа * combinedFactor * 10) / 10,
-    }));
-  }, [combinedFactor]);
-
-  const priceData = useMemo(() => {
-    return priceDataBase.map(d => ({
-      ...d,
-      цена: Math.round(d.цена * combinedFactor * 10) / 10,
-      себестоимость: Math.round(d.себестоимость * combinedFactor * 10) / 10,
-    }));
-  }, [combinedFactor]);
-
-  // Pie chart data based on selected business type
+  // Pie chart data based on selected filters with random variations
   const revenuePieData = useMemo(() => {
     const data = PIE_DATA_BY_BUSINESS[pieBusinessType as keyof typeof PIE_DATA_BY_BUSINESS];
     if (!data) return PIE_DATA_BY_BUSINESS["Все"].revenue;
-    return data.revenue;
-  }, [pieBusinessType]);
+    
+    // Apply filter factors for random variations
+    const territoryFactor = filterFactor(pieTerritory);
+    const productGroupFactor = filterFactor(pieProductGroup);
+    const divisionGroupFactor = filterFactor(pieDivisionGroup);
+    const divisionFactor = filterFactor(pieDivision);
+    
+    const combinedFactor = territoryFactor * productGroupFactor * divisionGroupFactor * divisionFactor;
+    
+    // Apply random variation to values
+    return data.revenue.map(item => ({
+      ...item,
+      value: Number((item.rawValue * combinedFactor).toFixed(1)),
+    }));
+  }, [pieBusinessType, pieTerritory, pieProductGroup, pieDivisionGroup, pieDivision]);
 
   const marginPieData = useMemo(() => {
     const data = PIE_DATA_BY_BUSINESS[pieBusinessType as keyof typeof PIE_DATA_BY_BUSINESS];
     if (!data) return PIE_DATA_BY_BUSINESS["Все"].margin;
-    return data.margin;
-  }, [pieBusinessType]);
+    
+    // Apply filter factors for random variations
+    const territoryFactor = filterFactor(pieTerritory);
+    const productGroupFactor = filterFactor(pieProductGroup);
+    const divisionGroupFactor = filterFactor(pieDivisionGroup);
+    const divisionFactor = filterFactor(pieDivision);
+    
+    const combinedFactor = territoryFactor * productGroupFactor * divisionGroupFactor * divisionFactor;
+    
+    // Apply random variation to values
+    return data.margin.map(item => ({
+      ...item,
+      value: Number((item.rawValue * combinedFactor).toFixed(1)),
+    }));
+  }, [pieBusinessType, pieTerritory, pieProductGroup, pieDivisionGroup, pieDivision]);
 
   // Filtered counterparty list
   const filteredCounterparties = useMemo(() => {
@@ -859,61 +884,70 @@ export function Finance() {
             <AIPlaceholder lines={4} linkLabel="Power BI — Финансы" />
           </div>
 
-          {/* Charts with filters */}
+          {/* Combined Charts from Dashboard: Выручка и маржа + Цена реализации и себестоимость */}
           <GlassCard className="my-4 p-5">
-            {/* Filters */}
+            {/* Common filters for both charts */}
             <div className="flex items-center gap-3 flex-wrap mb-5">
-              <Dropdown label="Территории" value={chartTerritory} options={territoryOptions} onChange={setChartTerritory} />
-              <Dropdown label="Подразделения" value={chartDivision} options={divisionOptions} onChange={setChartDivision} />
-              <Dropdown label="Вид бизнеса" value={chartBusinessType} options={businessTypeOptions} onChange={(v) => { setChartBusinessType(v); setChartProductGroup("Все"); }} />
-              <Dropdown label="Группа товаров" value={chartProductGroup} options={chartProductGroupOptions} onChange={setChartProductGroup} disabled={chartBusinessType === "Все"} />
-              {filtersApplied && (
-                <span className="text-xs font-semibold px-2 py-1 rounded-lg" style={{ background: "rgba(204,0,0,0.1)", color: "#e57373", border: "1px solid rgba(204,0,0,0.2)" }}>
-                  Фильтры применены
-                </span>
-              )}
+              <Dropdown label="Территории" value={territoriyaDash} options={territoriiOptionsDash as any} onChange={setTeritoriyaDash} />
+              <Dropdown label="Вид бизнеса" value={vidBiznesaDash || "—"} options={ВИДЫ_БИЗНЕСА as unknown as string[]} onChange={(v) => { setVidBiznesaDash(v); setGruppaTovarovDash("Все"); }} />
+              <Dropdown label="Группа товаров" value={gruppaTovarovDash || "Все"} options={produkt2OptionsDash as any} onChange={setGruppaTovarovDash} disabled={!vidBiznesaDash} />
+              <Dropdown label="Группа подразделений" value={gruppaPodrazdeleniyDash || "—"} options={["—", ...ГРУППЫ_ПОДРАЗДЕЛЕНИЙ] as unknown as string[]} onChange={(v) => { setGruppaPodrazdeleniyDash(v); setPodrazdelenieDash("Все"); }} />
+              <Dropdown label="Подразделения" value={podrazdelenieDash || "Все"} options={podrazdeleniya1OptionsDash as any} onChange={setPodrazdelenieDash} disabled={!gruppaPodrazdeleniyDash || gruppaPodrazdeleniyDash === "—"} />
             </div>
 
+            {/* Two charts in grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <GlassCard className="p-5 my-4" glow="#008183">
-              <ChartTitle>Выручка и маржа (млн ₽)</ChartTitle>
-              <ResponsiveContainer width="100%" height={220}>
-                <AreaChart data={revenueMonthly}>
-                  <defs>
-                    <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#008183" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#008183" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="marGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#BA2447" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#BA2447" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid {...cp.cartesianGrid} />
-                  <XAxis dataKey="month" {...cp.xAxis} />
-                  <YAxis {...cp.yAxis} />
-                  <Tooltip content={<CustomChartTooltip />} />
-                  <Legend {...cp.legend} />
-                  <Area type="monotone" dataKey="выручка" name="Выручка" stroke="#008183" fill="url(#revGrad)" strokeWidth={2.5} />
-                  <Area type="monotone" dataKey="маржа" name="Маржа" stroke="#BA2447" fill="url(#marGrad)" strokeWidth={2.5} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </GlassCard>
+              {/* Chart 1: Вы��учка и маржа */}
+              <GlassCard className="p-5 my-4" glow="#008183">
+                <ChartTitle>Выручка и маржа (млн ₽)</ChartTitle>
+                <ResponsiveContainer width="100%" height={220}>
+                  <AreaChart data={revenueMarginData} margin={{ right: 10 }}>
+                    <defs>
+                      <linearGradient id="dashRevGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#008183" stopOpacity={0.08} />
+                        <stop offset="95%" stopColor="#008183" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="dashMarGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#BA2447" stopOpacity={0.08} />
+                        <stop offset="95%" stopColor="#BA2447" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid {...cp.cartesianGrid} />
+                    <XAxis dataKey="month" {...cp.xAxis} />
+                    <YAxis {...cp.yAxis} width={45} />
+                    <Tooltip content={<CustomChartTooltip />} />
+                    <Legend {...cp.legend} />
+                    <Area key="area-revenue" type="monotone" dataKey="выручка" name="Выручка" stroke="#008183" fill="url(#dashRevGrad)" strokeWidth={2.5} />
+                    <Area key="area-margin" type="monotone" dataKey="маржа" name="Маржа" stroke="#BA2447" fill="url(#dashMarGrad)" strokeWidth={2.5} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </GlassCard>
 
-            <GlassCard className="p-5 my-4" glow="#00B19F">
-              <ChartTitle>Цена реализации и себестоимость (₽/кг)</ChartTitle>
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={priceData}>
-                  <CartesianGrid {...cp.cartesianGrid} />
-                  <XAxis dataKey="month" {...cp.xAxis} />
-                  <YAxis domain={[100, 165]} {...cp.yAxis} />
-                  <Tooltip content={<CustomChartTooltip />} />
-                  <Legend {...cp.legend} />
-                  <Line type="monotone" dataKey="цена" name="Цена" stroke="#00B19F" strokeWidth={2.5} dot={{ r: 3, fill: "#00B19F", strokeWidth: 0 }} />
-                  <Line type="monotone" dataKey="себестоимость" name="Себестоимость" stroke="#BA2447" strokeWidth={2} strokeDasharray="5 5" dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
-            </GlassCard>
+              {/* Chart 2: Цена реализации и себестоимость */}
+              <GlassCard className="p-5 my-4" glow="#1A8D7A">
+                <ChartTitle>Цена реализации и себестоимость (₽/кг)</ChartTitle>
+                <ResponsiveContainer width="100%" height={220}>
+                  <AreaChart data={priceCostData} margin={{ right: 10 }}>
+                    <defs>
+                      <linearGradient id="dashPriceGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#1A8D7A" stopOpacity={0.08} />
+                        <stop offset="95%" stopColor="#1A8D7A" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="dashCostGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#ba2447" stopOpacity={0.08} />
+                        <stop offset="95%" stopColor="#ba2447" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid {...cp.cartesianGrid} />
+                    <XAxis dataKey="month" {...cp.xAxis} />
+                    <YAxis {...cp.yAxis} width={45} />
+                    <Tooltip content={<CustomChartTooltip />} />
+                    <Legend {...cp.legend} />
+                    <Area key="area-price" type="monotone" dataKey="цена" name="Цена" stroke="#1A8D7A" fill="url(#dashPriceGrad)" strokeWidth={2.5} />
+                    <Area key="area-cost" type="monotone" dataKey="себестоимость" name="Себестоимость" stroke="#ba2447" fill="url(#dashCostGrad)" strokeWidth={2.5} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </GlassCard>
             </div>
           </GlassCard>
 
@@ -926,8 +960,29 @@ export function Finance() {
           <GlassCard className="my-4 p-5">
             {/* Filters */}
             <div className="flex items-center gap-3 flex-wrap mb-5">
-              <Dropdown label="Вид бизнеса" value={pieBusinessType} options={businessTypeOptions} onChange={setPieBusinessType} />
-              <Dropdown label="Подразделения" value={pieDivision} options={divisionOptions} onChange={setPieDivision} />
+              <Dropdown label="Территории" value={pieTerritory} options={pieTerritoryOptions} onChange={setPieTerritory} />
+              <Dropdown 
+                label="Вид бизнеса" 
+                value={pieBusinessType} 
+                options={businessTypeOptions} 
+                onChange={setPieBusinessType}
+              />
+              <Dropdown 
+                label="Группа подразделений" 
+                value={pieDivisionGroup || "—"} 
+                options={["—", ...ГРУППЫ_ПОДРАЗДЕЛЕНИЙ] as unknown as string[]} 
+                onChange={(v) => { 
+                  setPieDivisionGroup(v); 
+                  setPieDivision("Все"); 
+                }} 
+              />
+              <Dropdown 
+                label="Подразделения" 
+                value={pieDivision || "Все"} 
+                options={pieDivisionOptions} 
+                onChange={setPieDivision} 
+                disabled={!pieDivisionGroup || pieDivisionGroup === "—"} 
+              />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -1221,7 +1276,7 @@ export function Finance() {
                 <XAxis dataKey="month" {...cp.xAxis} />
                 <YAxis {...cp.yAxis} />
                 <Tooltip content={<CustomChartTooltip />} cursor={false} />
-                <Area type="monotone" dataKey="сумма" name="Дебиторка" stroke="#ba2447" fill="url(#debGrad)" strokeWidth={2.5} />
+                <Area key="area-receivables" type="monotone" dataKey="сумма" name="Дебиторка" stroke="#ba2447" fill="url(#debGrad)" strokeWidth={2.5} />
               </AreaChart>
             </ResponsiveContainer>
           </GlassCard>
@@ -1443,11 +1498,7 @@ export function Finance() {
                 </a>
               ))}
             </div>
-            <div className="w-full rounded-xl mt-2" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", border: `1px solid ${innerCardBorder}`, padding: "2rem" }}>
-              <p className="text-sm" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)" }}>
-                Iframe с Power BI отчётом будет встроен здесь после настройки embed-ссылки
-              </p>
-            </div>
+            
           </div>
         </GlassCard>
       )}

@@ -329,7 +329,7 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Topbar */}
         <header
-          className="h-14 flex items-center gap-2 flex-shrink-0 relative px-[16px] py-[32px]"
+          className="h-14 flex items-center gap-2 flex-shrink-0 relative px-[16px] py-[32px] mx-[0px] my-[-2px]"
           style={{
             background: headerBg,
             backdropFilter: isDark ? "blur(20px)" : "none",

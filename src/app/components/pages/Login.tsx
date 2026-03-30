@@ -1,5 +1,5 @@
-import image_6d19dd7a1c06f38e92a17d43316b77621712beae from '../../../assets/6d19dd7a1c06f38e92a17d43316b77621712beae.png'
-import image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df from '../../../assets/57bc1ed8c53e14ed69b8d98b78f63b24a1f830df.png'
+import image_6d19dd7a1c06f38e92a17d43316b77621712beae from '../../assets/6d19dd7a1c06f38e92a17d43316b77621712beae.png'
+import image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df from '../../assets/57bc1ed8c53e14ed69b8d98b78f63b24a1f830df.png'
 import React, { useState } from "react";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import ratimirLogoOfficial from "../../../assets/ratimir-logo-official.svg";
@@ -211,26 +211,7 @@ export function Login({ onLogin }: LoginProps) {
         </div>
 
         {/* Feedback button */}
-        <button
-          className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-medium transition-all"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            color: "rgba(255,255,255,0.5)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-            e.currentTarget.style.borderColor = "rgba(186,36,71,0.3)";
-            e.currentTarget.style.color = "#ff6b8a";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-            e.currentTarget.style.color = "rgba(255,255,255,0.5)";
-          }}
-        >
-          💬 Нужна помощь? Свяжитесь с нами
-        </button>
+        
 
         <p
           className="text-center text-xs mt-6"

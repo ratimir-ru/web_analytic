@@ -19,6 +19,7 @@ import { useTheme } from "../ThemeProvider";
 import {
   ВИДЫ_БИЗНЕСА,
   ГРУППЫ_ПОДРАЗДЕЛЕНИЙ,
+  ТЕРРИТОРИИ,
   businessTypeToProductGroups,
   divisionGroupToDivisions,
 } from "../filtersData";
@@ -360,14 +361,49 @@ function LflTooltip({ active, payload, label }: any) {
   );
 }
 
+// Custom tooltip for analytical charts (divisions & product groups)
+function AnalyticalTooltip({ active, payload, label }: any) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  
+  if (!active || !payload || !payload[0]) return null;
+  const data = payload[0].payload;
+  const currentYear = data.текущийГод || data.value;
+  const prevYear = data.прошлыйГод;
+  const ratio = prevYear ? ((currentYear / prevYear) * 100).toFixed(1) : "—";
+  
+  return (
+    <div 
+      className="rounded-xl p-3 text-xs"
+      style={{ 
+        background: isDark ? "rgba(15,20,25,0.95)" : "rgba(255,255,255,0.95)",
+        backdropFilter: "blur(20px)",
+        border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+        color: isDark ? "white" : "black",
+        boxShadow: isDark 
+          ? "0 8px 32px rgba(0,0,0,0.5)" 
+          : "0 8px 32px rgba(0,0,0,0.15)",
+      }}
+    >
+      <p className="font-bold mb-1">{label || data.name}</p>
+      <p style={{ color: "#1A8D7A" }}>Текущий год: {currentYear} т</p>
+      <p style={{ color: "#4F709D" }}>Прошлый год: {prevYear} т</p>
+      <p style={{ color: YELLOW }}>Текущий/Прошлый год: {ratio}%</p>
+    </div>
+  );
+}
+
 // ── Main ─────────────────────────────────────────────────────────────────────
 export function Sales() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
   // Category breakdown filters
+  const [catTerritory, setCatTerritory] = useState<string>("Все");
   const [catBusiness, setCatBusiness] = useState<string>("");
   const [catProductGroup, setCatProductGroup] = useState<string>("Все");
+  const [catDivisionGroup, setCatDivisionGroup] = useState<string>("");
+  const [catDivision, setCatDivision] = useState<string>("");
 
   // Analytical dashboard filters
   const [analyticBusiness, setAnalyticBusiness] = useState<string>(ВИДЫ_БИЗНЕСА[0]);
@@ -393,6 +429,12 @@ export function Sales() {
     return businessTypeToProductGroups[catBusiness] || [];
   }, [catBusiness]);
 
+  // Available divisions for category breakdown
+  const catDivisions = useMemo(() => {
+    if (!catDivisionGroup) return [];
+    return divisionGroupToDivisions[catDivisionGroup] || [];
+  }, [catDivisionGroup]);
+
   // Analytical: divisions from selected group
   const analyticDivisions = useMemo(() => {
     return divisionGroupToDivisions[analyticGroup] || [];
@@ -406,24 +448,75 @@ export function Sales() {
   // Generate mock data for division chart
   const divisionChartData = useMemo(() => {
     const divs = analyticDivisions;
-    const vals = seededMock(analyticGroup + analyticBusiness, 50, 300, divs.length);
-    return divs.map((d, i) => ({ name: d, value: vals[i] })).sort((a, b) => b.value - a.value);
+    const currentYearVals = seededMock(analyticGroup + analyticBusiness, 50, 300, divs.length);
+    const prevYearVals = seededMock(analyticGroup + analyticBusiness + "prev", 45, 280, divs.length);
+    return divs.map((d, i) => ({ 
+      name: d, 
+      value: currentYearVals[i],
+      текущийГод: currentYearVals[i],
+      прошлыйГод: prevYearVals[i]
+    })).sort((a, b) => b.value - a.value);
   }, [analyticDivisions, analyticGroup, analyticBusiness]);
 
   // Generate mock data for product group chart
   const productGroupChartData = useMemo(() => {
     const groups = analyticProductGroups;
-    const vals = seededMock(analyticBusiness + analyticGroup, 80, 400, groups.length);
-    return groups.map((g, i) => ({ name: g, value: vals[i] })).sort((a, b) => b.value - a.value);
+    const currentYearVals = seededMock(analyticBusiness + analyticGroup, 80, 400, groups.length);
+    const prevYearVals = seededMock(analyticBusiness + analyticGroup + "prev", 75, 380, groups.length);
+    return groups.map((g, i) => ({ 
+      name: g, 
+      value: currentYearVals[i],
+      текущийГод: currentYearVals[i],
+      прошлыйГод: prevYearVals[i]
+    })).sort((a, b) => b.value - a.value);
   }, [analyticProductGroups, analyticBusiness, analyticGroup]);
 
   // Determine which category to show based on filters
   const filteredCategory = useMemo(() => {
-    if (!catBusiness && catProductGroup === "Все") return categories[0];
-    // Simple mock: rotate categories based on filter selection
-    const idx = (catBusiness.length + catProductGroup.length) % categories.length;
-    return categories[idx];
-  }, [catBusiness, catProductGroup]);
+    // Generate seed from all filter values
+    const seed = `${catTerritory}${catBusiness}${catProductGroup}${catDivisionGroup}${catDivision}`;
+    
+    // Generate random values based on seed
+    const baseIdx = Math.abs(seed.split('').reduce((h, c) => ((h << 5) - h + c.charCodeAt(0)) | 0, 0)) % categories.length;
+    const baseCat = categories[baseIdx];
+    
+    // Generate modified values based on filters
+    const planOffset = seededMock(seed + "plan", -20, 20, 1)[0];
+    const factOffset = seededMock(seed + "fact", -25, 25, 1)[0];
+    const priceOffset = seededMock(seed + "price", -10, 15, 1)[0];
+    const marginOffset = seededMock(seed + "margin", -5, 5, 1)[0];
+    const serviceOffset = seededMock(seed + "service", -8, 5, 1)[0];
+    
+    const newPlan = Math.max(80, baseCat.plan + planOffset);
+    const newFact = Math.max(70, baseCat.fact + factOffset);
+    const newPricePlan = Math.max(100, baseCat.price_plan + priceOffset);
+    const newPriceFact = Math.max(95, baseCat.price_fact + priceOffset);
+    const newMarginPlan = Math.max(10, Math.min(50, baseCat.margin_plan + marginOffset));
+    const newMarginFact = Math.max(8, Math.min(48, baseCat.margin_fact + marginOffset));
+    const newService = Math.max(85, Math.min(99, baseCat.service + serviceOffset));
+    
+    // Generate trend data
+    const trendVals = seededMock(seed + "trend", 70, 95, 6);
+    const trendPlan = seededMock(seed + "trendPlan", 75, 100, 6);
+    const trend = [0,1,2,3,4,5].map(i => ({
+      month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i],
+      план: trendPlan[i],
+      факт: trendVals[i],
+    }));
+    
+    return {
+      ...baseCat,
+      plan: newPlan,
+      fact: newFact,
+      price_plan: newPricePlan,
+      price_fact: newPriceFact,
+      margin_plan: newMarginPlan,
+      margin_fact: newMarginFact,
+      service: newService,
+      trend,
+      status: (newService >= 97 ? "green" : newService >= 92 ? "yellow" : "red") as const,
+    };
+  }, [catTerritory, catBusiness, catProductGroup, catDivisionGroup, catDivision]);
 
   return (
     <div>
@@ -525,7 +618,7 @@ export function Sales() {
                 <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                 <XAxis type="number" {...darkChartProps.xAxis} />
                 <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={100} tick={{ fontSize: 12 }} />
-                <Tooltip content={<CustomChartTooltip />} />
+                <Tooltip content={<AnalyticalTooltip />} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {divisionChartData.map((entry, idx) => (
                     <Cell key={idx} fill={entry.value >= 0 ? "#1A8D7A" : "#ba2447"} />
@@ -545,7 +638,7 @@ export function Sales() {
                 <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                 <XAxis type="number" {...darkChartProps.xAxis} />
                 <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={120} tick={{ fontSize: 12 }} />
-                <Tooltip content={<CustomChartTooltip />} />
+                <Tooltip content={<AnalyticalTooltip />} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {productGroupChartData.map((_, idx) => (
                     <Cell key={idx} fill="#1A8D7A" />
@@ -562,20 +655,19 @@ export function Sales() {
         <AIPlaceholder lines={3} linkLabel="Power BI — Продажи" isDark={isDark} />
       </div>
 
-      {/* Overall chart with % overlay */}
+      {/* Overall chart with % overlay - New separate block */}
       <GlassCard className="p-5 mb-4" glow={BLUE} style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
         <ChartTitle>Общий объём продаж — план vs факт + % от плана</ChartTitle>
         <ResponsiveContainer width="100%" height={240}>
           <BarChart data={overallData}>
             <CartesianGrid {...darkChartProps.cartesianGrid} />
             <XAxis dataKey="month" {...darkChartProps.xAxis} />
-            <YAxis {...darkChartProps.yAxis} yAxisId="left" />
+            <YAxis {...darkChartProps.yAxis} yAxisId="left" domain={[0, 1200]} />
             <YAxis yAxisId="right" orientation="right" domain={[90, 105]} {...darkChartProps.yAxis} unit="%" />
             <Tooltip content={<PctTooltip />} />
             <Legend {...darkChartProps.legend} />
-            <Bar yAxisId="left" dataKey="план" name="План (т)" fill="#4F709D" radius={[4, 4, 0, 0]} />
-            <Bar yAxisId="left" dataKey="факт" name="Факт (т)" fill={BLUE} radius={[4, 4, 0, 0]} />
-            <Line yAxisId="right" type="monotone" dataKey="pct" name="% от плана" stroke={YELLOW} strokeWidth={2} dot={{ r: 3, fill: YELLOW, strokeWidth: 0 }} />
+            <Bar key="bar-plan" yAxisId="left" dataKey="план" name="План (т)" fill="#60a5fa" radius={[4, 4, 0, 0]} />
+            <Bar key="bar-fact" yAxisId="left" dataKey="факт" name="Факт (т)" fill="#1A8D7A" radius={[4, 4, 0, 0]} />
             <ReferenceLine yAxisId="right" y={100} stroke="rgba(16,185,129,0.4)" strokeDasharray="4 4" />
           </BarChart>
         </ResponsiveContainer>
@@ -652,6 +744,13 @@ export function Sales() {
         {/* Filter dropdowns instead of buttons */}
         <div className="flex items-center gap-3 mb-5 flex-wrap">
           <Dropdown
+            label="Территория"
+            value={catTerritory}
+            options={ТЕРРИТОРИИ}
+            onChange={setCatTerritory}
+            isDark={isDark}
+          />
+          <Dropdown
             label="Вид бизнеса"
             value={catBusiness || "Выберите"}
             options={ВИДЫ_БИЗНЕСА}
@@ -667,6 +766,24 @@ export function Sales() {
             options={["Все" as string, ...catProductGroups] as readonly string[]}
             onChange={setCatProductGroup}
             disabled={!catBusiness}
+            isDark={isDark}
+          />
+          <Dropdown
+            label="Группа подразделений"
+            value={catDivisionGroup || "Выберите"}
+            options={ГРУППЫ_ПОДРАЗДЕЛЕНИЙ}
+            onChange={(v) => {
+              setCatDivisionGroup(v);
+              setCatDivision("");
+            }}
+            isDark={isDark}
+          />
+          <Dropdown
+            label="Подразделение"
+            value={catDivision || "Выберите"}
+            options={catDivisions.length > 0 ? catDivisions : ["Выберите"] as readonly string[]}
+            onChange={setCatDivision}
+            disabled={!catDivisionGroup}
             isDark={isDark}
           />
         </div>
@@ -712,8 +829,8 @@ export function Sales() {
                   <YAxis {...darkChartProps.yAxis} />
                   <Tooltip content={<CustomChartTooltip />} />
                   <Legend {...darkChartProps.legend} />
-                  <Line type="monotone" dataKey="план" name="План" stroke="#4F709D" strokeWidth={2} strokeDasharray="5 5" dot={false} />
-                  <Line type="monotone" dataKey="факт" name="Факт" stroke="#1A8D7A" strokeWidth={2.5} dot={{ r: 4, fill: "#1A8D7A", strokeWidth: 0 }} />
+                  <Line key="line-plan" type="monotone" dataKey="план" name="План" stroke="#4F709D" strokeWidth={2} strokeDasharray="5 5" dot={false} />
+                  <Line key="line-fact" type="monotone" dataKey="факт" name="Факт" stroke="#1A8D7A" strokeWidth={2.5} dot={{ r: 4, fill: "#1A8D7A", strokeWidth: 0 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

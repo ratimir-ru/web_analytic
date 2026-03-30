@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  Legend,
 } from "recharts";
 import {
   TrendingUp,
@@ -21,6 +22,8 @@ import {
   BarChart2,
   Layers,
   PercentSquare,
+  Bell,
+  AlertTriangle,
 } from "lucide-react";
 import { StatCard, SectionHeader, GlassCard, ChartTitle, chartProps, CustomChartTooltip } from "../StatCard";
 import { useTheme } from "../ThemeProvider";
@@ -32,6 +35,7 @@ import {
   ПОДРАЗДЕЛЕНИЯ,
   ВИДЫ_БИЗНЕСА,
   businessTypeToProductGroups,
+  divisionGroupToDivisions,
 } from "../filtersData";
 
 // ── Palette ──────────────────────────────────────────────────────────────────
@@ -66,6 +70,7 @@ const volumeChartData = months.map((m, i) => ({
   id: `volume-${i}`,
   факт: [820, 870, 948, 910, 940, 980, 960, 990, 970, 920, 940, 980][i],
   план: [850, 880, 980, 930, 960, 1000, 980, 1010, 990, 950, 970, 1000][i],
+  прошлыйГод: [795, 845, 920, 885, 915, 955, 935, 965, 945, 895, 915, 955][i], // Данные прошлого года
 }));
 
 const serviceChartData = months.map((m, i) => ({
@@ -96,6 +101,21 @@ const breakdownByРазрез: Record<string, { name: string; значение: 
     цвет: ["#008183", "#00B19F", "#6BF0AE", "#E0DCD0", "#4F709D"][i],
   })),
 };
+
+// ── Data for new charts ──────────────────────────────────────────────────────
+const revenueMarginData = months.map((m, i) => ({
+  month: m,
+  id: `revmar-${i}`,
+  выручка: [84.1, 95.0, 97.4, 91.2, 94.8, 99.1, 96.3, 101.2, 98.7, 81.2, 86.5, 92.3][i],
+  маржа: [21.9, 25.3, 26.1, 23.5, 24.8, 27.0, 25.9, 28.1, 26.8, 22.4, 23.1, 24.8][i],
+}));
+
+const priceCostData = months.map((m, i) => ({
+  month: m,
+  id: `pricecost-${i}`,
+  цена: [146.3, 151.0, 153.4, 149.8, 152.1, 155.3, 153.8, 156.2, 154.7, 142.5, 145.8, 148.2][i],
+  себестоимость: [108.2, 111.4, 113.2, 110.5, 112.8, 113.4, 113.9, 112.5, 113.1, 105.8, 107.2, 109.4][i],
+}));
 
 // Mock data for Структура объёма — stacked bar format
 // Each bar = product group, segments = подразделения shares
@@ -429,6 +449,69 @@ function KpiBlockBottom({ title, fact, planTarget, accentColor, icon }: {
       <p className="text-xs" style={{ color: accentColor }}>
         ▸ план: {planTarget}
       </p>
+    </div>
+  );
+}
+
+// ── Custom tooltip for Volume chart ──────────────────────────────────────────
+function VolumeChartTooltip({ active, payload, label }: any) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  if (!active || !payload?.length) return null;
+  
+  const data = payload[0]?.payload;
+  if (!data) return null;
+  
+  const currentYear = data.факт;
+  const lastYear = data.прошлыйГод;
+  const plan = data.план;
+  const changeVsLastYear = lastYear ? (((currentYear - lastYear) / lastYear) * 100).toFixed(1) : null;
+  
+  return (
+    <div
+      className="rounded-xl p-3 text-xs"
+      style={{
+        background: isDark ? "rgba(15,20,25,0.98)" : "rgba(255,255,255,0.98)",
+        backdropFilter: "blur(20px)",
+        border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
+        boxShadow: isDark ? "0 12px 40px rgba(0,0,0,0.5)" : "0 12px 40px rgba(0,0,0,0.2)",
+        minWidth: "200px",
+      }}
+    >
+      <p className="font-bold mb-3" style={{ color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)" }}>
+        {label}
+      </p>
+      
+      <div className="flex items-center gap-2 mb-2">
+        <div className="w-2.5 h-2.5 rounded-sm" style={{ background: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)" }} />
+        <p style={{ color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)" }}>
+          <span className="font-semibold">Текущий год:</span> {currentYear} т
+        </p>
+      </div>
+      
+      {lastYear && (
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-2.5 h-2.5 rounded-sm" style={{ background: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }} />
+          <p style={{ color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)" }}>
+            <span className="font-semibold">Прошлый год:</span> {lastYear} т
+          </p>
+        </div>
+      )}
+      
+      <div className="flex items-center gap-2 mb-2">
+        <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "rgba(79, 112, 157, 0.6)" }} />
+        <p style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}>
+          <span className="font-semibold">План:</span> {plan} т
+        </p>
+      </div>
+      
+      {changeVsLastYear && (
+        <div className="mt-2 pt-2" style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
+          <p style={{ color: parseFloat(changeVsLastYear) >= 0 ? GREEN : RED, fontWeight: 600 }}>
+            {parseFloat(changeVsLastYear) >= 0 ? "▲" : "▼"} {Math.abs(parseFloat(changeVsLastYear))}% к прошлому году
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -898,9 +981,9 @@ export function Dashboard() {
                 <CartesianGrid {...cp.cartesianGrid} />
                 <XAxis dataKey="month" {...cp.xAxis} />
                 <YAxis {...cp.yAxis} width={45} />
-                <Tooltip content={<CustomChartTooltip />} />
-                <Area type="monotone" dataKey="план" name="План" stroke={`rgba(${hexToRgb(chartColor)},0.4)`} fill="url(#grad-dash-plan)" strokeWidth={1.5} strokeDasharray="5 5" />
-                <Area type="monotone" dataKey="факт" name="Факт" stroke={chartColor} fill="url(#grad-dash-fact)" strokeWidth={2.5} />
+                <Tooltip content={показатель === "Объём" ? <VolumeChartTooltip /> : <CustomChartTooltip />} />
+                <Area key="area-plan" type="monotone" dataKey="план" name="План" stroke={`rgba(${hexToRgb(chartColor)},0.4)`} fill="url(#grad-dash-plan)" strokeWidth={1.5} strokeDasharray="5 5" />
+                <Area key="area-fact" type="monotone" dataKey="факт" name="Факт" stroke={chartColor} fill="url(#grad-dash-fact)" strokeWidth={2.5} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -932,6 +1015,9 @@ export function Dashboard() {
           </div>
         </div>
       </GlassCard>
+
+      {/* AI Analyst block after first chart */}
+      <AIPlaceholder lines={3} linkLabel="Все дашборды" />
 
       {/* Структура объёма */}
       <GlassCard className="p-5 my-4">
@@ -994,6 +1080,154 @@ export function Dashboard() {
         )}
       </GlassCard>
 
+      {/* Важные события */}
+      <GlassCard className="p-5 my-4">
+        <div className="flex items-center justify-between mb-5">
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>
+            Важные события
+          </p>
+          <div className="flex items-center gap-2">
+            
+            <button
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+              style={{
+                background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
+                border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)",
+                color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
+              }}
+            >
+              <AlertTriangle size={14} />
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {/* Event 1 */}
+          <div
+            className="p-4 rounded-xl transition-all"
+            style={{
+              background: isDark ? "rgba(186,36,71,0.06)" : "rgba(186,36,71,0.04)",
+              border: "1px solid rgba(186,36,71,0.2)",
+            }}
+          >
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div className="flex items-start gap-2">
+                <AlertTriangle size={16} style={{ color: "#ba2447", flexShrink: 0, marginTop: 2 }} />
+                <h4 className="text-sm font-semibold leading-snug" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
+                  Невыполнение плана по группе «Колбасные изделия»
+                </h4>
+              </div>
+              <span
+                className="text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded whitespace-nowrap"
+                style={{
+                  background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
+                  color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
+                  border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
+                }}
+              >
+                продажи
+              </span>
+            </div>
+            <p className="text-xs font-semibold ml-6" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
+              <span style={{ color: "#ba2447", fontSize: 16, fontWeight: 600 }}>440тн</span> / 980тн
+            </p>
+          </div>
+
+          {/* Event 2 */}
+          <div
+            className="p-4 rounded-xl transition-all"
+            style={{
+              background: isDark ? "rgba(186,36,71,0.06)" : "rgba(186,36,71,0.04)",
+              border: "1px solid rgba(186,36,71,0.2)",
+            }}
+          >
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div className="flex items-start gap-2">
+                <AlertTriangle size={16} style={{ color: "#ba2447", flexShrink: 0, marginTop: 2 }} />
+                <h4 className="text-sm font-semibold leading-snug" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
+                  Низкий уровень сервиса по подразделению Реми
+                </h4>
+              </div>
+              <span
+                className="text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded whitespace-nowrap"
+                style={{
+                  background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
+                  color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
+                  border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
+                }}
+              >
+                продажи
+              </span>
+            </div>
+            <p className="text-xs font-semibold ml-6" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
+              <span style={{ color: "#ba2447", fontSize: 16, fontWeight: 600 }}>75%</span> / 93%
+            </p>
+          </div>
+
+          {/* Event 3 */}
+          <div
+            className="p-4 rounded-xl transition-all"
+            style={{
+              background: isDark ? "rgba(186,36,71,0.06)" : "rgba(186,36,71,0.04)",
+              border: "1px solid rgba(186,36,71,0.2)",
+            }}
+          >
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div className="flex items-start gap-2">
+                <AlertTriangle size={16} style={{ color: "#ba2447", flexShrink: 0, marginTop: 2 }} />
+                <h4 className="text-sm font-semibold leading-snug" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
+                  Просрочка долга – контрагент «X5»
+                </h4>
+              </div>
+              <span
+                className="text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded whitespace-nowrap"
+                style={{
+                  background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
+                  color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
+                  border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
+                }}
+              >
+                финансы
+              </span>
+            </div>
+            <p className="text-xs font-semibold ml-6" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
+              <span style={{ color: "#ba2447", fontSize: 16, fontWeight: 600 }}>10 млн</span> – 90+ дней
+            </p>
+          </div>
+
+          {/* Event 4 */}
+          <div
+            className="p-4 rounded-xl transition-all"
+            style={{
+              background: isDark ? "rgba(186,36,71,0.06)" : "rgba(186,36,71,0.04)",
+              border: "1px solid rgba(186,36,71,0.2)",
+            }}
+          >
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div className="flex items-start gap-2">
+                <AlertTriangle size={16} style={{ color: "#ba2447", flexShrink: 0, marginTop: 2 }} />
+                <h4 className="text-sm font-semibold leading-snug" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
+                  Невыполнение задач – Федоров Ф.Ф.
+                </h4>
+              </div>
+              <span
+                className="text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded whitespace-nowrap"
+                style={{
+                  background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
+                  color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
+                  border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
+                }}
+              >
+                задачи
+              </span>
+            </div>
+            <p className="text-xs font-semibold ml-6" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
+              <span style={{ color: "#ba2447", fontSize: 16, fontWeight: 600 }}>4 просроченных</span> / 4
+            </p>
+          </div>
+        </div>
+      </GlassCard>
+
       {/* AI placeholder 2 */}
       <AIPlaceholder lines={4} />
 
@@ -1029,9 +1263,6 @@ export function Dashboard() {
           ))}
         </div>
       </GlassCard>
-
-      {/* AI Analyst block at the end */}
-      <AIPlaceholder lines={3} linkLabel="Все дашборды" />
     </div>
   );
 }
