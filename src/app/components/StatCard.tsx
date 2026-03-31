@@ -294,8 +294,9 @@ export function chartProps(isDark: boolean = false) {
     legend: {
       iconSize: 8,
       wrapperStyle: {
-        fontSize: "10px",
-        opacity: 0.7,
+        fontSize: "11px",
+        opacity: 1.05,
+        color: "#ffffff",
       },
     },
   };
@@ -322,8 +323,9 @@ export const darkChartProps = {
   legend: {
     iconSize: 8,
     wrapperStyle: {
-      fontSize: "10px",
-      opacity: 0.7,
+      fontSize: "11px",
+      opacity: 1.05,
+      color: "#ffffff",
     },
   },
 };

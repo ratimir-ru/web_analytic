@@ -617,7 +617,7 @@ export function Sales() {
               <BarChart data={divisionChartData} layout="vertical" margin={{ left: 10, right: 10 }}>
                 <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                 <XAxis type="number" {...darkChartProps.xAxis} />
-                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={100} tick={{ fontSize: 12 }} />
+                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={100} tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.35)' }} />
                 <Tooltip content={<AnalyticalTooltip />} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {divisionChartData.map((entry, idx) => (
@@ -637,7 +637,7 @@ export function Sales() {
               <BarChart data={productGroupChartData} layout="vertical" margin={{ left: 10, right: 10 }}>
                 <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                 <XAxis type="number" {...darkChartProps.xAxis} />
-                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={120} tick={{ fontSize: 12 }} />
+                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={120} tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.35)' }} />
                 <Tooltip content={<AnalyticalTooltip />} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {productGroupChartData.map((_, idx) => (

@@ -156,7 +156,7 @@ const PIE_DATA_BY_BUSINESS = {
       { name: "КОЛБАСНЫЕ ИЗДЕЛИЯ", value: 25.6, rawValue: 28.4, color: "#008183" },
       { name: "ЗАМОРОЖЕННЫЕ ПОЛУФАБРИКАТЫ", value: 24.2, rawValue: 26.8, color: "#00B19F" },
       { name: "ДЕЛИКАТЕСЫ", value: 28.1, rawValue: 31.2, color: "#6BF0AE" },
-      { name: "ОХЛАЖДЕННЫЕ ПОЛУФАБ����ИКАТЫ", value: 22.1, rawValue: 24.5, color: "#E0DCD0" },
+      { name: "ОХЛАЖДЕННЫЕ ПОЛУФАБРИКАТЫ", value: 22.1, rawValue: 24.5, color: "#E0DCD0" },
     ],
   },
   "Агроптица": {
@@ -317,7 +317,7 @@ function AIPlaceholder({ lines = 4, linkLabel }: { lines?: number; linkLabel?: s
           </div>
           <div className="flex items-center justify-between mt-2">
             <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)" }}>
-              Текст ИИ-аналитика будет отображён здесь
+              Текст ИИ-аналитика будет отображен здесь
             </p>
             {linkLabel && (
               <a
@@ -341,13 +341,29 @@ function AIPlaceholder({ lines = 4, linkLabel }: { lines?: number; linkLabel?: s
   );
 }
 
-// ─── Half-circle gauge (спидометр) ─���─�������─���──────────────────────────────────────
+// ─── Half-circle gauge (спидометр) ───────────────────────────────────────────────────────
 function HalfGauge({ value, label, sublabel }: { value: number; label: string; sublabel: string }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const pct = Math.min(Math.max(value / 100, 0), 1);
 
-  const size = 180;
+  // Адаптивный размер спидометра для широких экранов
+  const [size, setSize] = React.useState(180);
+
+  React.useEffect(() => {
+    const updateSize = () => {
+      if (window.innerWidth > 1600) {
+        setSize(240);
+      } else {
+        setSize(180);
+      }
+    };
+
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
   const cx = size / 2;
   const cy = size / 2 + 5;
   const r = size / 2 - 22;
@@ -367,7 +383,7 @@ function HalfGauge({ value, label, sublabel }: { value: number; label: string; s
 
   return (
     <div className="flex flex-col items-center">
-      <svg width={size} height={size / 2 + 35} viewBox={`0 0 ${size} ${size / 2 + 40}`}>
+      <svg width={size} height={size / 2 + 35} viewBox={`${size * 0.0833} ${(size / 2 + 40) * 0.0833} ${size / 1.2} ${(size / 2 + 40) / 1.2}`}>
         <defs>
           <filter id={`glow-${value}`} x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="2.77" result="blur" />
@@ -463,9 +479,9 @@ function HalfGauge({ value, label, sublabel }: { value: number; label: string; s
         {/* Percentage text */}
         <text 
           x={cx} 
-          y={cy} 
+          y={cy + (size > 200 ? -12 : -8)} 
           textAnchor="middle" 
-          fontSize={22} 
+          fontSize={size > 200 ? 28 : 22} 
           fontWeight="bold" 
           fill={isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.92)"} 
           fontFamily="Montserrat, system-ui"
@@ -473,8 +489,8 @@ function HalfGauge({ value, label, sublabel }: { value: number; label: string; s
           {value}%
         </text>
       </svg>
-      <p className="text-xs font-semibold text-center mx-[0px] mt-[-22px] mb-[0px]" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}>{label}</p>
-      <p className="text-xs text-center mt-0.5" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>{sublabel}</p>
+      <p className="font-semibold text-center mx-[0px] mb-[0px]" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)", fontSize: size > 200 ? '15px' : '12px', marginTop: size > 200 ? '-28px' : '-22px' }}>{label}</p>
+      <p className="text-center mt-0.5" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)", fontSize: size > 200 ? '14px' : '12px' }}>{sublabel}</p>
     </div>
   );
 }
@@ -897,7 +913,7 @@ export function Finance() {
 
             {/* Two charts in grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              {/* Chart 1: Вы��учка и маржа */}
+              {/* Chart 1: Выручка и маржа */}
               <GlassCard className="p-5 my-4" glow="#008183">
                 <ChartTitle>Выручка и маржа (млн ₽)</ChartTitle>
                 <ResponsiveContainer width="100%" height={220}>
@@ -1478,7 +1494,7 @@ export function Finance() {
             <div>
               <p className="text-lg font-black mb-2" style={{ color: textPrimary }}>Power BI — Финансы</p>
               <p className="text-sm mb-4" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
-                Интерактивный дашборд в Power BI с детализацией выручки, маржин����льности и дебиторской задолженности.
+                Интерактивный дашборд в Power BI с детализацией выручки, маржинальности и дебиторской задолженности.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">

@@ -222,7 +222,7 @@ function Dropdown<T extends string>({
   );
 }
 
-// ── AI Placeholder ─────────────────────�������──────────────────────────────────────
+// ── AI Placeholder ────────────────────────────────────────────────────────────
 function AIPlaceholder({ lines = 3, linkLabel }: { lines?: number; linkLabel?: string }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -420,7 +420,7 @@ function TaskBlock() {
   );
 }
 
-// �����─ Bottom row KPI Block ─────────────────────────────────────────────────────
+// ── Bottom row KPI Block ─────────────────────────────────────────────────────
 function KpiBlockBottom({ title, fact, planTarget, accentColor, icon }: {
   title: string; fact: string; planTarget: string; accentColor: string; icon: React.ReactNode;
 }) {
@@ -1239,7 +1239,7 @@ export function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             { label: "Power BI — Финансы", desc: "Дашборд финансовых показателей", color: "#f59e0b", href: "#" },
-            { label: "Power BI — Продажи", desc: "Анализ продаж по ��егионам и блокам", color: "#3b82f6", href: "#" },
+            { label: "Power BI — Продажи", desc: "Анализ продаж по Регионам и блокам", color: "#3b82f6", href: "#" },
             { label: "Power BI — Логистика", desc: "Утилизация ТС и маршруты", color: "#10b981", href: "#" },
           ].map(link => (
             <a

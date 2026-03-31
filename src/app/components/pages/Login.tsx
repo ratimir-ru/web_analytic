@@ -2,7 +2,6 @@ import image_6d19dd7a1c06f38e92a17d43316b77621712beae from '../../../assets/6d19
 import image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df from '../../../assets/57bc1ed8c53e14ed69b8d98b78f63b24a1f830df.png'
 import React, { useState } from "react";
 import { Eye, EyeOff, LogIn } from "lucide-react";
-import ratimirLogoOfficial from "../../../assets/ratimir-logo-official.svg";
 
 interface LoginProps {
   onLogin: (username: string) => void;
@@ -32,12 +31,14 @@ export function Login({ onLogin }: LoginProps) {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4"
+      className="fixed inset-0 overflow-auto"
       style={{
         background:
           "radial-gradient(ellipse at 20% 20%, rgba(158,35,59,0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(186,36,71,0.05) 0%, transparent 50%), #0f1419",
+        fontFamily: "Montserrat, system-ui, -apple-system, sans-serif",
       }}
     >
+      <div className="min-h-screen flex items-center justify-center p-4">
       {/* Background decorations */}
       <div
         className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden"
@@ -219,6 +220,7 @@ export function Login({ onLogin }: LoginProps) {
         >
           © 2026 ООО «Ратимир». Все права защищены.
         </p>
+      </div>
       </div>
     </div>
   );
