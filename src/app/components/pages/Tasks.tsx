@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { SectionHeader, GlassCard } from "../StatCard";
 import { useTheme } from "../ThemeProvider";
-import { Plus, Search, ChevronUp, ChevronDown, X } from "lucide-react";
+import { Plus, Search, ChevronUp, ChevronDown, X, Pencil } from "lucide-react";
 
 type Priority = "Высокий" | "Средний" | "Низкий";
 type Status = "В работе" | "Выполнено" | "Просрочено" | "Отложено" | "Новая";
@@ -31,6 +31,13 @@ const initialTasks: Task[] = [
   { id: 8, executor: "Сидоров К.А.", block: "IT", task: "Настроить интеграцию TMS с 1С", priority: "Высокий", dateSet: "2026-03-01", deadline: "2026-03-22", daysOverdue: 0, status: "Выполнено", transfers: 1 },
   { id: 9, executor: "Петрова М.С.", block: "Продажи", task: "Провести переговоры с сетью «АТБ» по условиям Q2", priority: "Средний", dateSet: "2026-03-12", deadline: "2026-03-28", daysOverdue: 0, status: "В работе", transfers: 0 },
   { id: 10, executor: "Новиков А.П.", block: "Операции", task: "Обновить регламент погрузо-разгрузочных работ", priority: "Низкий", dateSet: "2026-03-10", deadline: "2026-04-15", daysOverdue: 0, status: "Отложено", transfers: 1 },
+  { id: 11, executor: "Федоров Ф.Ф.", block: "Финансы", task: "Провести анализ рентабельности по подразделениям", priority: "Средний", dateSet: "2026-03-16", deadline: "2026-03-30", daysOverdue: 0, status: "В работе", transfers: 0 },
+  { id: 12, executor: "Смирнова О.Л.", block: "Продажи", task: "Подготовить презентацию нового продукта для клиентов", priority: "Высокий", dateSet: "2026-03-14", deadline: "2026-03-26", daysOverdue: 0, status: "В работе", transfers: 1 },
+  { id: 13, executor: "Кузнецов В.Р.", block: "Доставка", task: "Организовать обучение водителей новым стандартам безопасности", priority: "Высокий", dateSet: "2026-03-11", deadline: "2026-03-24", daysOverdue: 0, status: "Просрочено", transfers: 0 },
+  { id: 14, executor: "Морозова А.С.", block: "HR", task: "Подготовить квартальный отчет по текучести кадров", priority: "Низкий", dateSet: "2026-03-19", deadline: "2026-04-08", daysOverdue: 0, status: "Новая", transfers: 0 },
+  { id: 15, executor: "Лебедев Д.Н.", block: "IT", task: "Обновить систему мониторинга серверов", priority: "Средний", dateSet: "2026-03-17", deadline: "2026-04-02", daysOverdue: 0, status: "В работе", transfers: 0 },
+  { id: 16, executor: "Соколова Н.В.", block: "Операции", task: "Провести аудит складских помещений", priority: "Средний", dateSet: "2026-03-13", deadline: "2026-03-27", daysOverdue: 0, status: "В работе", transfers: 1 },
+  { id: 17, executor: "Волков П.Т.", block: "Продажи", task: "Разработать стратегию входа на новый региональный рынок", priority: "Высокий", dateSet: "2026-03-09", deadline: "2026-03-29", daysOverdue: 0, status: "В работе", transfers: 0 },
 ];
 
 const priorityStyle: Record<Priority, React.CSSProperties> = {
@@ -68,9 +75,12 @@ export function Tasks() {
   const [filterPriority, setFilterPriority] = useState("Все");
   const [showModal, setShowModal] = useState(false);
   const [newTask, setNewTask] = useState<Omit<Task, "id">>(emptyTask);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [sortKey, setSortKey] = useState<keyof Task>("deadline");
   const [sortAsc, setSortAsc] = useState(true);
   const [expandedTaskIds, setExpandedTaskIds] = useState<Set<number>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const tasksPerPage = 10;
   
   // States for custom dropdowns
   const [openBlockDropdown, setOpenBlockDropdown] = useState(false);
@@ -107,11 +117,30 @@ export function Tasks() {
       return sortAsc ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
     });
 
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / tasksPerPage);
+  const paginatedTasks = filtered.slice((currentPage - 1) * tasksPerPage, currentPage * tasksPerPage);
+
+  // Reset page when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [search, filterBlock, filterStatus, filterPriority]);
+
   const addTask = () => {
     if (!newTask.task || !newTask.executor || !newTask.deadline) return;
     setTasks([...tasks, { ...newTask, id: Math.max(...tasks.map(t => t.id)) + 1 }]);
     setNewTask(emptyTask);
     setShowModal(false);
+  };
+
+  const openEditModal = (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const saveEditedTask = () => {
+    if (!editingTask || !editingTask.task || !editingTask.executor || !editingTask.deadline) return;
+    setTasks(tasks.map(t => t.id === editingTask.id ? editingTask : t));
+    setEditingTask(null);
   };
 
   const statusStyle: Record<Status, React.CSSProperties> = {
@@ -160,8 +189,8 @@ export function Tasks() {
               key={s.key}
               className="rounded-2xl p-4 text-center cursor-pointer transition-all"
               style={{
-                background: filterStatus === s.key ? (style.background as string).replace("0.1)", "0.15)") : isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
-                border: filterStatus === s.key ? style.border as string : `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
+                background: filterStatus === s.key ? (style.background as string).replace("0.1)", "0.2)") : isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
+                border: filterStatus === s.key ? style.border as string : `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
               }}
               onClick={() => setFilterStatus(filterStatus === s.key ? "Все" : s.key)}
             >
@@ -555,24 +584,36 @@ export function Tasks() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 && (
+              {paginatedTasks.length === 0 && (
                 <tr>
                   <td colSpan={9} className="text-center py-10 text-sm" style={{ color: isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)" }}>
                     Задачи не найдены
                   </td>
                 </tr>
               )}
-              {filtered.map(t => {
+              {paginatedTasks.map(t => {
                 const isExpanded = expandedTaskIds.has(t.id);
                 return (
                   <React.Fragment key={t.id}>
                     <tr
-                      className="transition-colors"
+                      className="transition-colors group"
                       style={{ borderBottom: isExpanded ? "none" : `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}
                       onMouseEnter={e => (e.currentTarget.style.background = "rgba(186,36,71,0.08)")}
                       onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                     >
-                      <td className="px-4 py-3 text-sm whitespace-nowrap" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}>{t.executor}</td>
+                      <td className="px-4 py-3 text-sm whitespace-nowrap" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => openEditModal(t)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}
+                            title="Редактировать задачу"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <span>{t.executor}</span>
+                        </div>
+                      </td>
                       <td className="px-4 py-3">
                         <span className="px-2 py-0.5 rounded-lg text-xs font-medium"
                           style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)", color: "#93c5fd" }}>
@@ -625,12 +666,58 @@ export function Tasks() {
           </table>
         </div>
         <div
-          className="px-4 py-2"
+          className="px-4 py-3 flex items-center justify-between"
           style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}` }}
         >
           <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.3)" }}>
-            Показано {filtered.length} из {tasks.length} задач
+            Показано {((currentPage - 1) * tasksPerPage) + 1}-{Math.min(currentPage * tasksPerPage, filtered.length)} из {filtered.length} задач
           </p>
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex gap-1">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 rounded-lg text-sm font-medium transition-all"
+                style={{
+                  background: currentPage === 1 ? "transparent" : isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+                  border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+                  color: currentPage === 1 ? (isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)") : (isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)"),
+                  cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                }}
+              >
+                ‹
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className="px-3 py-1 rounded-lg text-sm font-medium transition-all"
+                  style={{
+                    background: page === currentPage ? "rgba(26,141,122,0.15)" : isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+                    border: `1px solid ${page === currentPage ? "rgba(26,141,122,0.3)" : isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+                    color: page === currentPage ? "#1A8D7A" : isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
+                  }}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 rounded-lg text-sm font-medium transition-all"
+                style={{
+                  background: currentPage === totalPages ? "transparent" : isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+                  border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+                  color: currentPage === totalPages ? (isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)") : (isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)"),
+                  cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                }}
+              >
+                ›
+              </button>
+            </div>
+          )}
         </div>
       </GlassCard>
 
@@ -720,6 +807,116 @@ export function Tasks() {
                 }}
               >
                 Добавить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingTask && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)" }}>
+          <div
+            className="w-full max-w-lg rounded-2xl p-6"
+            style={{
+              background: isDark ? "#0f1419" : "#f8f9fa",
+              border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+              backdropFilter: "blur(24px)",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
+            }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="font-black" style={{ color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)" }}>Редактирование задачи</h3>
+                <p className="text-xs mt-0.5" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.35)" }}>Измените параметры задачи</p>
+              </div>
+              <button onClick={() => setEditingTask(null)} style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Задача *</label>
+                <textarea
+                  value={editingTask.task}
+                  onChange={e => setEditingTask({ ...editingTask, task: e.target.value })}
+                  style={{ ...inputStyle, width: "100%", resize: "none" }}
+                  rows={2}
+                  placeholder="Описание задачи..."
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Исполнитель *</label>
+                  <input
+                    value={editingTask.executor}
+                    onChange={e => setEditingTask({ ...editingTask, executor: e.target.value })}
+                    style={{ ...inputStyle, width: "100%" }}
+                    placeholder="ФИО"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Блок</label>
+                  <select value={editingTask.block} onChange={e => setEditingTask({ ...editingTask, block: e.target.value as Block })} style={{ ...inputStyle, width: "100%" }}>
+                    {blocks.map(b => <option key={b}>{b}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Приоритет</label>
+                  <select value={editingTask.priority} onChange={e => setEditingTask({ ...editingTask, priority: e.target.value as Priority })} style={{ ...inputStyle, width: "100%" }}>
+                    {priorities.map(p => <option key={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Статус</label>
+                  <select value={editingTask.status} onChange={e => setEditingTask({ ...editingTask, status: e.target.value as Status })} style={{ ...inputStyle, width: "100%" }}>
+                    {statuses.map(s => <option key={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Срок выполнения *</label>
+                  <input
+                    type="date"
+                    value={editingTask.deadline}
+                    onChange={e => setEditingTask({ ...editingTask, deadline: e.target.value })}
+                    style={{ ...inputStyle, width: "100%", colorScheme: isDark ? "dark" : "light" }}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Переносов</label>
+                  <input
+                    type="number"
+                    value={editingTask.transfers}
+                    onChange={e => setEditingTask({ ...editingTask, transfers: parseInt(e.target.value) || 0 })}
+                    style={{ ...inputStyle, width: "100%" }}
+                    min="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setEditingTask(null)}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+                style={{ background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)", border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`, color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}
+              >
+                Отмена
+              </button>
+              <button
+                onClick={saveEditedTask}
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all"
+                style={{
+                  background: "linear-gradient(135deg, #1A8D7A, #156b5f)",
+                  boxShadow: "0 0 20px rgba(26,141,122,0.4)",
+                }}
+              >
+                Сохранить
               </button>
             </div>
           </div>

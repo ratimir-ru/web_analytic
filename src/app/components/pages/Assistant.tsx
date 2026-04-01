@@ -45,11 +45,11 @@ export function Assistant() {
   const isDark = theme === "dark";
 
   const formatMessage = (text: string) => {
-    return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
+    return text.split(/(\\*\\*[^*]+\\*\\*)/g).map((part, i) => {
       if (part.startsWith("**") && part.endsWith("**")) {
         return <strong key={i} style={{ color: isDark ? "rgba(255,255,255,0.95)" : "rgba(0,0,0,0.95)" }}>{part.slice(2, -2)}</strong>;
       }
-      return part.split("\n").map((line, j, arr) => (
+      return part.split("\\n").map((line, j, arr) => (
         <span key={`${i}-${j}`}>{line}{j < arr.length - 1 ? <br /> : null}</span>
       ));
     });
@@ -58,12 +58,13 @@ export function Assistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1, role: "assistant", time: "09:00",
-      text: "Привет! Я AI-ассистент, подключённый к данным вашего дашборда.\n\nЗадайте вопрос на естественном языке — отвечу с цифрами, трендами и конкретными рекомендациями.",
+      text: "Привет! Я AI-ассистент, подключённый к данным вашего дашборда.\\n\\nЗадайте вопрос на естественном языке — отвечу с цифрами, трендами и конкретными рекомендациями.",
     },
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [copied, setCopied] = useState<number | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
@@ -93,17 +94,22 @@ export function Assistant() {
 
   return (
     <div className="h-full flex flex-col" style={{ maxHeight: "calc(100vh - 7rem)" }}>
-      <SectionHeader
-        title="AI Ассистент"
-        description="Задавайте вопросы о показателях дашборда на естественном языке. Ассистент знает текущие данные по финансам, продажам, доставке и задачам."
-      />
+      {!isExpanded && (
+        <SectionHeader
+          title="AI Ассистент"
+          description="Задавайте вопросы о показателях дашборда на естественном языке. Ассистент знает текущие данные по финансам, продажам, доставке и задачам."
+        />
+      )}
 
       <div
+        onClick={() => !isExpanded && setIsExpanded(true)}
         className="flex-1 flex flex-col rounded-2xl overflow-hidden min-h-0"
         style={{
           background: isDark ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.7)",
           border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`,
           backdropFilter: isDark ? "blur(20px)" : "none",
+          cursor: isExpanded ? "default" : "pointer",
+          transition: "all 0.3s ease",
         }}
       >
         {/* Header */}

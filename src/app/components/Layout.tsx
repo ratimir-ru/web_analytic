@@ -22,6 +22,9 @@ import {
   Menu,
   X,
   MessageCircle,
+  Binoculars,
+  Home,
+  Store,
 } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { FeedbackPopup } from "./FeedbackWidget";
@@ -32,8 +35,16 @@ interface AuthProps {
   userName?: string;
 }
 
-const navItems = [
-  { to: "/dashboard", label: "Главная", icon: LayoutDashboard },
+interface NavItem {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>;
+  disabled?: boolean;
+}
+
+const navItems: NavItem[] = [
+  { to: "/home", label: "Главная", icon: Home },
+  { to: "/overview", label: "Обзор", icon: Binoculars },
   { to: "/finance", label: "Финансы", icon: TrendingUp },
   { to: "/sales", label: "Продажи", icon: ShoppingCart },
   { to: "/delivery", label: "Логистика", icon: Truck },
@@ -42,6 +53,7 @@ const navItems = [
   { to: "/assistant", label: "AI Ассистент", icon: Brain },
   { to: "/reports", label: "Отчёты", icon: FileText },
   { to: "/operative-report", label: "Оперативный отчёт", icon: BarChart2 },
+  { to: "/frs", label: "ФРС", icon: Store, disabled: true },
 ];
 
 const separatorAfter = "/tasks";
@@ -123,7 +135,7 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
 
   const bgBase = isDark
     ? "#0f1419"
-    : "#e8eaed";
+    : "#f8f9fa";
 
   const sidebarBg = isDark
     ? "rgba(255,255,255,0.025)"
@@ -217,72 +229,124 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
 
         {/* Nav */}
         <nav className="flex-1 py-3 px-2 overflow-y-auto space-y-0.5">
-          {navItems.map((item) => (
-            <React.Fragment key={item.to}>
-              <NavLink
-                to={item.to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-2.5 py-2.5 rounded-xl transition-all duration-200 group relative ${
-                    isActive ? "" : "hover:opacity-90"
-                  }`
-                }
-                style={({ isActive }) =>
-                  isActive ? navActiveStyle : navInactiveStyle
-                }
-                title={collapsed ? item.label : undefined}
-              >
-                {({ isActive }) => (
-                  <>
-                    {isActive && (
-                      <div
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full"
-                        style={{ background: "linear-gradient(180deg, #ba2447, #8B0000)" }}
+          {navItems.map((item) => {
+            if (item.disabled) {
+              // Disabled item - не кликабельный
+              return (
+                <React.Fragment key={item.to}>
+                  <div
+                    className="flex items-center px-2.5 rounded-xl cursor-not-allowed"
+                    style={{
+                      background: "transparent",
+                      border: "1px solid transparent",
+                      opacity: 0.4,
+                      minHeight: 40,
+                    }}
+                    title={collapsed ? item.label : undefined}
+                  >
+                    <div className="flex items-center justify-center" style={{ width: 17, height: 40 }}>
+                      <item.icon
+                        size={17}
+                        className="flex-shrink-0"
+                        style={{
+                          color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)",
+                        }}
                       />
-                    )}
-                    <item.icon
-                      size={17}
-                      className="flex-shrink-0"
-                      style={{
-                        color: isActive
-                          ? isDark ? "#ff6b6b" : "#ba2447"
-                          : isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)",
-                      }}
-                    />
+                    </div>
                     {!collapsed && (
                       <span
-                        className="text-sm font-medium truncate"
+                        className="text-sm font-medium truncate ml-3"
                         style={{
-                          color: isActive
-                            ? isDark ? "#ffcece" : "#ba2447"
-                            : isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)",
+                          color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)",
                         }}
                       >
                         {item.label}
                       </span>
                     )}
-                  </>
+                  </div>
+                  {item.to === separatorAfter && (
+                    <div
+                      className="my-2 mx-2"
+                      style={{
+                        height: 1,
+                        background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)",
+                      }}
+                    />
+                  )}
+                </React.Fragment>
+              );
+            }
+            
+            return (
+              <React.Fragment key={item.to}>
+                <NavLink
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `flex items-center px-2.5 rounded-xl transition-all duration-200 group relative ${
+                      isActive ? "" : "hover:opacity-90"
+                    }`
+                  }
+                  style={({ isActive }) => ({
+                    ...(isActive ? navActiveStyle : navInactiveStyle),
+                    minHeight: 40,
+                  })}
+                  title={collapsed ? item.label : undefined}
+                >
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <div
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full"
+                          style={{ background: "linear-gradient(180deg, #ba2447, #8B0000)" }}
+                        />
+                      )}
+                      <div className="flex items-center justify-center" style={{ width: 17, height: 40 }}>
+                        <item.icon
+                          size={17}
+                          className="flex-shrink-0"
+                          style={{
+                            color: isActive
+                              ? isDark ? "#ff6b6b" : "#ba2447"
+                              : isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)",
+                          }}
+                        />
+                      </div>
+                      {!collapsed && (
+                        <span
+                          className="text-sm font-medium truncate ml-3"
+                          style={{
+                            color: isActive
+                              ? isDark ? "#ffcece" : "#ba2447"
+                              : isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)",
+                          }}
+                        >
+                          {item.label}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </NavLink>
+                {item.to === separatorAfter && (
+                  <div
+                    className="my-2 mx-2"
+                    style={{
+                      height: 1,
+                      background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)",
+                    }}
+                  />
                 )}
-              </NavLink>
-              {item.to === separatorAfter && (
-                <div
-                  className="my-2 mx-2"
-                  style={{
-                    height: 1,
-                    background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)",
-                  }}
-                />
-              )}
-            </React.Fragment>
-          ))}
+              </React.Fragment>
+            );
+          })}
         </nav>
 
         {/* Bottom: Feedback button */}
         <div
-          className="p-2 mx-2 mb-3"
+          className="px-2 mb-3"
         >
           <button
             onClick={() => setFeedbackOpen(!feedbackOpen)}
-            className="flex items-center gap-3 px-2.5 py-2.5 rounded-xl transition-all duration-200 w-full"
+            className="flex items-center px-2.5 rounded-xl transition-all duration-200 w-full"
             style={{
               background: feedbackOpen
                 ? isDark ? "rgba(186,36,71,0.12)" : "rgba(186,36,71,0.08)"
@@ -291,21 +355,24 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
                 ? isDark ? "1px solid rgba(186,36,71,0.2)" : "1px solid rgba(186,36,71,0.15)"
                 : "1px solid transparent",
               color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)",
+              minHeight: 40,
             }}
             title={collapsed ? "Обратная связь" : undefined}
           >
-            <MessageCircle
-              size={17}
-              className="flex-shrink-0"
-              style={{
-                color: feedbackOpen
-                  ? "#ba2447"
-                  : isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)",
-              }}
-            />
+            <div className="flex items-center justify-center" style={{ width: 17, height: 40 }}>
+              <MessageCircle
+                size={17}
+                className="flex-shrink-0"
+                style={{
+                  color: feedbackOpen
+                    ? "#ba2447"
+                    : isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)",
+                }}
+              />
+            </div>
             {!collapsed && (
               <span
-                className="text-sm font-medium truncate"
+                className="text-sm font-medium truncate ml-3"
                 style={{
                   color: feedbackOpen
                     ? isDark ? "#ffcece" : "#ba2447"
@@ -389,7 +456,7 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
                   <div
                     className="absolute top-full mt-1 left-0 right-0 rounded-xl overflow-hidden z-50"
                     style={{
-                      background: isDark ? "rgba(10,15,20,0.9)" : "rgba(255,255,255,0.9)",
+                      background: isDark ? "rgba(10,15,20,0.92)" : "rgba(250,250,252,0.92)",
                       border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
                       backdropFilter: "blur(80px)",
                       WebkitBackdropFilter: "blur(80px)",
@@ -475,11 +542,13 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
               <div
                 className="absolute right-0 top-full mt-2 w-80 rounded-2xl overflow-hidden"
                 style={{
-                  background: isDark ? "rgba(15,20,25,0.95)" : "rgba(255,255,255,0.95)",
-                  backdropFilter: "blur(30px)",
-                  WebkitBackdropFilter: "blur(30px)",
+                  background: isDark ? "rgba(15,20,25,0.92)" : "rgba(250,250,252,0.92)",
+                  backdropFilter: "blur(80px)",
+                  WebkitBackdropFilter: "blur(80px)",
                   border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.1)",
-                  boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+                  boxShadow: isDark 
+                    ? "0 20px 60px rgba(0,0,0,0.5)" 
+                    : "0 20px 60px rgba(0,0,0,0.2)",
                   zIndex: 9999,
                 }}
               >

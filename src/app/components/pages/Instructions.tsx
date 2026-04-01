@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SectionHeader, GlassCard } from "../StatCard";
+import { SectionHeader, GlassCard, GlassCardInstructions} from "../StatCard";
 import { useTheme } from "../ThemeProvider";
 import { ExternalLink, Download, Search, BookOpen, FileText, Video, Play } from "lucide-react";
 
@@ -72,7 +72,7 @@ export function Instructions() {
           const count = instructions.filter(i => i.type === t).length;
           const tc = typeConfig[t];
           return (
-            <GlassCard key={t} className="p-4 flex items-center gap-4 my-4">
+            <GlassCardInstructions key={t} className="p-4 flex items-center gap-4 my-4">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: `rgba(${tc.color === "#93c5fd" ? "59,130,246" : tc.color === "#f87171" ? "239,68,68" : "168,85,247"},0.15)`, color: tc.color }}
@@ -83,13 +83,13 @@ export function Instructions() {
                 <p className="text-xl font-black" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>{count}</p>
                 <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.4)" }}>{tc.label}-{t === "web" ? "страниц" : t === "pdf" ? "документов" : "уроков"}</p>
               </div>
-            </GlassCard>
+            </GlassCardInstructions>
           );
         })}
       </div>
 
       {/* Search + filter */}
-      <div className="flex flex-wrap gap-3 mb-5">
+      <div className="flex flex-wrap gap-3 mb-3">
         <div className="relative flex-1 min-w-64">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }} />
           <input
@@ -110,7 +110,7 @@ export function Instructions() {
           />
         </div>
         <div
-          className="flex gap-1 p-1 rounded-xl flex-wrap"
+          className="flex gap-1 p-0 rounded-xl flex-wrap"
           style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}
         >
           {categories.map(cat => (
@@ -142,9 +142,9 @@ export function Instructions() {
           const tc = typeConfig[ins.type];
           const cs = catStyle[ins.category] || {};
           return (
-            <GlassCard
+            <GlassCardInstructions
               key={ins.id}
-              className="p-5 my-4 transition-all duration-200"
+              className="p-5 my-2 transition-all duration-200"
               style={{}}>
               {/* Top row */}
               <div className="flex items-start gap-4">
@@ -208,7 +208,7 @@ export function Instructions() {
                   )}
                 </div>
               </div>
-            </GlassCard>
+            </GlassCardInstructions>
           );
         })}
       </div>

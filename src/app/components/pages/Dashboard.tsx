@@ -222,7 +222,7 @@ function Dropdown<T extends string>({
   );
 }
 
-// ── AI Placeholder ────────────────────────────────────────────────────────────
+// ── AI Placeholder ─────────────────────�������──────────────────────────────────────
 function AIPlaceholder({ lines = 3, linkLabel }: { lines?: number; linkLabel?: string }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -230,8 +230,8 @@ function AIPlaceholder({ lines = 3, linkLabel }: { lines?: number; linkLabel?: s
     <GlassCard 
       className="p-4 my-4"
       style={{
-        background: "rgba(59,130,246,0.04)",
-        border: "1px solid rgba(59,130,246,0.12)",
+        background: isDark ? "rgba(59,130,246,0.08)" : "rgba(59,130,246,0.15)",
+        border: isDark ? "1px solid rgba(59,130,246,0.2)" : "1px solid rgba(59,130,246,0.3)",
       }}
     >
       <div className="flex gap-3">
@@ -239,7 +239,7 @@ function AIPlaceholder({ lines = 3, linkLabel }: { lines?: number; linkLabel?: s
           <Bot size={16} style={{ color: "#60a5fa" }} />
         </div>
         <div className="flex-1">
-          <p className="text-xs font-semibold mb-2" style={{ color: "#93c5fd" }}>
+          <p className="text-xs font-semibold mb-2" style={{ color: "#60a5fa" }}>
             ИИ-аналитик
           </p>
           <div className="space-y-2">
@@ -420,7 +420,7 @@ function TaskBlock() {
   );
 }
 
-// ── Bottom row KPI Block ─────────────────────────────────────────────────────
+// �����─ Bottom row KPI Block ─────────────────────────────────────────────────────
 function KpiBlockBottom({ title, fact, planTarget, accentColor, icon }: {
   title: string; fact: string; planTarget: string; accentColor: string; icon: React.ReactNode;
 }) {
@@ -471,8 +471,9 @@ function VolumeChartTooltip({ active, payload, label }: any) {
     <div
       className="rounded-xl p-3 text-xs"
       style={{
-        background: isDark ? "rgba(15,20,25,0.98)" : "rgba(255,255,255,0.98)",
-        backdropFilter: "blur(20px)",
+        background: isDark ? "rgba(15,20,25,0.92)" : "rgba(250,250,252,0.92)",
+        backdropFilter: "blur(80px)",
+        WebkitBackdropFilter: "blur(80px)",
         border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
         boxShadow: isDark ? "0 12px 40px rgba(0,0,0,0.5)" : "0 12px 40px rgba(0,0,0,0.2)",
         minWidth: "200px",
@@ -528,8 +529,9 @@ function StackedVolumeTooltip({ active, payload, label, coordinate }: any) {
     <div
       className="rounded-xl p-3 text-xs"
       style={{
-        background: isDark ? "rgba(15,20,25,0.95)" : "rgba(255,255,255,0.95)",
-        backdropFilter: "blur(20px)",
+        background: isDark ? "rgba(15,20,25,0.92)" : "rgba(250,250,252,0.92)",
+        backdropFilter: "blur(80px)",
+        WebkitBackdropFilter: "blur(80px)",
         border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
         color: isDark ? "white" : "black",
         boxShadow: isDark 
@@ -559,7 +561,7 @@ function StackedVolumeTooltip({ active, payload, label, coordinate }: any) {
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────────
-export function Dashboard() {
+export function Overview() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const cp = chartProps(isDark);
@@ -970,12 +972,12 @@ export function Dashboard() {
               <AreaChart data={chartData} margin={{ right: 10 }}>
                 <defs>
                   <linearGradient id="grad-dash-plan" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={chartColor} stopOpacity={0.08} />
-                    <stop offset="95%" stopColor={chartColor} stopOpacity={0} />
+                    <stop key="stop-plan-1" offset="5%" stopColor={chartColor} stopOpacity={0.08} />
+                    <stop key="stop-plan-2" offset="95%" stopColor={chartColor} stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="grad-dash-fact" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={chartColor} stopOpacity={0.25} />
-                    <stop offset="95%" stopColor={chartColor} stopOpacity={0} />
+                    <stop key="stop-fact-1" offset="5%" stopColor={chartColor} stopOpacity={0.25} />
+                    <stop key="stop-fact-2" offset="95%" stopColor={chartColor} stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid {...cp.cartesianGrid} />
@@ -1239,7 +1241,7 @@ export function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             { label: "Power BI — Финансы", desc: "Дашборд финансовых показателей", color: "#f59e0b", href: "#" },
-            { label: "Power BI — Продажи", desc: "Анализ продаж по Регионам и блокам", color: "#3b82f6", href: "#" },
+            { label: "Power BI — Продажи", desc: "Анализ продаж по регионам и блокам", color: "#3b82f6", href: "#" },
             { label: "Power BI — Логистика", desc: "Утилизация ТС и маршруты", color: "#10b981", href: "#" },
           ].map(link => (
             <a

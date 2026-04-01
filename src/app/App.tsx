@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import { ThemeProvider } from "./components/ThemeProvider";
 import { Layout } from "./components/Layout";
 import { Login } from "./components/pages/Login";
-import { Dashboard } from "./components/pages/Dashboard";
+import { Home } from "./components/pages/Home";
+import { Overview } from "./components/pages/Dashboard";
 import { Finance } from "./components/pages/Finance";
 import { Sales } from "./components/pages/Sales";
 import { Delivery } from "./components/pages/Delivery";
@@ -33,24 +35,27 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route
-          element={<Layout onLogout={handleLogout} userName={userName} />}
-        >
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/finance" element={<Finance />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/delivery" element={<Delivery />} />
-          <Route path="/tasks" element={<Tasks />} />
-          <Route path="/instructions" element={<Instructions />} />
-          <Route path="/assistant" element={<Assistant />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/operative-report" element={<OperativeReport />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Route>
-      </Routes>
+      <ThemeProvider>
+        <Routes>
+          <Route
+            element={<Layout onLogout={handleLogout} userName={userName} />}
+          >
+            <Route index element={<Navigate to="/home" replace />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/overview" element={<Overview />} />
+            <Route path="/finance" element={<Finance />} />
+            <Route path="/sales" element={<Sales />} />
+            <Route path="/delivery" element={<Delivery />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/instructions" element={<Instructions />} />
+            <Route path="/assistant" element={<Assistant />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/operative-report" element={<OperativeReport />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
+          </Route>
+        </Routes>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

@@ -1,3 +1,5 @@
+import { useTheme } from "../app/components/ThemeProvider";
+
 interface AlertBlockProps {
   variant: 'green' | 'yellow' | 'red';
   title: string;
@@ -6,24 +8,24 @@ interface AlertBlockProps {
 
 const variantStyles = {
   green: {
-    bg: 'rgba(16,185,129,0.04)',
-    border: 'rgba(16,185,129,0.15)',
-    dotBg: '#10b981',
-    dotShadow: '#10b981',
-    textColor: '#10b981',
+    bg: 'rgba(26,141,122,0.12)',
+    border: 'rgba(26,141,122,0.25)',
+    dotBg: '#1A8D7A',
+    dotShadow: '#1A8D7A',
+    textColor: '#1A8D7A',
     descColor: 'rgba(255,255,255,0.55)',
   },
   yellow: {
-    bg: 'rgba(245,158,11,0.04)',
-    border: 'rgba(245,158,11,0.15)',
-    dotBg: '#fcd34d',
-    dotShadow: '#fcd34d',
-    textColor: '#fcd34d',
+    bg: 'rgba(245,158,11,0.12)',
+    border: 'rgba(245,158,11,0.25)',
+    dotBg: '#fbbf24',
+    dotShadow: '#fbbf24',
+    textColor: '#fbbf24',
     descColor: 'rgba(255,245,212,0.55)',
   },
   red: {
-    bg: 'rgba(186,36,71,0.04)',
-    border: 'rgba(186,36,71,0.15)',
+    bg: 'rgba(186,36,71,0.12)',
+    border: 'rgba(186,36,71,0.25)',
     dotBg: '#ba2447',
     dotShadow: '#ba2447',
     textColor: '#ba2447',
@@ -32,7 +34,12 @@ const variantStyles = {
 };
 
 export default function AlertBlock({ variant, title, description }: AlertBlockProps) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const styles = variantStyles[variant];
+  
+  // Яркий и темный желтый цвет для белой темы
+  const yellowLightTheme = variant === 'yellow' && !isDark ? '#d97706' : styles.textColor;
   
   return (
     <div 
@@ -59,7 +66,7 @@ export default function AlertBlock({ variant, title, description }: AlertBlockPr
         <div className="relative shrink-0 w-full" data-name="Paragraph">
           <p 
             className="font-semibold leading-[18px] not-italic whitespace-nowrap text-[16px] p-[0px]" 
-            style={{ color: styles.textColor }}
+            style={{ color: yellowLightTheme }}
           >
             {title}
           </p>
@@ -67,7 +74,7 @@ export default function AlertBlock({ variant, title, description }: AlertBlockPr
         <div className="relative shrink-0 w-full" data-name="Paragraph">
           <p 
             className="font-normal leading-[15px] not-italic px-[0px] py-[11px] text-[12px]" 
-            style={{ color: styles.descColor }}
+            style={{ color: isDark ? styles.descColor : "rgba(0,0,0,0.7)" }}
           >
             {description}
           </p>

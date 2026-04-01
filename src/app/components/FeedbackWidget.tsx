@@ -43,9 +43,10 @@ export function FeedbackPopup({ isOpen, onClose }: FeedbackPopupProps) {
   return (
     <>
       <div
-        className="fixed bottom-16 w-80 rounded-2xl z-[70]"
+        className="fixed w-80 rounded-2xl z-[70]"
         style={{
           right: 24,
+          bottom: 24,
           background: panelBg,
           border: panelBorder,
           backdropFilter: isDark ? "blur(24px)" : "none",

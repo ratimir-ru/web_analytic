@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Camera, Mail, Phone, Building2, Briefcase, ChevronUp, ChevronDown, X } from "lucide-react";
+import { Camera, Mail, Phone, Building2, Briefcase, ChevronUp, ChevronDown, X, Pencil } from "lucide-react";
 import { GlassCard, SectionHeader } from "../StatCard";
 import { useTheme } from "../ThemeProvider";
 
@@ -41,10 +41,16 @@ const statusStyle: Record<TaskStatus, React.CSSProperties> = {
   "Новая": { background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.25)", color: "#c084fc" },
 };
 
+const blocks: Block[] = ["Финансы", "Продажи", "Доставка", "HR", "Операции", "IT"];
+const priorities: Priority[] = ["Высокий", "Средний", "Низкий"];
+const statuses: TaskStatus[] = ["Новая", "В работе", "Выполнено", "Просрочено", "Отложено"];
+
 export function Profile() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
+  const [tasks, setTasks] = useState<Task[]>(myTasks);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [sortKey, setSortKey] = useState<keyof Task>("deadline");
   const [sortAsc, setSortAsc] = useState(true);
   const profile = {
@@ -61,7 +67,7 @@ export function Profile() {
     else { setSortKey(key); setSortAsc(true); }
   };
 
-  const sorted = [...myTasks].sort((a, b) => {
+  const sorted = [...tasks].sort((a, b) => {
     const av = a[sortKey], bv = b[sortKey];
     if (typeof av === "number" && typeof bv === "number") return sortAsc ? av - bv : bv - av;
     return sortAsc ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
@@ -73,6 +79,28 @@ export function Profile() {
       <ChevronDown size={9} style={{ color: sortKey === k && !sortAsc ? "#ff6b6b" : "rgba(255,255,255,0.3)" }} />
     </span>
   );
+
+  const openEditModal = (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const saveEditedTask = () => {
+    if (!editingTask || !editingTask.task || !editingTask.executor || !editingTask.deadline) return;
+    setTasks(tasks.map(t => t.id === editingTask.id ? editingTask : t));
+    setEditingTask(null);
+  };
+
+  const inputStyle: React.CSSProperties = {
+    background: isDark ? "rgba(10,15,20,0.7)" : "rgba(255,255,255,0.9)",
+    border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
+    borderRadius: 10,
+    color: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
+    fontSize: 13,
+    padding: "8px 12px",
+    outline: "none",
+    backdropFilter: "blur(80px)",
+    WebkitBackdropFilter: "blur(80px)",
+  };
 
   const fieldStyle: React.CSSProperties = {
     background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
@@ -172,7 +200,7 @@ export function Profile() {
               style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)" }}
             >
               <p className="text-xl font-black" style={{ color: "#93c5fd" }}>
-                {myTasks.filter(t => t.status === "В работе").length}
+                {tasks.filter(t => t.status === "В работе").length}
               </p>
               <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>В работе</p>
             </div>
@@ -181,7 +209,7 @@ export function Profile() {
               style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)" }}
             >
               <p className="text-xl font-black" style={{ color: "#f87171" }}>
-                {myTasks.filter(t => t.status === "Просрочено").length}
+                {tasks.filter(t => t.status === "Просрочено").length}
               </p>
               <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>Просрочено</p>
             </div>
@@ -274,15 +302,26 @@ export function Profile() {
               {sorted.map(t => (
                 <tr
                   key={t.id}
+                  className="group"
                   style={{ borderBottom: isDark ? "1px solid rgba(255,255,255,0.04)" : "1px solid rgba(0,0,0,0.04)" }}
                   onMouseEnter={e => (e.currentTarget.style.background = "rgba(186,36,71,0.08)")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
                   <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded-lg text-xs font-medium"
-                      style={{ background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.2)", color: "#ff6b6b" }}>
-                      {t.block}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => openEditModal(t)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}
+                        title="Редактировать задачу"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <span className="px-2 py-0.5 rounded-lg text-xs font-medium"
+                        style={{ background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.2)", color: "#ff6b6b" }}>
+                        {t.block}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-sm max-w-xs" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.75)" }}>
                     <span className="line-clamp-2">{t.task}</span>
@@ -326,6 +365,116 @@ export function Profile() {
           </p>
         </div>
       </GlassCard>
+
+      {/* Edit Modal */}
+      {editingTask && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)" }}>
+          <div
+            className="w-full max-w-lg rounded-2xl p-6"
+            style={{
+              background: isDark ? "#0f1419" : "#f8f9fa",
+              border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+              backdropFilter: "blur(24px)",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
+            }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="font-black" style={{ color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)" }}>Редактирование задачи</h3>
+                <p className="text-xs mt-0.5" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.35)" }}>Измените параметры задачи</p>
+              </div>
+              <button onClick={() => setEditingTask(null)} style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Задача *</label>
+                <textarea
+                  value={editingTask.task}
+                  onChange={e => setEditingTask({ ...editingTask, task: e.target.value })}
+                  style={{ ...inputStyle, width: "100%", resize: "none" }}
+                  rows={2}
+                  placeholder="Описание задачи..."
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Блок</label>
+                  <select value={editingTask.block} onChange={e => setEditingTask({ ...editingTask, block: e.target.value as Block })} style={{ ...inputStyle, width: "100%" }}>
+                    {blocks.map(b => <option key={b}>{b}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Приоритет</label>
+                  <select value={editingTask.priority} onChange={e => setEditingTask({ ...editingTask, priority: e.target.value as Priority })} style={{ ...inputStyle, width: "100%" }}>
+                    {priorities.map(p => <option key={p}>{p}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Статус</label>
+                  <select value={editingTask.status} onChange={e => setEditingTask({ ...editingTask, status: e.target.value as TaskStatus })} style={{ ...inputStyle, width: "100%" }}>
+                    {statuses.map(s => <option key={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Срок выполнения *</label>
+                  <input
+                    type="date"
+                    value={editingTask.deadline}
+                    onChange={e => setEditingTask({ ...editingTask, deadline: e.target.value })}
+                    style={{ ...inputStyle, width: "100%", colorScheme: isDark ? "dark" : "light" }}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Дата постановки</label>
+                  <input
+                    type="date"
+                    value={editingTask.dateSet}
+                    onChange={e => setEditingTask({ ...editingTask, dateSet: e.target.value })}
+                    style={{ ...inputStyle, width: "100%", colorScheme: isDark ? "dark" : "light" }}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs mb-1.5 block" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>Переносов</label>
+                  <input
+                    type="number"
+                    value={editingTask.transfers}
+                    onChange={e => setEditingTask({ ...editingTask, transfers: parseInt(e.target.value) || 0 })}
+                    style={{ ...inputStyle, width: "100%" }}
+                    min="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setEditingTask(null)}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+                style={{ background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)", border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`, color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}
+              >
+                Отмена
+              </button>
+              <button
+                onClick={saveEditedTask}
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all"
+                style={{
+                  background: "linear-gradient(135deg, #1A8D7A, #156b5f)",
+                  boxShadow: "0 0 20px rgba(26,141,122,0.4)",
+                }}
+              >
+                Сохранить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

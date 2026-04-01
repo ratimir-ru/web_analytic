@@ -12,13 +12,19 @@ type Tab = "custom" | "auto";
 
 type ReportType = "" | "plan-fact" | "lfl";
 type Period = "" | "Январь" | "Февраль" | "Март" | "Апрель" | "Май" | "Июнь" | "Июль" | "Август" | "Сентябрь" | "Октябрь" | "Ноябрь" | "Декабрь" | "Q1 2026" | "Q2 2026" | "Q3 2026" | "Q4 2026" | "2025" | "2026";
-type Division = 
+type ProductGroup = 
   | "ДЕЛИКАТЕСЫ" | "ЗАМОРОЖЕННЫЕ ПОЛУФАБРИКАТЫ" | "КОЛБАСНЫЕ ИЗДЕЛИЯ" | "Мясной проект Ратимир" | "ОХЛАЖДЕННЫЕ ПОЛУФАБРИКАТЫ"
   | "Птица замороженная" | "Птица охлажденная"
   | "Проект Птица, Мясо" | "Проект СТ" | "Проект СТ, МП ПЛЮС"
   | "МАП"
   | "Мясо" | "Прочие";
-type ProductGroup = "Колбасные изделия" | "Заморозка" | "Деликатесы" | "Охлажденные ПФ" | "Мясной проект";
+type Subdivision = 
+  | "Восточная Сибирь Улан-Удэ" | "Восточная Сибирь Чита" | "Камчатка" | "Магадан" | "Сахалин"
+  | "ОБП Кавалерово" | "ОБП Благовещенск" | "ОБП Комсомольск" | "ОБП Находка" | "ОБП Спасск" | "ОБП Хабаровск" | "Владивосток"
+  | "Светофор"
+  | "X5 Retail" | "Близкий" | "Реми" | "Самбери"
+  | "Фирменная розничная сеть";
+type Territory = "Владивосток" | "Хабаровск" | "Находка" | "Комсомольск" | "Благовещенск" | "Кавалерово" | "Спасск";
 
 interface AutoReport {
   id: number;
@@ -39,14 +45,21 @@ const autoReports: AutoReport[] = [
 ];
 
 const PERIODS: Period[] = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь", "Q1 2026", "Q2 2026", "Q3 2026", "Q4 2026", "2025", "2026"];
-const DIVISIONS: Division[] = [
+const PRODUCT_GROUPS: ProductGroup[] = [
   "ДЕЛИКАТЕСЫ", "ЗАМОРОЖЕННЫЕ ПОЛУФАБРИКАТЫ", "КОЛБАСНЫЕ ИЗДЕЛИЯ", "Мясной проект Ратимир", "ОХЛАЖДЕННЫЕ ПОЛУФАБРИКАТЫ",
   "Птица замороженная", "Птица охлажденная",
   "Проект Птица, Мясо", "Проект СТ", "Проект СТ, МП ПЛЮС",
   "МАП",
   "Мясо", "Прочие"
 ];
-const PRODUCT_GROUPS: ProductGroup[] = ["Колбасные изделия", "Заморозка", "Деликатесы", "Охлажденные ПФ", "Мясной проект"];
+const SUBDIVISIONS: Subdivision[] = [
+  "Восточная Сибирь Улан-Удэ", "Восточная Сибирь Чита", "Камчатка", "Магадан", "Сахалин",
+  "ОБП Кавалерово", "ОБП Благовещенск", "ОБП Комсомольск", "ОБП Находка", "ОБП Спасск", "ОБП Хабаровск", "Владивосток",
+  "Светофор",
+  "X5 Retail", "Близкий", "Реми", "Самбери",
+  "Фирменная розничная сеть"
+];
+const TERRITORIES: Territory[] = ["Владивосток", "Хабаровск", "Находка", "Комсомольск", "Благовещенск", "Кавалерово", "Спасск"];
 
 const REPORT_TYPE_LABELS: Record<string, string> = {
   "plan-fact": "План-факт анализ",
@@ -61,8 +74,9 @@ export function Reports() {
   const [step, setStep] = useState(1);
   const [reportType, setReportType] = useState<ReportType>("");
   const [period, setPeriod] = useState<Period>("");
-  const [divisions, setDivisions] = useState<Division[]>([]);
   const [productGroups, setProductGroups] = useState<ProductGroup[]>([]);
+  const [subdivisions, setSubdivisions] = useState<Subdivision[]>([]);
+  const [territories, setTerritories] = useState<Territory[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
@@ -96,15 +110,16 @@ export function Reports() {
   };
 
   const handleNext = () => {
-    if (step < 4) setStep(step + 1);
+    if (step < 5) setStep(step + 1);
     else setShowPreview(true);
   };
 
   const canProceed = () => {
     if (step === 1) return !!reportType;
     if (step === 2) return !!period || (startDate && endDate);
-    if (step === 3) return divisions.length > 0;
-    if (step === 4) return productGroups.length > 0;
+    if (step === 3) return productGroups.length > 0;
+    if (step === 4) return subdivisions.length > 0;
+    if (step === 5) return territories.length > 0;
     return true;
   };
 
@@ -112,8 +127,9 @@ export function Reports() {
     setStep(1);
     setReportType("");
     setPeriod("");
-    setDivisions([]);
     setProductGroups([]);
+    setSubdivisions([]);
+    setTerritories([]);
     setShowPreview(false);
     setStartDate(undefined);
     setEndDate(undefined);
@@ -330,7 +346,7 @@ export function Reports() {
             <GlassCard className="p-6 my-4 transition-all duration-300">
               {/* Steps indicator */}
               <div className="flex items-center gap-2 mb-8">
-                {[1, 2, 3, 4].map(s => (
+                {[1, 2, 3, 4, 5].map(s => (
                   <React.Fragment key={s}>
                     <div
                       className="flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold transition-all"
@@ -342,7 +358,7 @@ export function Reports() {
                     >
                       {s}
                     </div>
-                    {s < 4 && (
+                    {s < 5 && (
                       <div
                         className="flex-1 h-0.5 rounded-full"
                         style={{
@@ -552,32 +568,48 @@ export function Reports() {
                 </div>
               )}
 
-              {/* Step 3: Division */}
+              {/* Step 3: Product group */}
               {step === 3 && (
                 <div className="animate-fadeIn">
                   <h3 className="font-bold text-base mb-5" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
-                    Выберите подразделение <span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)", fontWeight: 400, fontSize: 13 }}>(можно выбрать несколько)</span>
+                    Выберите группу товаров <span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)", fontWeight: 400, fontSize: 13 }}>(можно выбрать несколько)</span>
                   </h3>
                   
+                  {/* Кнопка "Все" */}
+                  <div className="mb-4">
+                    <button
+                      style={productGroups.length === PRODUCT_GROUPS.length ? optionBtnActive : optionBtnBase}
+                      onClick={() => {
+                        if (productGroups.length === PRODUCT_GROUPS.length) {
+                          setProductGroups([]);
+                        } else {
+                          setProductGroups([...PRODUCT_GROUPS]);
+                        }
+                      }}
+                    >
+                      Все
+                    </button>
+                  </div>
+
                   {/* Основной бизнес */}
                   <div className="mb-4">
                     <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
                       Основной бизнес
                     </p>
                     <div className="flex gap-2 flex-wrap">
-                      {(["ДЕЛИКАТЕСЫ", "ЗАМОРОЖЕННЫЕ ПОЛУФАБРИКАТЫ", "КОЛБАСНЫЕ ИЗДЕЛИЯ", "Мясной проект Ратимир", "ОХЛАЖДЕННЫЕ ПОЛУФАБРИКАТЫ"] as Division[]).map(d => (
+                      {(["ДЕЛИКАТЕСЫ", "ЗАМОРОЖЕННЫЕ ПОЛУФАБРИКАТЫ", "КОЛБАСНЫЕ ИЗДЕЛИЯ", "Мясной проект Ратимир", "ОХЛАЖДЕННЫЕ ПОЛУФАБРИКАТЫ"] as ProductGroup[]).map(g => (
                         <button
-                          key={d}
-                          style={divisions.includes(d) ? optionBtnActive : optionBtnBase}
+                          key={g}
+                          style={productGroups.includes(g) ? optionBtnActive : optionBtnBase}
                           onClick={() => {
-                            if (divisions.includes(d)) {
-                              setDivisions(divisions.filter(div => div !== d));
+                            if (productGroups.includes(g)) {
+                              setProductGroups(productGroups.filter(pg => pg !== g));
                             } else {
-                              setDivisions([...divisions, d]);
+                              setProductGroups([...productGroups, g]);
                             }
                           }}
                         >
-                          {d}
+                          {g}
                         </button>
                       ))}
                     </div>
@@ -589,19 +621,19 @@ export function Reports() {
                       Агроптица
                     </p>
                     <div className="flex gap-2 flex-wrap">
-                      {(["Птица замороженная", "Птица охлажденная"] as Division[]).map(d => (
+                      {(["Птица замороженная", "Птица охлажденная"] as ProductGroup[]).map(g => (
                         <button
-                          key={d}
-                          style={divisions.includes(d) ? optionBtnActive : optionBtnBase}
+                          key={g}
+                          style={productGroups.includes(g) ? optionBtnActive : optionBtnBase}
                           onClick={() => {
-                            if (divisions.includes(d)) {
-                              setDivisions(divisions.filter(div => div !== d));
+                            if (productGroups.includes(g)) {
+                              setProductGroups(productGroups.filter(pg => pg !== g));
                             } else {
-                              setDivisions([...divisions, d]);
+                              setProductGroups([...productGroups, g]);
                             }
                           }}
                         >
-                          {d}
+                          {g}
                         </button>
                       ))}
                     </div>
@@ -613,19 +645,19 @@ export function Reports() {
                       СТ
                     </p>
                     <div className="flex gap-2 flex-wrap">
-                      {(["Проект Птица, Мясо", "Проект СТ", "Проект СТ, МП ПЛЮС"] as Division[]).map(d => (
+                      {(["Проект Птица, Мясо", "Проект СТ", "Проект СТ, МП ПЛЮС"] as ProductGroup[]).map(g => (
                         <button
-                          key={d}
-                          style={divisions.includes(d) ? optionBtnActive : optionBtnBase}
+                          key={g}
+                          style={productGroups.includes(g) ? optionBtnActive : optionBtnBase}
                           onClick={() => {
-                            if (divisions.includes(d)) {
-                              setDivisions(divisions.filter(div => div !== d));
+                            if (productGroups.includes(g)) {
+                              setProductGroups(productGroups.filter(pg => pg !== g));
                             } else {
-                              setDivisions([...divisions, d]);
+                              setProductGroups([...productGroups, g]);
                             }
                           }}
                         >
-                          {d}
+                          {g}
                         </button>
                       ))}
                     </div>
@@ -637,19 +669,19 @@ export function Reports() {
                       МАП
                     </p>
                     <div className="flex gap-2 flex-wrap">
-                      {(["МАП"] as Division[]).map(d => (
+                      {(["МАП"] as ProductGroup[]).map(g => (
                         <button
-                          key={d}
-                          style={divisions.includes(d) ? optionBtnActive : optionBtnBase}
+                          key={g}
+                          style={productGroups.includes(g) ? optionBtnActive : optionBtnBase}
                           onClick={() => {
-                            if (divisions.includes(d)) {
-                              setDivisions(divisions.filter(div => div !== d));
+                            if (productGroups.includes(g)) {
+                              setProductGroups(productGroups.filter(pg => pg !== g));
                             } else {
-                              setDivisions([...divisions, d]);
+                              setProductGroups([...productGroups, g]);
                             }
                           }}
                         >
-                          {d}
+                          {g}
                         </button>
                       ))}
                     </div>
@@ -661,15 +693,160 @@ export function Reports() {
                       Трейдинг
                     </p>
                     <div className="flex gap-2 flex-wrap">
-                      {(["Мясо", "Прочие"] as Division[]).map(d => (
+                      {(["Мясо", "Прочие"] as ProductGroup[]).map(g => (
+                        <button
+                          key={g}
+                          style={productGroups.includes(g) ? optionBtnActive : optionBtnBase}
+                          onClick={() => {
+                            if (productGroups.includes(g)) {
+                              setProductGroups(productGroups.filter(pg => pg !== g));
+                            } else {
+                              setProductGroups([...productGroups, g]);
+                            }
+                          }}
+                        >
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Subdivision */}
+              {step === 4 && (
+                <div className="animate-fadeIn">
+                  <h3 className="font-bold text-base mb-5" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
+                    Выберите подразделение <span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)", fontWeight: 400, fontSize: 13 }}>(можно выбрать несколько)</span>
+                  </h3>
+                  
+                  {/* Кнопка "Все" */}
+                  <div className="mb-4">
+                    <button
+                      style={subdivisions.length === SUBDIVISIONS.length ? optionBtnActive : optionBtnBase}
+                      onClick={() => {
+                        if (subdivisions.length === SUBDIVISIONS.length) {
+                          setSubdivisions([]);
+                        } else {
+                          setSubdivisions([...SUBDIVISIONS]);
+                        }
+                      }}
+                    >
+                      Все
+                    </button>
+                  </div>
+
+                  {/* Дистрибьюторы */}
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
+                      Дистрибьюторы
+                    </p>
+                    <div className="flex gap-2 flex-wrap">
+                      {(["Восточная Сибирь Улан-Удэ", "Восточная Сибирь Чита", "Камчатка", "Магадан", "Сахалин"] as Subdivision[]).map(d => (
                         <button
                           key={d}
-                          style={divisions.includes(d) ? optionBtnActive : optionBtnBase}
+                          style={subdivisions.includes(d) ? optionBtnActive : optionBtnBase}
                           onClick={() => {
-                            if (divisions.includes(d)) {
-                              setDivisions(divisions.filter(div => div !== d));
+                            if (subdivisions.includes(d)) {
+                              setSubdivisions(subdivisions.filter(div => div !== d));
                             } else {
-                              setDivisions([...divisions, d]);
+                              setSubdivisions([...subdivisions, d]);
+                            }
+                          }}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ОБП */}
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
+                      ОБП
+                    </p>
+                    <div className="flex gap-2 flex-wrap">
+                      {(["ОБП Кавалерово", "ОБП Благовещенск", "ОБП Комсомольск", "ОБП Находка", "ОБП Спасск", "ОБП Хабаровск", "Владивосток"] as Subdivision[]).map(d => (
+                        <button
+                          key={d}
+                          style={subdivisions.includes(d) ? optionBtnActive : optionBtnBase}
+                          onClick={() => {
+                            if (subdivisions.includes(d)) {
+                              setSubdivisions(subdivisions.filter(div => div !== d));
+                            } else {
+                              setSubdivisions([...subdivisions, d]);
+                            }
+                          }}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Светофор */}
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
+                      Светофор
+                    </p>
+                    <div className="flex gap-2 flex-wrap">
+                      {(["Светофор"] as Subdivision[]).map(d => (
+                        <button
+                          key={d}
+                          style={subdivisions.includes(d) ? optionBtnActive : optionBtnBase}
+                          onClick={() => {
+                            if (subdivisions.includes(d)) {
+                              setSubdivisions(subdivisions.filter(div => div !== d));
+                            } else {
+                              setSubdivisions([...subdivisions, d]);
+                            }
+                          }}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Сети */}
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
+                      Сети
+                    </p>
+                    <div className="flex gap-2 flex-wrap">
+                      {(["X5 Retail", "Близкий", "Реми", "Самбери"] as Subdivision[]).map(d => (
+                        <button
+                          key={d}
+                          style={subdivisions.includes(d) ? optionBtnActive : optionBtnBase}
+                          onClick={() => {
+                            if (subdivisions.includes(d)) {
+                              setSubdivisions(subdivisions.filter(div => div !== d));
+                            } else {
+                              setSubdivisions([...subdivisions, d]);
+                            }
+                          }}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ФРС */}
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
+                      ФРС
+                    </p>
+                    <div className="flex gap-2 flex-wrap">
+                      {(["Фирменная розничная сеть"] as Subdivision[]).map(d => (
+                        <button
+                          key={d}
+                          style={subdivisions.includes(d) ? optionBtnActive : optionBtnBase}
+                          onClick={() => {
+                            if (subdivisions.includes(d)) {
+                              setSubdivisions(subdivisions.filter(div => div !== d));
+                            } else {
+                              setSubdivisions([...subdivisions, d]);
                             }
                           }}
                         >
@@ -681,26 +858,43 @@ export function Reports() {
                 </div>
               )}
 
-              {/* Step 4: Product group */}
-              {step === 4 && (
+              {/* Step 5: Territory */}
+              {step === 5 && (
                 <div className="animate-fadeIn">
                   <h3 className="font-bold text-base mb-5" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
-                    Выберите группу товаров <span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)", fontWeight: 400, fontSize: 13 }}>(можно выбрать несколько)</span>
+                    Выберите территорию <span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)", fontWeight: 400, fontSize: 13 }}>(можно выбрать несколько)</span>
                   </h3>
+                  
+                  {/* Кнопка "Все" */}
+                  <div className="mb-4">
+                    <button
+                      style={territories.length === TERRITORIES.length ? optionBtnActive : optionBtnBase}
+                      onClick={() => {
+                        if (territories.length === TERRITORIES.length) {
+                          setTerritories([]);
+                        } else {
+                          setTerritories([...TERRITORIES]);
+                        }
+                      }}
+                    >
+                      Все
+                    </button>
+                  </div>
+
                   <div className="flex gap-2 flex-wrap">
-                    {PRODUCT_GROUPS.map(g => (
+                    {TERRITORIES.map(t => (
                       <button
-                        key={g}
-                        style={productGroups.includes(g) ? optionBtnActive : optionBtnBase}
+                        key={t}
+                        style={territories.includes(t) ? optionBtnActive : optionBtnBase}
                         onClick={() => {
-                          if (productGroups.includes(g)) {
-                            setProductGroups(productGroups.filter(pg => pg !== g));
+                          if (territories.includes(t)) {
+                            setTerritories(territories.filter(tr => tr !== t));
                           } else {
-                            setProductGroups([...productGroups, g]);
+                            setTerritories([...territories, t]);
                           }
                         }}
                       >
-                        {g}
+                        {t}
                       </button>
                     ))}
                   </div>
@@ -732,7 +926,7 @@ export function Reports() {
                     cursor: canProceed() ? "pointer" : "not-allowed",
                   }}
                 >
-                  {step < 4 ? "Далее →" : "Показать фильтры"}
+                  {step < 5 ? "Далее →" : "Показать фильтры"}
                 </button>
               </div>
             </GlassCard>
@@ -752,8 +946,9 @@ export function Reports() {
                 </p>
                 <ul className="space-y-1.5">
                   <li><span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}>Временной период:</span> <strong>{period || (startDate && endDate ? `${format(startDate, "dd.MM.yyyy", { locale: ru })} — ${format(endDate, "dd.MM.yyyy", { locale: ru })}` : "Не выбран")}</strong></li>
-                  <li><span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}>Подразделение:</span> <strong>{divisions.join(", ")}</strong></li>
                   <li><span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}>Группа товаров:</span> <strong>{productGroups.map(pg => pg.toUpperCase()).join(", ")}</strong></li>
+                  <li><span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}>Подразделение:</span> <strong>{subdivisions.join(", ")}</strong></li>
+                  <li><span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}>Территория:</span> <strong>{territories.join(", ")}</strong></li>
                   <li><span style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}>Выбранный отчёт:</span> <strong>{REPORT_TYPE_LABELS[reportType] || reportType}</strong></li>
                 </ul>
                 <p className="mt-4 text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>

@@ -10,6 +10,7 @@ import {
   ВИДЫ_БИЗНЕСА,
   ГРУППЫ_ПОДРАЗДЕЛЕНИЙ,
   divisionGroupToDivisions,
+  businessTypeToProductGroups,
 } from "../filtersData";
 import { Truck, Package, Star, Bot, ExternalLink } from "lucide-react";
 
@@ -115,32 +116,32 @@ const utilMonthlyBase = [
 ];
 
 const serviceWeekdayBase = [
-  { day: "Пн", OTIF: 93.5, "Доставка в срок": 95.8, "Полнота заказа": 98.2 },
-  { day: "Вт", OTIF: 92.8, "Доставка в срок": 95.2, "Полнота заказа": 97.8 },
-  { day: "Ср", OTIF: 94.2, "Доставка в срок": 96.1, "Полнота заказа": 98.6 },
-  { day: "Чт", OTIF: 91.5, "Доставка в срок": 94.8, "Полнота заказа": 97.3 },
-  { day: "Пт", OTIF: 90.8, "Доставка в срок": 94.2, "Полнота заказа": 96.9 },
-  { day: "Сб", OTIF: 89.2, "Доставка в срок": 92.8, "Полнота заказа": 96.2 },
-  { day: "Вс", OTIF: 87.5, "Доставка в срок": 90.5, "Полнота заказа": 94.8 },
+  { day: "Пн", values: [93.5, 92.8, 94.2, 91.5] },
+  { day: "Вт", values: [92.8, 91.5, 93.0, 90.2] },
+  { day: "Ср", values: [94.2, 93.5, 95.1, 92.8] },
+  { day: "Чт", values: [91.5, 90.8, 92.4, 89.5] },
+  { day: "Пт", values: [90.8, 89.5, 91.2, 88.0] },
+  { day: "Сб", values: [89.2, 88.0, 90.0, 86.5] },
+  { day: "Вс", values: [87.5, 86.2, 88.8, 85.0] },
 ];
 
 const serviceMonthlyBase = [
-  { month: "Янв", OTIF: 92.8, "Доставка в срок": 95.2, "Полнота заказа": 97.6 },
-  { month: "Фев", OTIF: 93.2, "Доставка в срок": 95.5, "Полнота заказа": 97.9 },
-  { month: "Мар", OTIF: 94.1, "Доставка в срок": 96.2, "Полнота заказа": 98.4 },
-  { month: "Апр", OTIF: 93.5, "Доставка в срок": 95.8, "Полнота заказа": 98.0 },
-  { month: "Май", OTIF: 94.8, "Доставка в срок": 96.5, "Полнота заказа": 98.7 },
-  { month: "Июн", OTIF: 91.9, "Доставка в срок": 94.8, "Полнота заказа": 97.4 },
-  { month: "Июл", OTIF: 90.5, "Доставка в срок": 93.9, "Полнота заказа": 96.8 },
-  { month: "Авг", OTIF: 92.3, "Доставка в срок": 95.0, "Полнота заказа": 97.5 },
-  { month: "Сен", OTIF: 93.8, "Доставка в срок": 96.0, "Полнота заказа": 98.3 },
-  { month: "Окт", OTIF: 93.1, "Доставка в срок": 95.4, "Полнота заказа": 97.8 },
-  { month: "Ноя", OTIF: 92.0, "Доставка в срок": 94.6, "Полнота заказа": 97.2 },
-  { month: "Дек", OTIF: 91.2, "Доставка в срок": 94.0, "Полнота заказа": 96.8 },
+  { month: "Янв", values: [92.8, 91.5, 93.5, 90.2] },
+  { month: "Фев", values: [93.2, 92.0, 94.0, 91.0] },
+  { month: "Мар", values: [94.1, 93.0, 95.2, 92.5] },
+  { month: "Апр", values: [93.5, 92.2, 94.5, 91.8] },
+  { month: "Май", values: [94.8, 93.8, 95.9, 93.2] },
+  { month: "Июн", values: [91.9, 90.5, 93.0, 89.8] },
+  { month: "Июл", values: [90.5, 89.2, 91.8, 88.5] },
+  { month: "Авг", values: [92.3, 91.0, 93.4, 90.5] },
+  { month: "Сен", values: [93.8, 92.5, 94.8, 92.0] },
+  { month: "Окт", values: [93.1, 91.8, 94.2, 91.2] },
+  { month: "Ноя", values: [92.0, 90.8, 93.2, 90.0] },
+  { month: "Дек", values: [91.2, 90.0, 92.5, 89.5] },
 ];
 
-const tabKeys = ["utilization", "service", "powerbi"] as const;
-const tabLabels = ["Утилизация ТС", "Уровень сервиса", "Power BI"];
+const tabKeys = ["service", "utilization", "powerbi"] as const;
+const tabLabels = ["Уровень сервиса", "Утилизация ТС", "Power BI"];
 
 // ── Components ────────────────────────────────────────────────────────────────
 function AIPlaceholder({ lines = 3, linkLabel, isDark }: { lines?: number; linkLabel?: string; isDark: boolean }) {
@@ -148,14 +149,14 @@ function AIPlaceholder({ lines = 3, linkLabel, isDark }: { lines?: number; linkL
     <GlassCard 
       className="p-4 my-4"
       style={{
-        background: "rgba(59,130,246,0.04)",
-        border: "1px solid rgba(59,130,246,0.12)",
+        background: isDark ? "rgba(59,130,246,0.08)" : "rgba(59,130,246,0.15)",
+        border: isDark ? "1px solid rgba(59,130,246,0.2)" : "1px solid rgba(59,130,246,0.3)",
       }}
     >
       <div className="flex gap-3">
         <Bot size={16} style={{ color: "#60a5fa", flexShrink: 0, marginTop: 2 }} />
         <div className="flex-1">
-          <p className="text-xs font-semibold mb-2" style={{ color: "#93c5fd" }}>ИИ-аналитик</p>
+          <p className="text-xs font-semibold mb-2" style={{ color: "#60a5fa" }}>ИИ-аналитик</p>
           <div className="space-y-2">
             {Array.from({ length: lines }).map((_, i) => (
               <div key={i} className="h-2.5 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)", width: i === lines - 1 ? "55%" : "100%" }} />
@@ -187,26 +188,29 @@ function AIPlaceholder({ lines = 3, linkLabel, isDark }: { lines?: number; linkL
   );
 }
 
-function Dropdown<T extends string>({ label, value, options, onChange, isDark }: {
-  label: string; value: T; options: readonly T[]; onChange: (v: T) => void; isDark: boolean;
+function Dropdown<T extends string>({ label, value, options, onChange, isDark, disabled }: {
+  label: string; value: T; options: readonly T[]; onChange: (v: T) => void; isDark: boolean; disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
       <button
-        onClick={() => setOpen(o => !o)}
+        onClick={() => !disabled && setOpen(o => !o)}
         className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
         style={{
           background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
           border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
           color: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
+          opacity: disabled ? 0.5 : 1,
+          cursor: disabled ? "not-allowed" : "pointer",
         }}
+        disabled={disabled}
       >
         <span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>{label}:</span>
         <span>{value}</span>
         <span style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>▾</span>
       </button>
-      {open && (
+      {open && !disabled && (
         <div className="absolute top-full left-0 mt-1 rounded-xl overflow-hidden z-50 min-w-max"
           style={{
             background: isDark ? "rgba(10,15,20,0.9)" : "rgba(255,255,255,0.9)",
@@ -269,9 +273,10 @@ export function Delivery() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const [activeTab, setActiveTab] = useState<typeof tabKeys[number]>("utilization");
+  const [activeTab, setActiveTab] = useState<typeof tabKeys[number]>("service");
   const [группаПодразделений, setГруппаПодразделений] = useState<string>(ГРУППЫ_ПОДРАЗДЕЛЕНИЙ[0]);
   const [видБизнеса, setВидБизнеса] = useState<string>(ВИДЫ_БИЗНЕСА[0]);
+  const [группаТоваров, setГруппаТоваров] = useState<string>("Все");
 
   const utilColor = (v: number) => v >= 85 ? GREEN : v >= 70 ? YELLOW : RED;
   const servColor = (v: number) => v >= 95 ? GREEN : v >= 90 ? YELLOW : RED;
@@ -285,6 +290,13 @@ export function Delivery() {
   const innerCardBorder = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
 
   const filterSeed = группаПодразделений + видБизнеса;
+
+  // Product group options based on business type
+  const группаТоваровOptions = useMemo(() => {
+    if (!видБизнеса) return ["Все"];
+    const groups = businessTypeToProductGroups[видБизнеса];
+    return groups ? ["Все", ...groups] : ["Все"];
+  }, [видБизнеса]);
 
   // Get divisions for selected group
   const divisions = useMemo(() => {
@@ -355,19 +367,52 @@ export function Delivery() {
   const overallService = useMemo(() => seededValue(filterSeed + "serv", 90, 8), [filterSeed]);
 
   // Service data — product groups
+  // Base service levels for product groups by business type
+  const productGroupServiceBase: Record<string, Record<string, number>> = {
+    "Основной бизнес": {
+      "ДЕЛИКАТЕСЫ": 96.5,
+      "ЗАМОРОЖЕННЫЕ ПОЛУФАБРИКАТЫ": 94.8,
+      "КОЛБАСНЫЕ ИЗДЕЛИЯ": 95.2,
+      "Мясной проект Ратимир": 93.1,
+      "ОХЛАЖДЕННЫЕ ПОЛУФАБРИКАТЫ": 91.8,
+    },
+    "Агроптица": {
+      "Птица замороженная": 97.2,
+      "Птица хлажденная": 95.6,
+    },
+    "СТ": {
+      "Проект Птица, Мясо": 94.3,
+      "Проект СТ": 92.7,
+      "Проект СТ, МП ПЛЮС": 93.5,
+    },
+    "МАП": {
+      "МАП": 96.1,
+    },
+    "Трейдинг": {
+      "Мясо": 89.4,
+      "Прочие": 88.7,
+    },
+  };
+
   const productGroupsService = useMemo(() => {
-    const groups = [
-      { name: "Колбасы", base: 95.2 },
-      { name: "Заморозка", base: 97.4 },
-      { name: "Охл. Ф", base: 91.8 },
-      { name: "Мясной", base: 88.3 },
-    ];
+    const groups = businessTypeToProductGroups[видБизнеса];
+    const baseValues = productGroupServiceBase[видБизнеса];
+    
+    if (!groups || !baseValues) {
+      return [
+        { name: "КОЛБАСНЫЕ ИЗДЕЛИЯ", service: 95.2 },
+        { name: "ЗАМОРОЖЕННЫЕ ПОЛУФАБРИКАТЫ", service: 94.8 },
+        { name: "ОХЛАЖДЕННЫЕ ПОЛУФАБРИКАТЫ", service: 91.8 },
+        { name: "ДЕЛИКАТЕСЫ", service: 96.5 },
+      ];
+    }
+    
     const offset = (seededValue(filterSeed + "pgserv", 0, 6) - 3) * 0.5;
-    return groups.map(g => ({
-      name: g.name,
-      service: Math.min(99.9, Math.max(80, +(g.base + offset).toFixed(1))),
+    return groups.map(groupName => ({
+      name: groupName,
+      service: Math.min(99.9, Math.max(85, +(baseValues[groupName] + offset).toFixed(1))),
     }));
-  }, [filterSeed]);
+  }, [filterSeed, видБизнеса]);
 
   // Service data — subdivisions
   const subdivisionsService = useMemo(() => {
@@ -379,27 +424,41 @@ export function Delivery() {
     }));
   }, [divisions, filterSeed]);
 
-  // Service weekday data — slightly varied
+  // Service weekday data — show divisions instead of measures
   const serviceWeekday = useMemo(() => {
     const offset = (seededValue(filterSeed + "weekserv", 0, 4) - 2) * 0.3;
-    return serviceWeekdayBase.map(d => ({
-      day: d.day,
-      OTIF: +(d.OTIF + offset).toFixed(1),
-      "Доставка в срок": +(d["Доставка в срок"] + offset).toFixed(1),
-      "Полнота заказа": +(d["Полнота заказа"] + offset).toFixed(1),
-    }));
-  }, [filterSeed]);
+    const topDivs = divisions.slice(0, 4);
+    if (topDivs.length === 0) return serviceWeekdayBase.map(d => ({ day: d.day, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
+    const result = serviceWeekdayBase.map(d => {
+      const row: Record<string, any> = { day: d.day };
+      topDivs.forEach((div, i) => {
+        row[div] = Math.min(99.9, Math.max(85, +(d.values[i % 4] + offset).toFixed(1)));
+      });
+      return row;
+    });
+    return result;
+  }, [divisions, filterSeed]);
 
-  // Service monthly data — slightly varied
+  // Service monthly data — show divisions instead of measures
   const serviceMonthly = useMemo(() => {
     const offset = (seededValue(filterSeed + "monthserv", 0, 4) - 2) * 0.3;
-    return serviceMonthlyBase.map(d => ({
-      month: d.month,
-      OTIF: +(d.OTIF + offset).toFixed(1),
-      "Доставка в срок": +(d["Доставка в срок"] + offset).toFixed(1),
-      "Полнота заказа": +(d["Полнота заказа"] + offset).toFixed(1),
-    }));
-  }, [filterSeed]);
+    const topDivs = divisions.slice(0, 4);
+    if (topDivs.length === 0) return serviceMonthlyBase.map(d => ({ month: d.month, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
+    const result = serviceMonthlyBase.map(d => {
+      const row: Record<string, any> = { month: d.month };
+      topDivs.forEach((div, i) => {
+        row[div] = Math.min(99.9, Math.max(85, +(d.values[i % 4] + offset).toFixed(1)));
+      });
+      return row;
+    });
+    return result;
+  }, [divisions, filterSeed]);
+
+  const serviceLineKeys = useMemo(() => {
+    const topDivs = divisions.slice(0, 4);
+    if (topDivs.length === 0) return ["Линия 1", "Линия 2", "Линия 3"];
+    return topDivs;
+  }, [divisions]);
 
   const activeTabStyle = {
     background: "rgba(204,0,0,0.15)",
@@ -502,7 +561,17 @@ export function Delivery() {
           {activeTab !== "powerbi" && (
             <div className="flex gap-2 flex-wrap">
               <Dropdown label="Группа подразделений" value={группаПодразделений} options={ГРУППЫ_ПОДРАЗДЕЛЕНИЙ} onChange={setГруппаПодразделений} isDark={isDark} />
-              <Dropdown label="Вид бизнеса" value={видБизнеса} options={ВИДЫ_БИЗНЕСА} onChange={setВидБизнеса} isDark={isDark} />
+              <Dropdown 
+                label="Вид бизнеса" 
+                value={видБизнеса} 
+                options={ВИДЫ_БИЗНЕСА} 
+                onChange={(v) => { 
+                  setВидБизнеса(v); 
+                  setГруппаТоваров("Все"); 
+                }} 
+                isDark={isDark} 
+              />
+              <Dropdown label="Группа товаров" value={группаТоваров} options={группаТоваровOptions} onChange={setГруппаТоваров} isDark={isDark} disabled={!видБизнеса} />
             </div>
           )}
         </div>
@@ -512,7 +581,7 @@ export function Delivery() {
           <>
             {/* Gauge + territories */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="p-6 rounded-xl flex flex-col items-center" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+              <div className="p-4 rounded-xl flex flex-col items-center" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>Общая утилизация ТС</ChartTitle>
                 <Gauge value={overallUtil} label={`Средняя (цель ≥ 85%) · ${группаПодразделений}`} unit="%" size={200} />
                 <div className="w-full mt-4 grid grid-cols-3 gap-3 text-center">
@@ -531,11 +600,13 @@ export function Delivery() {
 
               <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>Утилизация по территориям</ChartTitle>
-                <BarRows
-                  items={territoriesUtil.map(t => ({ name: t.name, value: t.utilization }))}
-                  colorFn={utilColor}
-                  isDark={isDark}
-                />
+                <div style={{ maxHeight: '240px', overflowY: 'auto', paddingRight: '4px' }}>
+                  <BarRows
+                    items={territoriesUtil.map(t => ({ name: t.name, value: t.utilization }))}
+                    colorFn={utilColor}
+                    isDark={isDark}
+                  />
+                </div>
               </div>
             </div>
 
@@ -616,11 +687,23 @@ export function Delivery() {
         {/* ── SERVICE TAB ───────────────────────────────────────────────────── */}
         {activeTab === "service" && (
           <>
-            {/* Gauge + groups + subdivisions */}
+            {/* Gauge + groups + subdivisions - 3 columns */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
               <div className="p-4 rounded-xl flex flex-col items-center" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
-                <ChartTitle>Общий уровень сервиса (OTIF)</ChartTitle>
+                <ChartTitle>Общий уровень сервиса</ChartTitle>
                 <Gauge value={overallService} label={`Факт: ${overallService}% · Цель: 97%`} unit="%" size={185} />
+                <div className="w-full mt-4 grid grid-cols-3 gap-3 text-center">
+                  {[
+                    ["Минимум", `${Math.min(...subdivisionsService.map(s => s.service))}%`, RED],
+                    ["Среднее", `${overallService}%`, YELLOW],
+                    ["Максимум", `${Math.max(...subdivisionsService.map(s => s.service))}%`, GREEN],
+                  ].map(([lbl, val, col]) => (
+                    <div key={lbl as string} className="rounded-xl p-3" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)", border: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}>
+                      <p className="text-xs font-semibold mb-1" style={{ color: textSecondary }}>{lbl}</p>
+                      <p className="text-lg font-bold" style={{ color: col as string }}>{val}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
@@ -635,11 +718,13 @@ export function Delivery() {
               <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>Уровень сервиса по подразделениям</ChartTitle>
                 {subdivisionsService.length > 0 ? (
-                  <BarRows
-                    items={subdivisionsService.map(s => ({ name: s.name, value: s.service }))}
-                    colorFn={servColor}
-                    isDark={isDark}
-                  />
+                  <div style={{ maxHeight: '240px', overflowY: 'auto', paddingRight: '4px' }}>
+                    <BarRows
+                      items={subdivisionsService.map(s => ({ name: s.name, value: s.service }))}
+                      colorFn={servColor}
+                      isDark={isDark}
+                    />
+                  </div>
                 ) : (
                   <p className="text-xs" style={{ color: textMuted }}>Нет подразделений для выбранной группы</p>
                 )}
@@ -657,9 +742,17 @@ export function Delivery() {
                     <YAxis domain={[88, 100]} {...darkChartProps.yAxis} />
                     <Tooltip content={<CustomChartTooltip />} />
                     <Legend {...darkChartProps.legend} />
-                    <Line type="monotone" dataKey="OTIF" stroke="#a855f7" strokeWidth={2.5} dot={{ r: 4, fill: "#a855f7", strokeWidth: 0 }} />
-                    <Line type="monotone" dataKey="Доставка в срок" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
-                    <Line type="monotone" dataKey="Полнота заказа" stroke={GREEN} strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
+                    {serviceLineKeys.map((key, i) => {
+                      const chartLineColors = ["#008183", "#00B19F", "#6BF0AE", "#E0DCD0", "#4F709D", "#A47DD4", "#E05A85", "#E05A85", "#BA2447"];
+                      // Назначаем фирменные цвета для конкретных подразделений
+                      let lineColor = chartLineColors[i % chartLineColors.length];
+                      if (key === "Восточная Сибирь") {
+                        lineColor = "#E05A85";
+                      } else if (key === "Магадан") {
+                        lineColor = "#BA2447";
+                      }
+                      return <Line key={`weekday-${key}-${i}`} type="monotone" dataKey={key} stroke={lineColor} strokeWidth={2} dot={{ r: 3, strokeWidth: 0, fill: isDark ? lineColor : "#000000" }} />;
+                    })}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -673,9 +766,17 @@ export function Delivery() {
                     <YAxis domain={[88, 100]} {...darkChartProps.yAxis} />
                     <Tooltip content={<CustomChartTooltip />} />
                     <Legend {...darkChartProps.legend} />
-                    <Line type="monotone" dataKey="OTIF" stroke="#a855f7" strokeWidth={2.5} dot={{ r: 4, fill: "#a855f7", strokeWidth: 0 }} />
-                    <Line type="monotone" dataKey="Доставка в срок" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
-                    <Line type="monotone" dataKey="Полнота заказа" stroke={GREEN} strokeWidth={2} dot={{ r: 3, strokeWidth: 0 }} />
+                    {serviceLineKeys.map((key, i) => {
+                      const chartLineColors = ["#008183", "#00B19F", "#6BF0AE", "#E0DCD0", "#4F709D", "#A47DD4", "#E05A85", "#E05A85", "#BA2447"];
+                      // Назначаем фирменные цвета для конкретных подразделений
+                      let lineColor = chartLineColors[i % chartLineColors.length];
+                      if (key === "Восточная Сибирь") {
+                        lineColor = "#E05A85";
+                      } else if (key === "Магадан") {
+                        lineColor = "#BA2447";
+                      }
+                      return <Line key={`month-${key}-${i}`} type="monotone" dataKey={key} stroke={lineColor} strokeWidth={2} dot={{ r: 3, strokeWidth: 0, fill: isDark ? lineColor : "#000000" }} />;
+                    })}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -727,8 +828,10 @@ export function Delivery() {
         )}
       </GlassCard>
 
-      {/* AI Analyst block at the end */}
-      <AIPlaceholder lines={3} linkLabel="Power BI — Логистика" isDark={isDark} />
+      {/* AI Analyst block at the end - only for non-PowerBI tabs */}
+      {activeTab !== "powerbi" && (
+        <AIPlaceholder lines={3} linkLabel="Power BI — Логистика" isDark={isDark} />
+      )}
     </div>
   );
 }

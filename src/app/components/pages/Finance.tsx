@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -55,6 +55,16 @@ const receivables = [
   { контрагент: "ООО МегаМаркет", сумма: 3.1, срок: 14, статус: "yellow" as const, доля: "21.1%" },
   { контрагент: "ИП Петрова М.С.", сумма: 0.9, срок: 7, статус: "green" as const, доля: "6.1%" },
   { контрагент: "ООО Альфа-Торг", сумма: 2.2, срок: 30, статус: "yellow" as const, доля: "15.0%" },
+  { контрагент: "ООО Омега Групп", сумма: 1.8, срок: 42, статус: "red" as const, доля: "12.2%" },
+  { контрагент: "ИП Васильев П.К.", сумма: 0.6, срок: 18, статус: "yellow" as const, доля: "4.1%" },
+  { контрагент: "ЗАО Северная звезда", сумма: 3.5, срок: 51, статус: "red" as const, доля: "23.8%" },
+  { контрагент: "ООО Прогресс-Трейд", сумма: 1.2, срок: 25, статус: "yellow" as const, доля: "8.2%" },
+  { контрагент: "ИП Федоров С.А.", сумма: 2.1, срок: 33, статус: "red" as const, доля: "14.3%" },
+  { контрагент: "ООО Восток-Запад", сумма: 0.8, срок: 12, статус: "green" as const, доля: "5.4%" },
+  { контрагент: "ЗАО Премиум Фуд", сумма: 1.9, срок: 28, статус: "yellow" as const, доля: "12.9%" },
+  { контрагент: "ООО Глобал Сервис", сумма: 2.7, срок: 46, статус: "red" as const, доля: "18.4%" },
+  { контрагент: "ИП Кузнецов Д.И.", сумма: 0.7, срок: 9, статус: "green" as const, доля: "4.8%" },
+  { контрагент: "ООО Феникс-Плюс", сумма: 1.4, срок: 35, статус: "red" as const, доля: "9.5%" },
 ];
 
 const receivablesChart = [
@@ -156,7 +166,7 @@ const PIE_DATA_BY_BUSINESS = {
       { name: "КОЛБАСНЫЕ ИЗДЕЛИЯ", value: 25.6, rawValue: 28.4, color: "#008183" },
       { name: "ЗАМОРОЖЕННЫЕ ПОЛУФАБРИКАТЫ", value: 24.2, rawValue: 26.8, color: "#00B19F" },
       { name: "ДЕЛИКАТЕСЫ", value: 28.1, rawValue: 31.2, color: "#6BF0AE" },
-      { name: "ОХЛАЖДЕННЫЕ ПОЛУФАБРИКАТЫ", value: 22.1, rawValue: 24.5, color: "#E0DCD0" },
+      { name: "ОХЛАЖДЕННЫЕ ПОЛУфАБРИКАТЫ", value: 22.1, rawValue: 24.5, color: "#E0DCD0" },
     ],
   },
   "Агроптица": {
@@ -298,14 +308,14 @@ function AIPlaceholder({ lines = 4, linkLabel }: { lines?: number; linkLabel?: s
     <GlassCard 
       className="p-4 my-4"
       style={{
-        background: "rgba(59,130,246,0.04)",
-        border: "1px solid rgba(59,130,246,0.12)",
+        background: isDark ? "rgba(59,130,246,0.08)" : "rgba(59,130,246,0.15)",
+        border: isDark ? "1px solid rgba(59,130,246,0.2)" : "1px solid rgba(59,130,246,0.3)",
       }}
     >
       <div className="flex gap-3">
         <Bot size={16} style={{ color: "#60a5fa", flexShrink: 0, marginTop: 2 }} />
         <div className="flex-1">
-          <p className="text-xs font-semibold mb-2" style={{ color: "#93c5fd" }}>ИИ-аналитик</p>
+          <p className="text-xs font-semibold mb-2" style={{ color: "#60a5fa" }}>ИИ-аналитик</p>
           <div className="space-y-2">
             {Array.from({ length: lines }).map((_, i) => (
               <div
@@ -317,7 +327,7 @@ function AIPlaceholder({ lines = 4, linkLabel }: { lines?: number; linkLabel?: s
           </div>
           <div className="flex items-center justify-between mt-2">
             <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)" }}>
-              Текст ИИ-аналитика будет отображен здесь
+              Текст ИИ-аналитика будет отображён здесь
             </p>
             {linkLabel && (
               <a
@@ -341,7 +351,7 @@ function AIPlaceholder({ lines = 4, linkLabel }: { lines?: number; linkLabel?: s
   );
 }
 
-// ─── Half-circle gauge (спидометр) ───────────────────────────────────────────────────────
+// ─── Half-circle gauge (спидометр) ������─�������─���──────────────────────────────────────
 function HalfGauge({ value, label, sublabel }: { value: number; label: string; sublabel: string }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -566,7 +576,7 @@ function ReceivablesSidebar() {
   return (
     <div
       className="rounded-2xl h-full flex flex-col px-5 py-5 mx-[0px] mt-[-9px] mb-[0px]"
-      style={{ background: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.15)" }}
+      style={{ background: "rgba(186,36,71,0.12)", border: "1px solid rgba(186,36,71,0.25)" }}
     >
       <div className="flex items-center gap-2 mb-3">
         <AlertCircle size={16} style={{ color: RED }} />
@@ -600,7 +610,7 @@ function ReceivablesSidebar() {
 
       <div
         className="rounded-xl p-4 flex items-center justify-between"
-        style={{ background: `rgba(${limitPct > 100 ? "239,68,68" : "16,185,129"},0.08)`, border: `1px solid rgba(${limitPct > 100 ? "239,68,68" : "16,185,129"},0.2)` }}
+        style={{ background: `rgba(${limitPct > 100 ? "186,36,71" : "26,141,122"},0.12)`, border: `1px solid rgba(${limitPct > 100 ? "186,36,71" : "26,141,122"},0.3)` }}
       >
         <div>
           <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>% к лимиту</p>
@@ -658,8 +668,9 @@ function PieTooltipContent({ active, payload }: any) {
     <div
       className="rounded-xl p-3 text-xs"
       style={{
-        background: isDark ? "rgba(15,20,25,0.95)" : "rgba(255,255,255,0.95)",
-        backdropFilter: "blur(20px)",
+        background: isDark ? "rgba(15,20,25,0.92)" : "rgba(250,250,252,0.92)",
+        backdropFilter: "blur(80px)",
+        WebkitBackdropFilter: "blur(80px)",
         border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
         color: isDark ? "white" : "black",
         boxShadow: isDark 
@@ -698,6 +709,8 @@ export function Finance() {
   // Counterparty search and collapse states
   const [counterpartySearch, setCounterpartySearch] = useState("");
   const [counterpartyListCollapsed, setCounterpartyListCollapsed] = useState(false);
+  const [counterpartyPage, setCounterpartyPage] = useState(1);
+  const counterpartyPerPage = 10;
   
   // Sort state for counterparty table
   type CounterpartySortKey = "сумма" | "срок" | "доля" | "статус";
@@ -814,6 +827,18 @@ export function Finance() {
     return result;
   }, [counterpartySearch, sortKey, sortAsc]);
 
+  // Paginated counterparties
+  const totalCounterpartyPages = Math.ceil(filteredCounterparties.length / counterpartyPerPage);
+  const paginatedCounterparties = useMemo(() => {
+    const startIndex = (counterpartyPage - 1) * counterpartyPerPage;
+    return filteredCounterparties.slice(startIndex, startIndex + counterpartyPerPage);
+  }, [filteredCounterparties, counterpartyPage]);
+
+  // Reset page when search changes
+  useEffect(() => {
+    setCounterpartyPage(1);
+  }, [counterpartySearch]);
+
   // Tab styles (matching Delivery.tsx)
   const activeTabStyle = {
     background: "rgba(204,0,0,0.15)",
@@ -851,7 +876,7 @@ export function Finance() {
 
       {/* Tabs */}
       <div
-        className="flex gap-1 p-1 rounded-xl w-fit mb-4"
+        className="flex gap-1 p-1 rounded-xl w-fit mx-[0px] mt-[0px] mb-[25px]"
         style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}
       >
         {tabKeys.map((key, i) => (
@@ -920,12 +945,12 @@ export function Finance() {
                   <AreaChart data={revenueMarginData} margin={{ right: 10 }}>
                     <defs>
                       <linearGradient id="dashRevGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#008183" stopOpacity={0.08} />
-                        <stop offset="95%" stopColor="#008183" stopOpacity={0} />
+                        <stop key="stop-rev-1" offset="5%" stopColor="#008183" stopOpacity={0.08} />
+                        <stop key="stop-rev-2" offset="95%" stopColor="#008183" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="dashMarGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#BA2447" stopOpacity={0.08} />
-                        <stop offset="95%" stopColor="#BA2447" stopOpacity={0} />
+                        <stop key="stop-mar-1" offset="5%" stopColor="#BA2447" stopOpacity={0.08} />
+                        <stop key="stop-mar-2" offset="95%" stopColor="#BA2447" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid {...cp.cartesianGrid} />
@@ -946,12 +971,12 @@ export function Finance() {
                   <AreaChart data={priceCostData} margin={{ right: 10 }}>
                     <defs>
                       <linearGradient id="dashPriceGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#1A8D7A" stopOpacity={0.08} />
-                        <stop offset="95%" stopColor="#1A8D7A" stopOpacity={0} />
+                        <stop key="stop-price-1" offset="5%" stopColor="#1A8D7A" stopOpacity={0.08} />
+                        <stop key="stop-price-2" offset="95%" stopColor="#1A8D7A" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="dashCostGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#ba2447" stopOpacity={0.08} />
-                        <stop offset="95%" stopColor="#ba2447" stopOpacity={0} />
+                        <stop key="stop-cost-1" offset="5%" stopColor="#ba2447" stopOpacity={0.08} />
+                        <stop key="stop-cost-2" offset="95%" stopColor="#ba2447" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid {...cp.cartesianGrid} />
@@ -1043,7 +1068,7 @@ export function Finance() {
                           <text 
                             x={x} 
                             y={y} 
-                            fill="#ffffff" 
+                            fill={isDark ? "#ffffff" : "#000000"} 
                             textAnchor={x > cx ? 'start' : 'end'} 
                             dominantBaseline="central"
                             style={{ fontSize: '12px', fontWeight: 500 }}
@@ -1052,7 +1077,7 @@ export function Finance() {
                           </text>
                         );
                       }}
-                      labelLine={{ stroke: "rgba(255,255,255,0.3)", strokeWidth: 1 }}
+                      labelLine={{ stroke: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.2)", strokeWidth: 1 }}
                       strokeWidth={0}
                     >
                       {revenuePieData.map((entry, index) => (
@@ -1120,7 +1145,7 @@ export function Finance() {
                           <text 
                             x={x} 
                             y={y} 
-                            fill="#ffffff" 
+                            fill={isDark ? "#ffffff" : "#000000"} 
                             textAnchor={x > cx ? 'start' : 'end'} 
                             dominantBaseline="central"
                             style={{ fontSize: '12px', fontWeight: 500 }}
@@ -1129,7 +1154,7 @@ export function Finance() {
                           </text>
                         );
                       }}
-                      labelLine={{ stroke: "rgba(255,255,255,0.3)", strokeWidth: 1 }}
+                      labelLine={{ stroke: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.2)", strokeWidth: 1 }}
                       strokeWidth={0}
                     >
                       {marginPieData.map((entry, index) => (
@@ -1284,8 +1309,8 @@ export function Finance() {
               <AreaChart data={receivablesChart} margin={{ left: -20, right: 10, top: 10, bottom: 10 }}>
                 <defs>
                   <linearGradient id="debGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ba2447" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#ba2447" stopOpacity={0} />
+                    <stop key="stop-deb-1" offset="5%" stopColor="#ba2447" stopOpacity={0.3} />
+                    <stop key="stop-deb-2" offset="95%" stopColor="#ba2447" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid {...cp.cartesianGrid} />
@@ -1444,8 +1469,8 @@ export function Finance() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredCounterparties.length > 0 ? (
-                      filteredCounterparties.map((row, i) => {
+                    {paginatedCounterparties.length > 0 ? (
+                      paginatedCounterparties.map((row, i) => {
                         const s = statusBadge[row.статус];
                         return (
                           <tr key={i} className="transition-colors" style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}
@@ -1475,6 +1500,57 @@ export function Finance() {
                     )}
                 </tbody>
               </table>
+              
+              {/* Pagination */}
+              {totalCounterpartyPages > 1 && (
+              <div className="px-5 py-3 flex items-center justify-between" style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
+                <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
+                  Показано {((counterpartyPage - 1) * counterpartyPerPage) + 1}-{Math.min(counterpartyPage * counterpartyPerPage, filteredCounterparties.length)} из {filteredCounterparties.length}
+                </p>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setCounterpartyPage(p => Math.max(1, p - 1))}
+                    disabled={counterpartyPage === 1}
+                    className="px-3 py-1 rounded-lg text-sm font-medium transition-all"
+                    style={{
+                      background: counterpartyPage === 1 ? "transparent" : isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+                      border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+                      color: counterpartyPage === 1 ? (isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)") : (isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)"),
+                      cursor: counterpartyPage === 1 ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    ‹
+                  </button>
+                  {Array.from({ length: totalCounterpartyPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => setCounterpartyPage(page)}
+                      className="px-3 py-1 rounded-lg text-sm font-medium transition-all"
+                      style={{
+                        background: page === counterpartyPage ? "rgba(26,141,122,0.15)" : isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+                        border: `1px solid ${page === counterpartyPage ? "rgba(26,141,122,0.3)" : isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+                        color: page === counterpartyPage ? "#1A8D7A" : isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
+                      }}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setCounterpartyPage(p => Math.min(totalCounterpartyPages, p + 1))}
+                    disabled={counterpartyPage === totalCounterpartyPages}
+                    className="px-3 py-1 rounded-lg text-sm font-medium transition-all"
+                    style={{
+                      background: counterpartyPage === totalCounterpartyPages ? "transparent" : isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+                      border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+                      color: counterpartyPage === totalCounterpartyPages ? (isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)") : (isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)"),
+                      cursor: counterpartyPage === totalCounterpartyPages ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    ›
+                  </button>
+                </div>
+              </div>
+              )}
             </div>
             )}
           </GlassCard>
@@ -1483,7 +1559,7 @@ export function Finance() {
         </>
       )}
 
-      {/* ── POWER BI TAB ──────────────────────────────────────────── */}
+      {/* ── POWER BI TAB ─────────��─────────────────────────────��──── */}
       {activeTab === "powerbi" && (
         <GlassCard className="p-8 my-4 text-center" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
           <div className="flex flex-col items-center gap-4">

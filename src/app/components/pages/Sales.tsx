@@ -201,14 +201,14 @@ function AIPlaceholder({ lines = 3, linkLabel, isDark }: { lines?: number; linkL
     <GlassCard 
       className="p-4 mb-4"
       style={{
-        background: "rgba(59,130,246,0.04)",
-        border: "1px solid rgba(59,130,246,0.12)",
+        background: isDark ? "rgba(59,130,246,0.08)" : "rgba(59,130,246,0.15)",
+        border: isDark ? "1px solid rgba(59,130,246,0.2)" : "1px solid rgba(59,130,246,0.3)",
       }}
     >
       <div className="flex gap-3">
         <Bot size={16} style={{ color: "#60a5fa", flexShrink: 0, marginTop: 2 }} />
         <div className="flex-1">
-          <p className="text-xs font-semibold mb-2" style={{ color: "#93c5fd" }}>ИИ-аналитик</p>
+          <p className="text-xs font-semibold mb-2" style={{ color: "#60a5fa" }}>ИИ-аналитик</p>
           <div className="space-y-2">
             {Array.from({ length: lines }).map((_, i) => (
               <div key={i} className="h-2.5 rounded-full"
@@ -617,7 +617,7 @@ export function Sales() {
               <BarChart data={divisionChartData} layout="vertical" margin={{ left: 10, right: 10 }}>
                 <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                 <XAxis type="number" {...darkChartProps.xAxis} />
-                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={100} tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.35)' }} />
+                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={100} tick={{ fontSize: 12, fill: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.6)' }} />
                 <Tooltip content={<AnalyticalTooltip />} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {divisionChartData.map((entry, idx) => (
@@ -637,7 +637,7 @@ export function Sales() {
               <BarChart data={productGroupChartData} layout="vertical" margin={{ left: 10, right: 10 }}>
                 <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                 <XAxis type="number" {...darkChartProps.xAxis} />
-                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={120} tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.35)' }} />
+                <YAxis dataKey="name" type="category" {...darkChartProps.yAxis} width={120} tick={{ fontSize: 12, fill: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.6)' }} />
                 <Tooltip content={<AnalyticalTooltip />} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {productGroupChartData.map((_, idx) => (
