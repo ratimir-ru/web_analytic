@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KPI Visual Preview Pure HTML</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:rgb(15,20,25);
+      font-family:'Inter',sans-serif;
+      color:#fff;
+      padding:24px;
+    }
+    .row{
+      display:block; /* один блок */
+    }
+    .viz-card{
+      position:relative;
+      overflow:hidden;
+      border-radius:16px;
+      background:rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.06);
+      backdrop-filter:blur(20px);
+      box-shadow:rgba(0,0,0,.3) 0 8px 32px;
+      padding:18px 18px 16px;
+      min-height:360px;
+      transition:.3s;
+    }
+    .viz-card:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,255,255,.1);
+      box-shadow:rgba(0,0,0,.38) 0 10px 36px;
+    }
+    .viz-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .viz-title{
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.35);
+    }
+    .viz-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:12px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      color:rgba(255,255,255,.8);
+      font-size:12px;
+      font-weight:600;
+      line-height:1;
+      white-space:nowrap;
+    }
+    .viz-pill span:first-child{color:rgba(255,255,255,.4)}
+    .viz-body-split{
+      display:grid;
+      grid-template-columns:40% 60%; /* 40 / 60 */
+      gap:14px;
+      min-height:290px;
+    }
+    .radar-wrap,.heatmap-wrap{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+    .sub-title{
+      font-size:11px;
+      font-weight:600;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.3);
+      margin-bottom:10px;
+    }
+    .radar-box{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:240px;
+    }
+    .radar-note{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      background:rgba(26,141,122,.08);
+      border:1px solid rgba(26,141,122,.16);
+      color:rgba(255,255,255,.58);
+      font-size:12px;
+      line-height:1.45;
+    }
+    .radar-svg{width:100%;max-width:320px;height:auto}
+    .axis-label{
+      fill:rgba(255,255,255,.58);
+      font-size:11px;
+      font-weight:600;
+    }
+    .grid-label{
+      fill:rgba(255,255,255,.22);
+      font-size:10px;
+    }
+    .heatmap-table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:6px 6px;
+      table-layout:fixed;
+    }
+    .heatmap-table th{
+      font-size:11px;
+      font-weight:600;
+      color:rgba(255,255,255,.42);
+      text-align:center;
+      padding:0 4px 8px;
+    }
+    .heatmap-table th:first-child{
+      text-align:left;
+      width:132px;
+    }
+    .heatmap-table td.label{
+      font-size:12px;
+      font-weight:600;
+      color:rgba(255,255,255,.74);
+      padding-right:8px;
+      line-height:1.25;
+    }
+    .heat-cell{
+      height:42px;
+      border-radius:12px;
+      text-align:center;
+      font-size:12px;
+      font-weight:700;
+      color:rgba(255,255,255,.92);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .heat-red{background:rgba(186,36,71,.24);border-color:rgba(186,36,71,.32)}
+    .heat-amber{background:rgba(245,158,11,.24);border-color:rgba(245,158,11,.34)}
+    .heat-soft{background:rgba(245,158,11,.18);border-color:rgba(245,158,11,.28)}
+    .heat-green{background:rgba(26,141,122,.22);border-color:rgba(26,141,122,.24)}
+    .heat-strong{background:rgba(26,141,122,.34);border-color:rgba(26,141,122,.35)}
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px 14px;
+      align-items:center;
+      margin-top:12px;
+      padding-top:8px;
+    }
+    .legend-item{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      color:rgba(255,255,255,.5);
+      font-size:11px;
+    }
+    .legend-swatch{
+      width:10px;
+      height:10px;
+      border-radius:4px;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    @media (max-width:900px){
+      .viz-body-split{grid-template-columns:1fr}
+      .heatmap-table th:first-child{width:120px}
+    }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <section class="viz-card">
+      <div class="viz-header">
+        <div class="viz-title">Профиль KPI</div>
+        <div class="viz-pill"><span>Разрез</span><span>Вид бизнеса</span></div>
+      </div>
+      <div class="viz-body-split">
+        <div class="radar-wrap">
+          <div class="sub-title">Spider chart</div>
+          <div class="radar-box">
+            <svg class="radar-svg" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg" aria-label="Spider chart KPI">
+              <g transform="translate(160,130)">
+                <polygon points="0,-90 85,-28 53,73 -53,73 -85,-28"
+                         fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.2"/>
+                <polygon points="0,-68 64,-21 40,55 -40,55 -64,-21"
+                         fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.2"/>
+                <polygon points="0,-45 42,-14 27,37 -27,37 -42,-14"
+                         fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.2"/>
+                <polygon points="0,-23 21,-7 13,18 -13,18 -21,-7"
+                         fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.2"/>
+                <line x1="0" y1="0" x2="0" y2="-90" stroke="rgba(255,255,255,0.10)"/>
+                <line x1="0" y1="0" x2="85" y2="-28" stroke="rgba(255,255,255,0.10)"/>
+                <line x1="0" y1="0" x2="53" y2="73" stroke="rgba(255,255,255,0.10)"/>
+                <line x1="0" y1="0" x2="-53" y2="73" stroke="rgba(255,255,255,0.10)"/>
+                <line x1="0" y1="0" x2="-85" y2="-28" stroke="rgba(255,255,255,0.10)"/>
+                <text class="grid-label" x="8" y="-88">110</text>
+                <text class="grid-label" x="8" y="-66">100</text>
+                <text class="grid-label" x="8" y="-43">90</text>
+                <text class="grid-label" x="8" y="-21">80</text>
+                <polygon points="0,-70.2 57.8,-18.9 34.8,48.0 -38.2,52.6 -57.8,-18.9"
+                         fill="rgba(26,141,122,0.22)" stroke="rgb(26,141,122)" stroke-width="2.5"/>
+                <circle cx="0" cy="-70.2" r="3" fill="rgb(26,141,122)"/>
+                <circle cx="57.8" cy="-18.9" r="3" fill="rgb(26,141,122)"/>
+                <circle cx="34.8" cy="48.0" r="3" fill="rgb(26,141,122)"/>
+                <circle cx="-38.2" cy="52.6" r="3" fill="rgb(26,141,122)"/>
+                <circle cx="-57.8" cy="-18.9" r="3" fill="rgb(26,141,122)"/>
+              </g>
+              <text class="axis-label" x="160" y="26" text-anchor="middle">Выручка</text>
+              <text class="axis-label" x="268" y="103" text-anchor="middle">Объём</text>
+              <text class="axis-label" x="226" y="242" text-anchor="middle">Маржа</text>
+              <text class="axis-label" x="84" y="242" text-anchor="middle">Утилизация ТС</text>
+              <text class="axis-label" x="52" y="103" text-anchor="middle">Уровень сервиса</text>
+            </svg>
+          </div>
+          <div class="radar-note">
+            Пятиугольник показывает % выполнения плана по пяти ключевым KPI.
+            Чем ближе вершина к внешнему контуру, тем выше исполнение; нижние оси
+            отражают уровень сервиса и утилизацию ТС.
+          </div>
+        </div>
+        <div class="heatmap-wrap">
+          <div class="sub-title">Heatmap по виду бизнеса</div>
+          <table class="heatmap-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Всего</th>
+                <th>Основной бизнес</th>
+                <th>Агроптица</th>
+                <th>Трейдинг</th>
+                <th>МАП</th>
+                <th>СТ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="label">Выручка</td>
+                <td class="heat-cell heat-green">101%</td>
+                <td class="heat-cell heat-green">103%</td>
+                <td class="heat-cell heat-soft">96%</td>
+                <td class="heat-cell heat-strong">108%</td>
+                <td class="heat-cell heat-amber">91%</td>
+                <td class="heat-cell heat-soft">98%</td>
+              </tr>
+              <tr>
+                <td class="label">Объём</td>
+                <td class="heat-cell heat-soft">97%</td>
+                <td class="heat-cell heat-soft">99%</td>
+                <td class="heat-cell heat-amber">93%</td>
+                <td class="heat-cell heat-green">101%</td>
+                <td class="heat-cell heat-red">89%</td>
+                <td class="heat-cell heat-soft">95%</td>
+              </tr>
+              <tr>
+                <td class="label">Маржа</td>
+                <td class="heat-cell heat-soft">95%</td>
+                <td class="heat-cell heat-amber">94%</td>
+                <td class="heat-cell heat-soft">98%</td>
+                <td class="heat-cell heat-amber">92%</td>
+                <td class="heat-cell heat-red">87%</td>
+                <td class="heat-cell heat-soft">96%</td>
+              </tr>
+              <tr>
+                <td class="label">Уровень сервиса</td>
+                <td class="heat-cell heat-amber">92%</td>
+                <td class="heat-cell heat-amber">94%</td>
+                <td class="heat-cell heat-amber">90%</td>
+                <td class="heat-cell heat-soft">95%</td>
+                <td class="heat-cell heat-red">84%</td>
+                <td class="heat-cell heat-red">89%</td>
+              </tr>
+              <tr>
+                <td class="label">Утилизация ТС</td>
+                <td class="heat-cell heat-red">88%</td>
+                <td class="heat-cell heat-amber">91%</td>
+                <td class="heat-cell heat-red">86%</td>
+                <td class="heat-cell heat-amber">93%</td>
+                <td class="heat-cell heat-red">82%</td>
+                <td class="heat-cell heat-red">85%</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="legend">
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:rgba(186,36,71,.24)"></span>ниже 90%
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:rgba(245,158,11,.24)"></span>90–99%
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:rgba(26,141,122,.22)"></span>100%+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

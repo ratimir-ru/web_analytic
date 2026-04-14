@@ -143,6 +143,9 @@ const serviceMonthlyBase = [
 const tabKeys = ["service", "utilization", "powerbi"] as const;
 const tabLabels = ["Уровень сервиса", "Утилизация ТС", "Power BI"];
 
+const УС_OPTIONS = ["Общий", "Первичный", "Вторичный"] as const;
+type УСТип = typeof УС_OPTIONS[number];
+
 // ── Components ────────────────────────────────────────────────────────────────
 function AIPlaceholder({ lines = 3, linkLabel, isDark }: { lines?: number; linkLabel?: string; isDark: boolean }) {
   return (
@@ -277,6 +280,7 @@ export function Delivery() {
   const [группаПодразделений, setГруппаПодразделений] = useState<string>(ГРУППЫ_ПОДРАЗДЕЛЕНИЙ[0]);
   const [видБизнеса, setВидБизнеса] = useState<string>(ВИДЫ_БИЗНЕСА[0]);
   const [группаТоваров, setГруппаТоваров] = useState<string>("Все");
+  const [усУровень, setУсУровень] = useState<УСТип>("Общий");
 
   const utilColor = (v: number) => v >= 85 ? GREEN : v >= 70 ? YELLOW : RED;
   const servColor = (v: number) => v >= 95 ? GREEN : v >= 90 ? YELLOW : RED;
@@ -290,6 +294,7 @@ export function Delivery() {
   const innerCardBorder = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
 
   const filterSeed = группаПодразделений + видБизнеса;
+  const serviceSeed = filterSeed + усУровень;
 
   // Product group options based on business type
   const группаТоваровOptions = useMemo(() => {
@@ -364,7 +369,7 @@ export function Delivery() {
 
   // Gauge overall value
   const overallUtil = useMemo(() => seededValue(filterSeed + "gauge", 82, 14), [filterSeed]);
-  const overallService = useMemo(() => seededValue(filterSeed + "serv", 90, 8), [filterSeed]);
+  const overallService = useMemo(() => seededValue(serviceSeed + "serv", 90, 8), [serviceSeed]);
 
   // Service data — product groups
   // Base service levels for product groups by business type
@@ -407,26 +412,26 @@ export function Delivery() {
       ];
     }
     
-    const offset = (seededValue(filterSeed + "pgserv", 0, 6) - 3) * 0.5;
+    const offset = (seededValue(serviceSeed + "pgserv", 0, 6) - 3) * 0.5;
     return groups.map(groupName => ({
       name: groupName,
       service: Math.min(99.9, Math.max(85, +(baseValues[groupName] + offset).toFixed(1))),
     }));
-  }, [filterSeed, видБизнеса]);
+  }, [serviceSeed, видБизнеса]);
 
   // Service data — subdivisions
   const subdivisionsService = useMemo(() => {
     if (divisions.length === 0) return [];
-    const vals = seededValues(filterSeed + "subdivserv", 88, 10, divisions.length);
+    const vals = seededValues(serviceSeed + "subdivserv", 88, 10, divisions.length);
     return divisions.map((d, i) => ({
       name: d,
       service: Math.min(99.5, +(vals[i] * 0.1 + 88).toFixed(1)),
     }));
-  }, [divisions, filterSeed]);
+  }, [divisions, serviceSeed]);
 
   // Service weekday data — show divisions instead of measures
   const serviceWeekday = useMemo(() => {
-    const offset = (seededValue(filterSeed + "weekserv", 0, 4) - 2) * 0.3;
+    const offset = (seededValue(serviceSeed + "weekserv", 0, 4) - 2) * 0.3;
     const topDivs = divisions.slice(0, 4);
     if (topDivs.length === 0) return serviceWeekdayBase.map(d => ({ day: d.day, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
     const result = serviceWeekdayBase.map(d => {
@@ -437,11 +442,11 @@ export function Delivery() {
       return row;
     });
     return result;
-  }, [divisions, filterSeed]);
+  }, [divisions, serviceSeed]);
 
   // Service monthly data — show divisions instead of measures
   const serviceMonthly = useMemo(() => {
-    const offset = (seededValue(filterSeed + "monthserv", 0, 4) - 2) * 0.3;
+    const offset = (seededValue(serviceSeed + "monthserv", 0, 4) - 2) * 0.3;
     const topDivs = divisions.slice(0, 4);
     if (topDivs.length === 0) return serviceMonthlyBase.map(d => ({ month: d.month, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
     const result = serviceMonthlyBase.map(d => {
@@ -452,7 +457,7 @@ export function Delivery() {
       return row;
     });
     return result;
-  }, [divisions, filterSeed]);
+  }, [divisions, serviceSeed]);
 
   const serviceLineKeys = useMemo(() => {
     const topDivs = divisions.slice(0, 4);
@@ -480,18 +485,19 @@ export function Delivery() {
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-        {/* Утилизация ТС */}
+
+        {/* Уровень сервиса */}
         <DeliveryKpiCard
-          title="Утилизация ТС"
-          fact={`${overallUtil}%`}
-          plan="Цел: ≥ 85%"
+          title="Уровень сервиса"
+          fact={`${overallService}%`}
+          plan="Целевой: 97%"
           bottomInfo={
             <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
-              style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>
-              ▲ +2.4%
+              style={{ background: overallService >= 97 ? "rgba(26,141,122,0.12)" : "rgba(186,36,71,0.12)", color: overallService >= 97 ? GREEN : RED, border: `1px solid ${overallService >= 97 ? "rgba(26,141,122,0.2)" : "rgba(186,36,71,0.2)"}` }}>
+              {overallService >= 97 ? '▲' : '▼'} {overallService >= 97 ? '+0.5%' : '-2.1%'}
             </span>
           }
-          icon={<Truck size={14} />}
+          icon={<Star size={14} />}
         />
 
         {/* Объём доставки */}
@@ -522,19 +528,20 @@ export function Delivery() {
           icon={<Package size={14} />}
         />
 
-        {/* Уровень сервиса */}
+        {/* Утилизация ТС */}
         <DeliveryKpiCard
-          title="Уровень сервиса"
-          fact={`${overallService}%`}
-          plan="Целевой: 97%"
+          title="Утилизация ТС"
+          fact={`${overallUtil}%`}
+          plan="Цел: ≥ 85%"
           bottomInfo={
             <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
-              style={{ background: overallService >= 97 ? "rgba(26,141,122,0.12)" : "rgba(186,36,71,0.12)", color: overallService >= 97 ? GREEN : RED, border: `1px solid ${overallService >= 97 ? "rgba(26,141,122,0.2)" : "rgba(186,36,71,0.2)"}` }}>
-              {overallService >= 97 ? '▲' : '▼'} {overallService >= 97 ? '+0.5%' : '-2.1%'}
+              style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>
+              ▲ +2.4%
             </span>
           }
-          icon={<Star size={14} />}
+          icon={<Truck size={14} />}
         />
+
       </div>
 
       {/* Main Logistics Block - Unified Card */}
@@ -572,6 +579,9 @@ export function Delivery() {
                 isDark={isDark} 
               />
               <Dropdown label="Группа товаров" value={группаТоваров} options={группаТоваровOptions} onChange={setГруппаТоваров} isDark={isDark} disabled={!видБизнеса} />
+              {activeTab === "service" && (
+                <Dropdown label="УС" value={усУровень} options={УС_OPTIONS} onChange={setУсУровень} isDark={isDark} />
+              )}
             </div>
           )}
         </div>
@@ -600,7 +610,7 @@ export function Delivery() {
 
               <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>Утилизация по территориям</ChartTitle>
-                <div style={{ maxHeight: '240px', overflowY: 'auto', paddingRight: '4px' }}>
+                <div style={{ maxHeight: '220px', overflowY: 'auto', paddingRight: '4px' }}>
                   <BarRows
                     items={territoriesUtil.map(t => ({ name: t.name, value: t.utilization }))}
                     colorFn={utilColor}
@@ -690,7 +700,7 @@ export function Delivery() {
             {/* Gauge + groups + subdivisions - 3 columns */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
               <div className="p-4 rounded-xl flex flex-col items-center" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
-                <ChartTitle>Общий уровень сервиса</ChartTitle>
+                <ChartTitle>{усУровень} уровень сервиса</ChartTitle>
                 <Gauge value={overallService} label={`Факт: ${overallService}% · Цель: 97%`} unit="%" size={185} />
                 <div className="w-full mt-4 grid grid-cols-3 gap-3 text-center">
                   {[
@@ -718,7 +728,7 @@ export function Delivery() {
               <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>Уровень сервиса по подразделениям</ChartTitle>
                 {subdivisionsService.length > 0 ? (
-                  <div style={{ maxHeight: '240px', overflowY: 'auto', paddingRight: '4px' }}>
+                  <div style={{ maxHeight: '220px', overflowY: 'auto', paddingRight: '4px' }}>
                     <BarRows
                       items={subdivisionsService.map(s => ({ name: s.name, value: s.service }))}
                       colorFn={servColor}

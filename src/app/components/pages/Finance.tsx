@@ -166,7 +166,7 @@ const PIE_DATA_BY_BUSINESS = {
       { name: "КОЛБАСНЫЕ ИЗДЕЛИЯ", value: 25.6, rawValue: 28.4, color: "#008183" },
       { name: "ЗАМОРОЖЕННЫЕ ПОЛУФАБРИКАТЫ", value: 24.2, rawValue: 26.8, color: "#00B19F" },
       { name: "ДЕЛИКАТЕСЫ", value: 28.1, rawValue: 31.2, color: "#6BF0AE" },
-      { name: "ОХЛАЖДЕННЫЕ ПОЛУфАБРИКАТЫ", value: 22.1, rawValue: 24.5, color: "#E0DCD0" },
+      { name: "ОХЛАЖДЕННЫЕ ПОЛУФАБРИКАТЫ", value: 22.1, rawValue: 24.5, color: "#E0DCD0" },
     ],
   },
   "Агроптица": {
@@ -351,7 +351,7 @@ function AIPlaceholder({ lines = 4, linkLabel }: { lines?: number; linkLabel?: s
   );
 }
 
-// ─── Half-circle gauge (спидометр) ������─�������─���──────────────────────────────────────
+// ─── Half-circle gauge (спидометр) ────────────────────────────────────────
 function HalfGauge({ value, label, sublabel }: { value: number; label: string; sublabel: string }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -567,7 +567,7 @@ function FinKpiCard({ title, fact, plan, forecast, icon, color, change }: {
   );
 }
 
-// ─── Receivables sidebar block ─────────��──────────────────────────────────────
+// ─── Receivables sidebar block ───────────────────────────────────────────────
 function ReceivablesSidebar() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -687,6 +687,115 @@ function PieTooltipContent({ active, payload }: any) {
   );
 }
 
+// ─── Aging Analysis Card ───────────────────────────────────────────────────────
+const AGING_SEGMENTS = [
+  { label: "До 30 дн.", color: "#1A8D7A", pct: "80.3%", width: 80.3, amt: "11.8 млн", count: 2 },
+  { label: "30-60 дн.", color: "#f59e0b", pct: "10.9%", width: 10.9, amt: "1.6 млн", count: 2 },
+  { label: "60-90 дн.", color: "#f97316", pct: "5.4%", width: 5.4, amt: "0.8 млн", count: 1 },
+  { label: "90+ дн.", color: "#ba2447", pct: "3.4%", width: 3.4, amt: "0.5 млн", count: 1 },
+];
+
+function AgingAnalysisCard({ isDark }: { isDark: boolean }) {
+  const [hovered, setHovered] = React.useState<number | null>(null);
+
+  const seg = hovered !== null ? AGING_SEGMENTS[hovered] : null;
+
+  return (
+    <GlassCard className="p-5 my-5">
+      <ChartTitle>Анализ по срокам задолженности</ChartTitle>
+
+      {/* Bar */}
+      <div
+        className="flex rounded-lg overflow-hidden cursor-pointer"
+        style={{ height: '40px', marginTop: '16px' }}
+        onMouseLeave={() => setHovered(null)}
+      >
+        {AGING_SEGMENTS.map((s, i) => (
+          <div
+            key={s.label}
+            className="transition-all duration-200"
+            style={{
+              width: `${s.width}%`,
+              backgroundColor: s.color,
+              filter: hovered === i ? "brightness(1.18)" : hovered !== null ? "brightness(0.72)" : "brightness(1)",
+            }}
+            onMouseEnter={() => setHovered(i)}
+          />
+        ))}
+      </div>
+
+      {/* Inline info panel — animates in below the bar, stays inside card */}
+      <div
+        style={{
+          maxHeight: seg ? '60px' : '0px',
+          opacity: seg ? 1 : 0,
+          overflow: 'hidden',
+          transition: 'max-height 0.2s ease, opacity 0.16s ease, margin 0.2s ease',
+          marginTop: seg ? '10px' : '0px',
+        }}
+      >
+        {seg && (
+          <div
+            className="rounded-xl px-4 py-2.5 flex items-center gap-5 flex-wrap"
+            style={{
+              background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)",
+              border: `1px solid ${seg.color}55`,
+              borderLeft: `3px solid ${seg.color}`,
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: seg.color }} />
+              <span className="text-xs font-bold" style={{ color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.85)" }}>
+                {seg.label}
+              </span>
+            </div>
+            <div className="h-3 w-px" style={{ background: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }} />
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>Доля:</span>
+              <span className="text-xs font-bold" style={{ color: seg.color }}>{seg.pct}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>Сумма:</span>
+              <span className="text-xs font-bold" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.8)" }}>{seg.amt} ₽</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>Контрагентов:</span>
+              <span className="text-xs font-bold" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.8)" }}>{seg.count}</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center gap-4 mt-3 flex-wrap">
+        {AGING_SEGMENTS.map((item, i) => (
+          <div
+            key={item.label}
+            className="flex items-center gap-1.5 cursor-pointer transition-opacity duration-150"
+            style={{ opacity: hovered === null || hovered === i ? 1 : 0.4 }}
+            onMouseEnter={() => setHovered(i)}
+            onMouseLeave={() => setHovered(null)}
+          >
+            <div className="w-3 h-3 rounded-sm" style={{ background: item.color }} />
+            <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
+              {item.label}: <span className="font-bold">{item.pct}</span> ({item.amt}, {item.count} контр.)
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-3 flex items-center justify-between px-2">
+        <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
+          Всего контрагентов: <span className="font-bold" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}>6</span>
+        </p>
+        <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
+          Текущий долг: <span className="font-bold" style={{ color: RED }}>14.7 млн ₽</span>
+        </p>
+      </div>
+    </GlassCard>
+  );
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export function Finance() {
   const { theme } = useTheme();
@@ -700,7 +809,7 @@ export function Finance() {
   const [pieTerritory, setPieTerritory] = useState<string>("Все");
   const [pieBusinessType, setPieBusinessType] = useState<string>("Все");
   const [pieProductGroup, setPieProductGroup] = useState<string>("Все");
-  const [pieDivisionGroup, setPieDivisionGroup] = useState<string>("—");
+  const [pieDivisionGroup, setPieDivisionGroup] = useState<string>("Все");
   const [pieDivision, setPieDivision] = useState<string>("Все");
 
   // Collapse state for detail table
@@ -719,25 +828,25 @@ export function Finance() {
 
   // Dashboard charts filters
   const [territoriyaDash, setTeritoriyaDash] = useState<string>("Все");
-  const [vidBiznesaDash, setVidBiznesaDash] = useState<string>("");
-  const [gruppaTovarovDash, setGruppaTovarovDash] = useState<string>("");
-  const [gruppaPodrazdeleniyDash, setGruppaPodrazdeleniyDash] = useState<string>("");
-  const [podrazdelenieDash, setPodrazdelenieDash] = useState<string>("");
+  const [vidBiznesaDash, setVidBiznesaDash] = useState<string>("Все");
+  const [gruppaTovarovDash, setGruppaTovarovDash] = useState<string>("Все");
+  const [gruppaPodrazdeleniyDash, setGruppaPodrazdeleniyDash] = useState<string>("Все");
+  const [podrazdelenieDash, setPodrazdelenieDash] = useState<string>("Все");
 
   // Dashboard chart options
   const territoriiOptionsDash = ТЕРРИТОРИИ;
-  const produkt2OptionsDash = vidBiznesaDash ? ["Все", ...(businessTypeToProductGroups[vidBiznesaDash] || [])] : ["Все"];
-  const podrazdeleniya1OptionsDash = gruppaPodrazdeleniyDash ? ["Все", ...(divisionGroupToDivisions[gruppaPodrazdeleniyDash] || [])] : ["Все"];
+  const produkt2OptionsDash = vidBiznesaDash && vidBiznesaDash !== "Все" ? ["Все", ...(businessTypeToProductGroups[vidBiznesaDash] || [])] : ["Все"];
+  const podrazdeleniya1OptionsDash = gruppaPodrazdeleniyDash && gruppaPodrazdeleniyDash !== "Все" ? ["Все", ...(divisionGroupToDivisions[gruppaPodrazdeleniyDash] || [])] : ["Все"];
 
   // Options for Pie charts and counterparty filters
   const pieTerritoryOptions = ТЕРРИТОРИИ;
   const pieProductGroupOptions = pieBusinessType && pieBusinessType !== "Все" 
     ? ["Все", ...(businessTypeToProductGroups[pieBusinessType] || [])] 
     : ["Все"];
-  const pieDivisionOptions = pieDivisionGroup && pieDivisionGroup !== "—" 
+  const pieDivisionOptions = pieDivisionGroup && pieDivisionGroup !== "Все" 
     ? ["Все", ...(divisionGroupToDivisions[pieDivisionGroup] || [])] 
     : ["Все"];
-  const territoryOptions = ТЕРРИТОРИИ;
+  const territoryOptions = ["Все", ...ТЕРРИТОРИИ];
   const divisionOptions = ["Все", ...ПОДРАЗДЕЛЕНИЯ];
   const businessTypeOptions = ["Все", ...ВИДЫ_БИЗНЕСА];
 
@@ -929,11 +1038,11 @@ export function Finance() {
           <GlassCard className="my-4 p-5">
             {/* Common filters for both charts */}
             <div className="flex items-center gap-3 flex-wrap mb-5">
-              <Dropdown label="Территории" value={territoriyaDash} options={territoriiOptionsDash as any} onChange={setTeritoriyaDash} />
-              <Dropdown label="Вид бизнеса" value={vidBiznesaDash || "—"} options={ВИДЫ_БИЗНЕСА as unknown as string[]} onChange={(v) => { setVidBiznesaDash(v); setGruppaTovarovDash("Все"); }} />
-              <Dropdown label="Группа товаров" value={gruppaTovarovDash || "Все"} options={produkt2OptionsDash as any} onChange={setGruppaTovarovDash} disabled={!vidBiznesaDash} />
-              <Dropdown label="Группа подразделений" value={gruppaPodrazdeleniyDash || "—"} options={["—", ...ГРУППЫ_ПОДРАЗДЕЛЕНИЙ] as unknown as string[]} onChange={(v) => { setGruppaPodrazdeleniyDash(v); setPodrazdelenieDash("Все"); }} />
-              <Dropdown label="Подразделения" value={podrazdelenieDash || "Все"} options={podrazdeleniya1OptionsDash as any} onChange={setPodrazdelenieDash} disabled={!gruppaPodrazdeleniyDash || gruppaPodrazdeleniyDash === "—"} />
+              <Dropdown label="Территории" value={territoriyaDash} options={["", ...territoriiOptionsDash] as any} onChange={setTeritoriyaDash} />
+              <Dropdown label="Вид бизнеса" value={vidBiznesaDash} options={["Все", ...ВИДЫ_БИЗНЕСА] as unknown as string[]} onChange={(v) => { setVidBiznesaDash(v); setGruppaTovarovDash("Все"); }} />
+              <Dropdown label="Группа товаров" value={gruppaTovarovDash || "Все"} options={produkt2OptionsDash as any} onChange={setGruppaTovarovDash} disabled={!vidBiznesaDash || vidBiznesaDash === "Все"} />
+              <Dropdown label="Группа подразделений" value={gruppaPodrazdeleniyDash} options={["Все", ...ГРУППЫ_ПОДРАЗДЕЛЕНИЙ] as unknown as string[]} onChange={(v) => { setGruppaPodrazdeleniyDash(v); setPodrazdelenieDash("Все"); }} />
+              <Dropdown label="Подразделения" value={podrazdelenieDash || "Все"} options={podrazdeleniya1OptionsDash as any} onChange={setPodrazdelenieDash} disabled={!gruppaPodrazdeleniyDash || gruppaPodrazdeleniyDash === "Все"} />
             </div>
 
             {/* Two charts in grid */}
@@ -1001,7 +1110,12 @@ export function Finance() {
           <GlassCard className="my-4 p-5">
             {/* Filters */}
             <div className="flex items-center gap-3 flex-wrap mb-5">
-              <Dropdown label="Территории" value={pieTerritory} options={pieTerritoryOptions} onChange={setPieTerritory} />
+              <Dropdown 
+                label="Территории" 
+                value={pieTerritory} 
+                options={["Все", ...pieTerritoryOptions] as any} 
+                onChange={setPieTerritory} 
+              />
               <Dropdown 
                 label="Вид бизнеса" 
                 value={pieBusinessType} 
@@ -1010,8 +1124,8 @@ export function Finance() {
               />
               <Dropdown 
                 label="Группа подразделений" 
-                value={pieDivisionGroup || "—"} 
-                options={["—", ...ГРУППЫ_ПОДРАЗДЕЛЕНИЙ] as unknown as string[]} 
+                value={pieDivisionGroup} 
+                options={["Все", ...ГРУППЫ_ПОДРАЗДЕЛЕНИЙ] as unknown as string[]} 
                 onChange={(v) => { 
                   setPieDivisionGroup(v); 
                   setPieDivision("Все"); 
@@ -1022,7 +1136,7 @@ export function Finance() {
                 value={pieDivision || "Все"} 
                 options={pieDivisionOptions} 
                 onChange={setPieDivision} 
-                disabled={!pieDivisionGroup || pieDivisionGroup === "—"} 
+                disabled={!pieDivisionGroup || pieDivisionGroup === "Все"} 
               />
             </div>
 
@@ -1323,83 +1437,26 @@ export function Finance() {
           </GlassCard>
 
           {/* Aging analysis — stacked horizontal bar chart */}
-          <GlassCard className="p-5 my-5">
-            <ChartTitle>Анализ по срокам задолженности</ChartTitle>
-            <div className="relative" style={{ height: '40px', marginTop: '16px' }}>
-              <div className="absolute inset-0 flex rounded-lg overflow-hidden">
-                <div 
-                  className="transition-all duration-300 hover:brightness-110 cursor-pointer flex items-center justify-center"
-                  style={{ 
-                    width: '80.3%', 
-                    backgroundColor: '#1A8D7A',
-                  }}
-                  title="До 30 дн.: 80.3% (11.8 млн)"
-                />
-                <div 
-                  className="transition-all duration-300 hover:brightness-110 cursor-pointer flex items-center justify-center"
-                  style={{ 
-                    width: '10.9%', 
-                    backgroundColor: '#f59e0b',
-                  }}
-                  title="30-60 дн.: 10.9% (1.6 млн)"
-                />
-                <div 
-                  className="transition-all duration-300 hover:brightness-110 cursor-pointer flex items-center justify-center"
-                  style={{ 
-                    width: '5.4%', 
-                    backgroundColor: '#f97316',
-                  }}
-                  title="60-90 дн.: 5.4% (0.8 млн)"
-                />
-                <div 
-                  className="transition-all duration-300 hover:brightness-110 cursor-pointer flex items-center justify-center"
-                  style={{ 
-                    width: '3.4%', 
-                    backgroundColor: '#ba2447',
-                  }}
-                  title="90+ дн.: 3.4% (0.5 млн)"
-                />
-              </div>
-            </div>
-            {/* Legend with percentages */}
-            <div className="flex items-center gap-4 mt-3 flex-wrap">
-              {[
-                { label: "До 30 дн.", color: "#1A8D7A", pct: "80.3%", amt: "11.8 млн", count: 2 },
-                { label: "30-60 дн.", color: "#f59e0b", pct: "10.9%", amt: "1.6 млн", count: 2 },
-                { label: "60-90 дн.", color: "#f97316", pct: "5.4%", amt: "0.8 млн", count: 1 },
-                { label: "90+ дн.", color: "#ba2447", pct: "3.4%", amt: "0.5 млн", count: 1 },
-              ].map(item => (
-                <div key={item.label} className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-sm" style={{ background: item.color }} />
-                  <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
-                    {item.label}: <span className="font-bold">{item.pct}</span> ({item.amt}, {item.count} контр.)
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 flex items-center justify-between px-2">
-              <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
-                Всего контрагентов: <span className="font-bold" style={{ color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}>6</span>
-              </p>
-              <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>
-                Текущий долг: <span className="font-bold" style={{ color: RED }}>14.7 млн ₽</span>
-              </p>
-            </div>
-          </GlassCard>
+          <AgingAnalysisCard isDark={isDark} />
 
           {/* Detailed counterparty table */}
           <GlassCard className="overflow-hidden my-4">
-            <div className="px-5 py-3 flex items-center justify-between gap-4" style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
-              <div className="flex items-center gap-2">
-                <ChartTitle>Детализация по контрагентам</ChartTitle>
-                {counterpartySearch && (
-                  <span className="text-xs px-2 py-0.5 rounded" style={{ 
+            <div className="px-5 pt-0 pb-3 flex items-center justify-between gap-4" style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}` }}>
+            <div className="flex items-center gap-2 self-center">
+              <span className="text-sm font-semibold" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
+                  Детализация по контрагентам
+              </span>
+              {counterpartySearch && (
+                <span
+                  className="text-xs px-2 py-0.5 rounded"
+                  style={{
                     background: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-                    color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
-                  }}>
-                    {filteredCounterparties.length} из {receivables.length}
-                  </span>
-                )}
+                    color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+                  }}
+                >
+                  {filteredCounterparties.length} из {receivables.length}
+                </span>
+              )}
               </div>
               <div className="flex items-center gap-3">
                 {/* Search input */}
@@ -1414,11 +1471,12 @@ export function Finance() {
                     placeholder="Поиск по контрагентам"
                     value={counterpartySearch}
                     onChange={(e) => setCounterpartySearch(e.target.value)}
-                    className="pl-9 pr-3 py-1.5 text-sm rounded-lg border outline-none transition-all"
+                    className="pl-10 pr-3 py-1.5 text-sm rounded-lg border outline-none transition-all"
                     style={{
                       background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
                       border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
                       color: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
+                      width: "260px",   // ← добавь эту строку
                     }}
                   />
                 </div>
@@ -1559,7 +1617,7 @@ export function Finance() {
         </>
       )}
 
-      {/* ── POWER BI TAB ─────────��─────────────────────────────��──── */}
+      {/* ── POWER BI TAB ────────────────────────────────────────── */}
       {activeTab === "powerbi" && (
         <GlassCard className="p-8 my-4 text-center" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
           <div className="flex flex-col items-center gap-4">

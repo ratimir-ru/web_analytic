@@ -14,6 +14,8 @@ import { Assistant } from "./components/pages/Assistant";
 import { Reports } from "./components/pages/Reports";
 import { OperativeReport } from "./components/pages/OperativeReport";
 import { Profile } from "./components/pages/Profile";
+import { Frs } from "./components/pages/Frs";
+import { StockBlock } from "./components/pages/Stock";
 
 export default function App() {
   const [authed, setAuthed] = useState(false);
@@ -46,12 +48,14 @@ export default function App() {
             <Route path="/finance" element={<Finance />} />
             <Route path="/sales" element={<Sales />} />
             <Route path="/delivery" element={<Delivery />} />
+            <Route path="/stock" element={<StockBlock />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/instructions" element={<Instructions />} />
             <Route path="/assistant" element={<Assistant />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/operative-report" element={<OperativeReport />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/frs" element={<Frs />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Route>
         </Routes>

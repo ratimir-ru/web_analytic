@@ -25,6 +25,7 @@ import {
   Binoculars,
   Home,
   Store,
+  Warehouse,
 } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { FeedbackPopup } from "./FeedbackWidget";
@@ -45,15 +46,16 @@ interface NavItem {
 const navItems: NavItem[] = [
   { to: "/home", label: "Главная", icon: Home },
   { to: "/overview", label: "Обзор", icon: Binoculars },
+  { to: "/frs", label: "ФРС", icon: Store },
   { to: "/finance", label: "Финансы", icon: TrendingUp },
   { to: "/sales", label: "Продажи", icon: ShoppingCart },
   { to: "/delivery", label: "Логистика", icon: Truck },
+  { to: "/stock", label: "Остатки", icon: Warehouse },
   { to: "/tasks", label: "Задачи", icon: ClipboardList },
   { to: "/instructions", label: "База знаний", icon: BookOpen },
   { to: "/assistant", label: "AI Ассистент", icon: Brain },
   { to: "/reports", label: "Отчёты", icon: FileText },
   { to: "/operative-report", label: "Оперативный отчёт", icon: BarChart2 },
-  { to: "/frs", label: "ФРС", icon: Store, disabled: true },
 ];
 
 const separatorAfter = "/tasks";
@@ -206,13 +208,13 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
       >
         {/* Logo */}
         <div
-          className="flex items-center h-16 flex-shrink-0 px-[12px] py-[7px] mx-[0px] my-[-9px]"
+          className="flex items-center h-13.5 flex-shrink-0 px-[16px] py-[16px] mx-[0px] my-[-9px] mt-[3px] mb-[-2px]"
           style={{ borderBottom: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.07)" }}
         >
           <img
             src={image_6d19dd7a1c06f38e92a17d43316b77621712beae}
             alt="Ратимир"
-            style={{ height: 28, flexShrink: 0 }}
+            style={{ height: 36, flexShrink: 0 }}
           />
           {!collapsed && (
             <div className="ml-3 overflow-hidden flex-1">
@@ -396,7 +398,7 @@ export function Layout({ onLogout, userName = "Иванов Иван" }: AuthPro
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Topbar */}
         <header
-          className="h-14 flex items-center gap-2 flex-shrink-0 relative px-[16px] py-[32px] mx-[0px] my-[-2px]"
+          className="h-14 flex items-center gap-2 flex-shrink-0 relative px-[16px] py-[32px] mx-[0px] my-[-1px]"
           style={{
             background: headerBg,
             backdropFilter: isDark ? "blur(20px)" : "none",

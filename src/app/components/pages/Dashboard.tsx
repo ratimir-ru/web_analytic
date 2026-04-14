@@ -151,6 +151,80 @@ function hexToRgb(hex: string): string {
   return `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}`;
 }
 
+// ── KPI Profile data ──────────────────────────────────────────────────────────
+type KpiRazrezKey = "Вид бизнеса" | "Территории" | "Группа подразделений";
+const KPI_RAZREZ_OPTIONS: KpiRazrezKey[] = ["Вид бизнеса", "Территории", "Группа подразделений"];
+
+const kpiHeatData: Record<KpiRazrezKey, { columns: string[]; rows: { label: string; values: number[] }[] }> = {
+  "Вид бизнеса": {
+    columns: ["Все", "Осн. бизнес", "Агроптица", "Трейдинг", "МАП", "СТ"],
+    rows: [
+      { label: "Выручка",     values: [101, 103,  96, 108,  91,  98] },
+      { label: "Объём",       values: [ 97,  99,  93, 101,  89,  95] },
+      { label: "Маржа",       values: [ 95,  94,  98,  92,  87,  96] },
+      { label: "Ур. сервиса", values: [ 92,  94,  90,  95,  84,  89] },
+      { label: "Утилиз. ТС",  values: [ 88,  91,  86,  93,  82,  85] },
+    ],
+  },
+  "Территории": {
+    columns: ["Все", "Владивосток", "Хабаровск", "Находка", "Комсомольск", "Благовещенск", "Кавалерово", "Спасск"],
+    rows: [
+      { label: "Выручка",     values: [101, 104,  99, 102,  97, 108,  91,  95] },
+      { label: "Объём",       values: [ 97, 101,  96,  98,  94, 103,  88,  92] },
+      { label: "Маржа",       values: [ 95,  98,  93,  96,  91,  99,  86,  90] },
+      { label: "Ур. сервиса", values: [ 92,  95,  90,  93,  88,  96,  83,  87] },
+      { label: "Утилиз. ТС",  values: [ 88,  91,  86,  89,  84,  93,  79,  83] },
+    ],
+  },
+  "Группа подразделений": {
+    columns: ["Все", "Дистрибьюторы", "ОБП", "Светофор", "Сети", "ФРС"],
+    rows: [
+      { label: "Выручка",     values: [101,  99, 105, 103,  97, 102] },
+      { label: "Объём",       values: [ 97,  95, 101,  99,  93,  98] },
+      { label: "Маржа",       values: [ 95,  93,  98,  96,  90,  97] },
+      { label: "Ур. сервиса", values: [ 92,  90,  94,  93,  87,  95] },
+      { label: "Утилиз. ТС",  values: [ 88,  86,  91,  89,  83,  90] },
+    ],
+  },
+};
+
+const spiderKpiMeta = [
+  { label: "Выручка",     pct: 89, факт: 98.5, план: 97.5, unit: "млрд ₽" },
+  { label: "Объём",       pct:  97, факт: 940,  план: 969,  unit: "т" },
+  { label: "Маржа",       pct:  95, факт: 25.1, план: 26.4, unit: "%" },
+  { label: "Ур. сервиса", pct:  92, факт: 94.8, план: 97.0, unit: "%" },
+  { label: "Утилиз. ТС",  pct:  88, факт: 87.0, план: 98.9, unit: "%" },
+];
+
+// Spider geometry helpers — viewBox 440x360, center (220,175)
+const SPIDER_CX = 220, SPIDER_CY = 175;
+const SPIDER_RINGS = [
+  { r: 28,  label: "80" },
+  { r: 55,  label: "90" },
+  { r: 83,  label: "100" },
+  { r: 110, label: "110" },
+];
+function pctToSpiderR(pct: number): number {
+  if (pct >= 100) return 83 + Math.min((pct - 100) / 10, 1) * 27;
+  if (pct >= 90)  return 55 + (pct - 90) / 10 * 28;
+  if (pct >= 80)  return 28 + (pct - 80) / 10 * 27;
+  return Math.max(0, (pct - 70) / 10 * 28);
+}
+function spiderPoint(r: number, i: number): [number, number] {
+  const a = -Math.PI / 2 + i * (2 * Math.PI / 5);
+  return [SPIDER_CX + r * Math.cos(a), SPIDER_CY + r * Math.sin(a)];
+}
+function spiderPoly(r: number): string {
+  return [0, 1, 2, 3, 4].map(i => spiderPoint(r, i).join(",")).join(" ");
+}
+
+function getHeatBg(v: number) {
+  if (v >= 100) return { bg: "rgba(26,141,122,0.26)", border: "rgba(26,141,122,0.30)" };
+  if (v >= 97)  return { bg: "rgba(26,141,122,0.14)", border: "rgba(26,141,122,0.22)" };
+  if (v >= 90)  return { bg: "rgba(245,158,11,0.22)", border: "rgba(245,158,11,0.32)" };
+  return               { bg: "rgba(186,36,71,0.22)",  border: "rgba(186,36,71,0.30)"  };
+}
+
 // ── Dropdown component ────────────────────────────────────────────────────────
 function Dropdown<T extends string>({
   label,
@@ -222,7 +296,7 @@ function Dropdown<T extends string>({
   );
 }
 
-// ── AI Placeholder ─────────────────────�������──────────────────────────────────────
+// ── AI Placeholder ───────────────────────────────────────────────────────────
 function AIPlaceholder({ lines = 3, linkLabel }: { lines?: number; linkLabel?: string }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -420,7 +494,7 @@ function TaskBlock() {
   );
 }
 
-// �����─ Bottom row KPI Block ─────────────────────────────────────────────────────
+// ─ Bottom row KPI Block ─────────────────────────────────────────────────────
 function KpiBlockBottom({ title, fact, planTarget, accentColor, icon }: {
   title: string; fact: string; planTarget: string; accentColor: string; icon: React.ReactNode;
 }) {
@@ -447,7 +521,7 @@ function KpiBlockBottom({ title, fact, planTarget, accentColor, icon }: {
       </div>
       <p className="text-2xl font-semibold mb-1" style={{ color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)" }}>{fact}</p>
       <p className="text-xs" style={{ color: accentColor }}>
-        ▸ план: {planTarget}
+         план: {planTarget}
       </p>
     </div>
   );
@@ -466,6 +540,7 @@ function VolumeChartTooltip({ active, payload, label }: any) {
   const lastYear = data.прошлыйГод;
   const plan = data.план;
   const changeVsLastYear = lastYear ? (((currentYear - lastYear) / lastYear) * 100).toFixed(1) : null;
+  const planFulfillment = plan ? Math.round((currentYear / plan) * 100) : null;
   
   return (
     <div
@@ -506,11 +581,18 @@ function VolumeChartTooltip({ active, payload, label }: any) {
         </p>
       </div>
       
-      {changeVsLastYear && (
+      {(changeVsLastYear || planFulfillment !== null) && (
         <div className="mt-2 pt-2" style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
-          <p style={{ color: parseFloat(changeVsLastYear) >= 0 ? GREEN : RED, fontWeight: 600 }}>
-            {parseFloat(changeVsLastYear) >= 0 ? "▲" : "▼"} {Math.abs(parseFloat(changeVsLastYear))}% к прошлому году
-          </p>
+          {changeVsLastYear && (
+            <p style={{ color: parseFloat(changeVsLastYear) >= 0 ? GREEN : RED, fontWeight: 600 }}>
+              {parseFloat(changeVsLastYear) >= 0 ? "▲" : "▼"} {Math.abs(parseFloat(changeVsLastYear))}% к прошлому году
+            </p>
+          )}
+          {planFulfillment !== null && (
+            <p className="mt-1" style={{ color: planFulfillment >= 100 ? GREEN : RED, fontWeight: 600 }}>
+              {planFulfillment >= 100 ? "▲" : "▼"} {planFulfillment}% выполнения
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -575,6 +657,8 @@ export function Overview() {
   const [разрез, setРазрез] = useState<РазрезDash>("Территории");
   const [видБизнеса, setВидБизнеса] = useState<string>("Основной бизнес");
   const [группаТоваров, setГруппаТоваров] = useState<string>("Все");
+  const [kpiРазрез, setKpiРазрез] = useState<KpiRazrezKey>("Вид бизнеса");
+  const [hoveredSpider, setHoveredSpider] = useState<number | null>(null);
 
   const chartDataMap: Record<ПоказательDash, typeof marginChartData> = {
     "Маржа": marginChartData,
@@ -954,6 +1038,189 @@ export function Overview() {
       {/* AI placeholder */}
       <AIPlaceholder lines={3} />
 
+      {/* KPI Profile — Spider Chart + Heatmap */}
+      <GlassCard className="p-5 my-4">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-2">
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>
+            Выполнение плана
+          </p>
+          <Dropdown label="Разрез" value={kpiРазрез} options={KPI_RAZREZ_OPTIONS} onChange={setKpiРазрез} />
+        </div>
+
+        <div className="grid gap-3" style={{ gridTemplateColumns: "66% 1fr" }}>
+
+          {/* ── Heatmap ── */}
+          <div className="flex flex-col min-w-0 justify-center">
+            <div className="overflow-x-auto">
+              {(() => {
+                const { columns, rows } = kpiHeatData[kpiРазрез];
+                return (
+                  <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "4px 4px", tableLayout: "auto" }}>
+                    <thead>
+                      <tr>
+                        <th style={{ minWidth: 96, textAlign: "left", paddingBottom: 5, fontSize: 11.5, fontWeight: 600, color: isDark ? "rgba(255,255,255,0.42)" : "rgba(0,0,0,0.42)" }}></th>
+                        {columns.map(h => (
+                          <th key={h} style={{ textAlign: "center", paddingBottom: 5, fontSize: 11.5, fontWeight: 600, color: isDark ? "rgba(255,255,255,0.42)" : "rgba(0,0,0,0.42)", whiteSpace: "nowrap" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map(row => (
+                        <tr key={row.label}>
+                          <td style={{ fontSize: 11.5, fontWeight: 600, paddingRight: 6, lineHeight: 1.25, color: isDark ? "rgba(255,255,255,0.72)" : "rgba(0,0,0,0.72)", whiteSpace: "nowrap" }}>
+                            {row.label}
+                          </td>
+                          {row.values.map((val, ci) => {
+                            const { bg, border } = getHeatBg(val);
+                            return (
+                              <td key={ci} style={{
+                                height: 50, minWidth: 48, borderRadius: 9, textAlign: "center",
+                                fontSize: 11.5, fontWeight: 700,
+                                color: isDark ? "rgba(255,255,255,0.90)" : "rgba(0,0,0,0.80)",
+                                background: bg, border: `1px solid ${border}`,
+                                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+                                transition: "background 0.3s, border-color 0.3s",
+                              }}>{val}%</td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* ── Spider chart ── */}
+          <div className="flex flex-col min-w-0">
+            <div className="flex-1 flex items-center justify-center relative">
+              <svg className="ml-[20px] mr-[0px] mt-[-60px] mb-[-80px]"
+                viewBox="0 0 480 390"
+                style={{ width: "100%", height: "auto", overflow: "visible" }}
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Grid rings */}
+                {SPIDER_RINGS.map(({ r, label }) => (
+                  <g key={r}>
+                    <polygon
+                      points={spiderPoly(r)}
+                      fill="none"
+                      stroke={isDark ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.09)"}
+                      strokeWidth="1"
+                    />
+                    <text
+                      x={SPIDER_CX + 5}
+                      y={SPIDER_CY - r + 1}
+                      fill={isDark ? "rgba(255,255,255,0.20)" : "rgba(0,0,0,0.20)"}
+                      fontSize="8.5"
+                      fontWeight="600"
+                    >{label}</text>
+                  </g>
+                ))}
+
+                {/* Axis spokes */}
+                {spiderKpiMeta.map((_, i) => {
+                  const [x2, y2] = spiderPoint(110, i);
+                  return (
+                    <line key={i} x1={SPIDER_CX} y1={SPIDER_CY} x2={x2} y2={y2}
+                      stroke={isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.10)"}
+                      strokeWidth="1" />
+                  );
+                })}
+
+                {/* Data polygon */}
+                <polygon
+                  points={spiderKpiMeta.map((d, i) => spiderPoint(pctToSpiderR(d.pct), i).join(",")).join(" ")}
+                  fill="rgba(26,141,122,0.18)"
+                  stroke={GREEN}
+                  strokeWidth="2"
+                />
+
+                {/* Axis labels — rendered before nodes so tooltip draws on top */}
+                {([
+                  { i: 0, dx:   0, dy: -128, anchor: "middle",  label: "Выручка" },
+                  { i: 1, dx: 128, dy:  -44, anchor: "start",   label: "Объём" },
+                  { i: 2, dx:  96, dy:  118, anchor: "middle",  label: "Маржа" },
+                  { i: 3, dx: -96, dy:  118, anchor: "middle",  label: "Утилиз. ТС" },
+                  { i: 4, dx:-128, dy:  -44, anchor: "end",     label: "Ур. сервиса" },
+                ] as { i:number; dx:number; dy:number; anchor:string; label:string }[]).map(({ i, dx, dy, anchor, label }) => (
+                  <text key={i}
+                    x={SPIDER_CX + dx}
+                    y={SPIDER_CY + dy}
+                    textAnchor={anchor as any}
+                    fill={isDark ? "rgba(255,255,255,0.60)" : "rgba(0,0,0,0.60)"}
+                    fontSize="11.5"
+                    fontWeight="600"
+                  >{label}</text>
+                ))}
+
+                {/* Data nodes with hover */}
+                {spiderKpiMeta.map((d, i) => {
+                  const [cx, cy] = spiderPoint(pctToSpiderR(d.pct), i);
+                  const isHov = hoveredSpider === i;
+                  const { bg, border } = getHeatBg(d.pct);
+                  return (
+                    <g key={i}>
+                      {/* Hit area */}
+                      <circle cx={cx} cy={cy} r={24} fill="transparent"
+                        onMouseEnter={() => setHoveredSpider(i)}
+                        onMouseLeave={() => setHoveredSpider(null)}
+                        style={{ cursor: "pointer" }}
+                      />
+                      <circle cx={cx} cy={cy} r={isHov ? 6 : 4}
+                        fill={isHov ? "#fff" : GREEN}
+                        stroke={GREEN}
+                        strokeWidth={isHov ? 2 : 0}
+                        style={{ transition: "r 0.15s", pointerEvents: "none" }}
+                      />
+                      {/* Tooltip bubble */}
+                      {isHov && (() => {
+                        const tipW = 148, tipH = 72;
+                        // Offset tooltip so it doesn't overlap the dot
+                        const angle = -Math.PI / 2 + i * (2 * Math.PI / 5);
+                        const offX = Math.cos(angle) >= 0 ? 14 : -tipW - 14;
+                        const offY = Math.sin(angle) >= 0 ? 14 : -tipH - 14;
+                        const tx = cx + offX;
+                        const ty = cy + offY;
+                        return (
+                          <g style={{ pointerEvents: "none" }}>
+                            <rect x={tx} y={ty} width={tipW} height={tipH} rx={10}
+                              fill={isDark ? "rgba(15,20,25,0.96)" : "rgba(255,255,255,0.96)"}
+                              stroke={border}
+                              strokeWidth="1"
+                            />
+                            <text x={tx + 10} y={ty + 18} fontSize="10" fontWeight="700"
+                              fill={isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)"}
+                              style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                              {d.label}
+                            </text>
+                            <text x={tx + 10} y={ty + 36} fontSize="14" fontWeight="700"
+                              fill={d.pct >= 100 ? GREEN : d.pct >= 90 ? YELLOW : RED}>
+                              {d.pct}%
+                            </text>
+                            <text x={tx + 10} y={ty + 52} fontSize="10" fontWeight="600"
+                              fill={isDark ? "rgba(255,255,255,0.40)" : "rgba(0,0,0,0.40)"}>
+                              Факт: {d.факт} {d.unit}
+                            </text>
+                            <text x={tx + 10} y={ty + 64} fontSize="10" fontWeight="600"
+                              fill={isDark ? "rgba(255,255,255,0.40)" : "rgba(0,0,0,0.40)"}>
+                              План: {d.план} {d.unit}
+                            </text>
+                          </g>
+                        );
+                      })()}
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          </div>
+
+        </div>
+      </GlassCard>
+
       {/* Charts section — single chart based on selected Показатель */}
       <GlassCard className="p-5 my-4">
         {/* Filters */}
@@ -968,33 +1235,103 @@ export function Overview() {
             <p className="text-xs font-semibold mb-2 uppercase tracking-wider" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)" }}>
               {показатель}
             </p>
-            <ResponsiveContainer width="100%" height={290}>
-              <AreaChart data={chartData} margin={{ right: 10 }}>
-                <defs>
-                  <linearGradient id="grad-dash-plan" x1="0" y1="0" x2="0" y2="1">
-                    <stop key="stop-plan-1" offset="5%" stopColor={chartColor} stopOpacity={0.08} />
-                    <stop key="stop-plan-2" offset="95%" stopColor={chartColor} stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="grad-dash-fact" x1="0" y1="0" x2="0" y2="1">
-                    <stop key="stop-fact-1" offset="5%" stopColor={chartColor} stopOpacity={0.25} />
-                    <stop key="stop-fact-2" offset="95%" stopColor={chartColor} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
+            {/* <ResponsiveContainer width="100%" height={290}>
+              <BarChart data={chartData} margin={{ right: 10 }} barCategoryGap="20%" barGap={2}>
                 <CartesianGrid {...cp.cartesianGrid} />
                 <XAxis dataKey="month" {...cp.xAxis} />
                 <YAxis {...cp.yAxis} width={45} />
-                <Tooltip content={показатель === "Объём" ? <VolumeChartTooltip /> : <CustomChartTooltip />} />
-                <Area key="area-plan" type="monotone" dataKey="план" name="План" stroke={`rgba(${hexToRgb(chartColor)},0.4)`} fill="url(#grad-dash-plan)" strokeWidth={1.5} strokeDasharray="5 5" />
-                <Area key="area-fact" type="monotone" dataKey="факт" name="Факт" stroke={chartColor} fill="url(#grad-dash-fact)" strokeWidth={2.5} />
+                <Tooltip content={<VolumeChartTooltip />} />
+                <Legend iconSize={10} wrapperStyle={{ fontSize: "13px", color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.7)" }} />
+                <Bar key="bar-plan" dataKey="план" name="План" fill={
+                  ({"Маржа":"rgba(180,174,164,0.32)","Цена":"rgba(164,125,212,0.28)","Объём":"rgba(79,112,157,0.28)","УС":"rgba(224,90,133,0.28)"} as Record<string,string>)[показатель]
+                } radius={[0, 0, 0, 0]} />
+                <Bar key="bar-fact" dataKey="факт" name="Факт" fill={
+                  ({"Маржа":"rgba(180,174,164,0.68)","Цена":"rgba(164,125,212,0.60)","Объём":"rgba(79,112,157,0.60)","УС":"rgba(224,90,133,0.60)"} as Record<string,string>)[показатель]
+                } radius={[0, 0, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer> */}
+            <ResponsiveContainer width="100%" height={290}>
+              <AreaChart data={chartData} margin={{ right: 10 }}>
+                <defs>
+                  <linearGradient id="gradПлан" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor={
+                      ({"Маржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
+                    } stopOpacity={0.18} />
+                    <stop offset="95%" stopColor={
+                      ({"Маржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
+                    } stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="gradФакт" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor={
+                      ({"Маржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
+                    } stopOpacity={0.45} />
+                    <stop offset="95%" stopColor={
+                      ({"Маржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
+                    } stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+
+                <CartesianGrid {...cp.cartesianGrid} />
+                <XAxis dataKey="month" {...cp.xAxis} />
+                <YAxis {...cp.yAxis} width={45} />
+                <Tooltip content={<VolumeChartTooltip />} />
+                <Legend
+                  iconSize={10}
+                  wrapperStyle={{ fontSize: "13px", color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.7)" }}
+                />
+
+                {/* План — пунктирная линия, светлая заливка */}
+                <Area
+                  key="area-plan"
+                  type="monotone"
+                  dataKey="план"
+                  name="План"
+                  stroke={
+                    ({"Маржа":"rgba(26,141,122,0.55)","Цена":"rgba(164,125,212,0.55)","Объём":"rgba(79,112,157,0.55)","УС":"rgba(224,90,133,0.55)"} as Record<string,string>)[показатель]
+                  }
+                  strokeWidth={1.5}
+                  strokeDasharray="5 4"
+                  fill="url(#gradПлан)"
+                  dot={false}
+                  activeDot={{ r: 4, strokeWidth: 0 }}
+                />
+
+                {/* Факт — сплошная линия, насыщенная заливка, точки */}
+                <Area
+                  key="area-fact"
+                  type="monotone"
+                  dataKey="факт"
+                  name="Факт"
+                  stroke={
+                    ({"Маржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
+                  }
+                  strokeWidth={2}
+                  fill="url(#gradФакт)"
+                  dot={(props: any) => {
+                    const { cx, cy, stroke } = props;
+                    return (
+                      <circle
+                        key={`dot-${cx}-${cy}`}
+                        cx={cx} cy={cy} r={3.5}
+                        fill={isDark ? "#1a1f26" : "#ffffff"}
+                        stroke={stroke}
+                        strokeWidth={2}
+                      />
+                    );
+                  }}
+                  activeDot={{ r: 5, strokeWidth: 2 }}
+                />
               </AreaChart>
             </ResponsiveContainer>
+
+            
           </div>
           {/* Right: horizontal bars by breakdown */}
           <div>
             <p className="text-xs font-semibold mb-2 uppercase tracking-wider" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>
               {разрез}
             </p>
-            <div className="space-y-2 overflow-y-auto pr-2" style={{ height: "290px" }}>
+            <div className="space-y-2 overflow-y-auto pr-2" style={{ height: "250px" }}>
               {rightBars.map(item => {
                 const maxVal = Math.max(...rightBars.map(b => b.значение));
                 const pct = (item.значение / maxVal) * 100;
@@ -1241,7 +1578,7 @@ export function Overview() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             { label: "Power BI — Финансы", desc: "Дашборд финансовых показателей", color: "#f59e0b", href: "#" },
-            { label: "Power BI — Продажи", desc: "Анализ продаж по регионам и блокам", color: "#3b82f6", href: "#" },
+            { label: "Power BI — Продажи", desc: "Анализ продаж по Регионам и блокам", color: "#3b82f6", href: "#" },
             { label: "Power BI — Логистика", desc: "Утилизация ТС и маршруты", color: "#10b981", href: "#" },
           ].map(link => (
             <a

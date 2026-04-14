@@ -37,6 +37,79 @@ function hexToRgb(hex: string): string {
   return `${parseInt(r[1], 16)},${parseInt(r[2], 16)},${parseInt(r[3], 16)}`;
 }
 
+// ── Custom Tooltip with AKB ───────────────────────────────────────────────────
+function CategoryTrendTooltipWithAKB({
+  active,
+  payload,
+  label,
+}: any) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div
+      className="rounded-xl p-3 text-xs"
+      style={{
+        background: isDark
+          ? "rgba(15,20,25,0.92)"
+          : "rgba(250,250,252,0.92)",
+        backdropFilter: "blur(80px)",
+        WebkitBackdropFilter: "blur(80px)",
+        border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+        color: isDark ? "white" : "black",
+        boxShadow: isDark
+          ? "0 8px 32px rgba(0,0,0,0.5)"
+          : "0 8px 32px rgba(0,0,0,0.15)",
+      }}
+    >
+      <p className="font-bold mb-1.5">{label}</p>
+      {payload.map((p: any, index: number) => (
+        <div
+          key={index}
+          className="flex items-center gap-1.5 mb-0.5"
+        >
+          <div
+            className="w-2 h-2 rounded-full"
+            style={{
+              background: p.stroke || p.color || p.fill,
+            }}
+          />
+          <span
+            style={{
+              color: isDark
+                ? "rgba(255,255,255,0.9)"
+                : "rgba(0,0,0,0.9)",
+            }}
+          >
+            {p.name}:{" "}
+            <span className="font-semibold">{p.value}</span>
+          </span>
+        </div>
+      ))}
+      <div className="flex items-center gap-1.5 mb-0.5 mt-1.5 pt-1.5" style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
+        <div
+          className="w-2 h-2 rounded-full"
+          style={{
+            background: "#3b82f6",
+          }}
+        />
+        <span
+          style={{
+            color: isDark
+              ? "rgba(255,255,255,0.9)"
+              : "rgba(0,0,0,0.9)",
+          }}
+        >
+          АКБ:{" "}
+          <span className="font-semibold">244</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ── Sales KPI Card Component ──────────────────────────────────────────────────
 function SalesKpiCard({ 
   title, 
@@ -122,31 +195,31 @@ const categories = [
   {
     id: "kolbasy", label: "Колбасы", color: "#BA2447",
     plan: 320, fact: 298, price_plan: 195, price_fact: 192,
-    margin_plan: 32, margin_fact: 29, service: 95, status: "yellow" as const,
+    margin_plan: 32, margin_fact: 29, service: 95, akb: 312, status: "yellow" as const,
     trend: [0,1,2,3,4,5].map(i => ({ month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i], план: [85,88,90,82,86,90][i], факт: [82,87,89,79,85,88][i] })),
   },
   {
     id: "zamorozka", label: "Заморозка", color: "#A47DD4",
     plan: 180, fact: 175, price_plan: 142, price_fact: 145,
-    margin_plan: 28, margin_fact: 29, service: 97, status: "green" as const,
+    margin_plan: 28, margin_fact: 29, service: 97, akb: 245, status: "green" as const,
     trend: [0,1,2,3,4,5].map(i => ({ month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i], план: [46,48,50,44,47,50][i], факт: [45,47,49,43,47,49][i] })),
   },
   {
     id: "delikatesy", label: "Деликатесы", color: "#4F709D",
     plan: 150, fact: 162, price_plan: 380, price_fact: 395,
-    margin_plan: 42, margin_fact: 45, service: 96, status: "green" as const,
+    margin_plan: 42, margin_fact: 45, service: 96, akb: 187, status: "green" as const,
     trend: [0,1,2,3,4,5].map(i => ({ month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i], план: [38,40,42,37,40,42][i], факт: [39,41,44,39,43,46][i] })),
   },
   {
     id: "oxl_pf", label: "Охлажденные ПФ", color: "#6BF0AE",
     plan: 210, fact: 195, price_plan: 128, price_fact: 124,
-    margin_plan: 22, margin_fact: 19, service: 91, status: "red" as const,
+    margin_plan: 22, margin_fact: 19, service: 91, akb: 278, status: "red" as const,
     trend: [0,1,2,3,4,5].map(i => ({ month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i], план: [54,56,58,52,55,58][i], факт: [50,53,55,48,51,54][i] })),
   },
   {
     id: "myasnoy", label: "Мясной проект", color: "#008183",
     plan: 130, fact: 118, price_plan: 165, price_fact: 158,
-    margin_plan: 18, margin_fact: 15, service: 88, status: "red" as const,
+    margin_plan: 18, margin_fact: 15, service: 88, akb: 153, status: "red" as const,
     trend: [0,1,2,3,4,5].map(i => ({ month: ["Окт","Ноя","Дек","Янв","Фев","Мар"][i], план: [33,35,37,32,34,37][i], факт: [31,33,34,29,32,33][i] })),
   },
 ];
@@ -356,7 +429,7 @@ function LflTooltip({ active, payload, label }: any) {
       <p className="font-bold mb-1">{label}</p>
       <p style={{ color: "#1A8D7A" }}>Текущий объем: {currentVolume} т</p>
       <p style={{ color: "#4F709D" }}>Прошлый объем: {prevVolume} т</p>
-      <p style={{ color: YELLOW }}>Прошлый/Текущий объем: {volumeRatio}%</p>
+      <p style={{ color: YELLOW }}>Прошлый/Текуий объем: {volumeRatio}%</p>
     </div>
   );
 }
@@ -400,10 +473,10 @@ export function Sales() {
 
   // Category breakdown filters
   const [catTerritory, setCatTerritory] = useState<string>("Все");
-  const [catBusiness, setCatBusiness] = useState<string>("");
+  const [catBusiness, setCatBusiness] = useState<string>("Все");
   const [catProductGroup, setCatProductGroup] = useState<string>("Все");
-  const [catDivisionGroup, setCatDivisionGroup] = useState<string>("");
-  const [catDivision, setCatDivision] = useState<string>("");
+  const [catDivisionGroup, setCatDivisionGroup] = useState<string>("Все");
+  const [catDivision, setCatDivision] = useState<string>("Все");
 
   // Analytical dashboard filters
   const [analyticBusiness, setAnalyticBusiness] = useState<string>(ВИДЫ_БИЗНЕСА[0]);
@@ -425,13 +498,13 @@ export function Sales() {
 
   // Available product groups for category breakdown
   const catProductGroups = useMemo(() => {
-    if (!catBusiness) return [];
+    if (!catBusiness || catBusiness === "Все") return [];
     return businessTypeToProductGroups[catBusiness] || [];
   }, [catBusiness]);
 
   // Available divisions for category breakdown
   const catDivisions = useMemo(() => {
-    if (!catDivisionGroup) return [];
+    if (!catDivisionGroup || catDivisionGroup === "Все") return [];
     return divisionGroupToDivisions[catDivisionGroup] || [];
   }, [catDivisionGroup]);
 
@@ -513,6 +586,7 @@ export function Sales() {
       margin_plan: newMarginPlan,
       margin_fact: newMarginFact,
       service: newService,
+      akb: Math.round(Math.max(100, baseCat.akb + (seededMock(seed + "akb", -20, 20, 1)[0]))),
       trend,
       status: (newService >= 97 ? "green" : newService >= 92 ? "yellow" : "red") as const,
     };
@@ -648,10 +722,157 @@ export function Sales() {
             </ResponsiveContainer>
           </div>
         </div>
+
+        {/* ── АКБ Section ──────────────────────────────────────────────── */}
+        {(() => {
+          const akbCurr = seededMock(analyticGroup + analyticBusiness + "akbc", 220, 420, 7);
+          const akbPrev = seededMock(analyticGroup + analyticBusiness + "akbp", 190, 380, 7);
+          const akbMonthData = lflMonths.map((m, i) => ({
+            month: m,
+            "Текущий год": akbCurr[i],
+            "Прошлый год": akbPrev[i],
+          }));
+          const currentAkb = akbCurr[6];
+          const prevAkb = akbPrev[6];
+          const akbLfl = +(((currentAkb - prevAkb) / prevAkb) * 100).toFixed(1);
+
+          const akbDivData = analyticDivisions.map((d) => {
+            const curr = seededMock(d + analyticGroup + "ac", 30, 130, 1)[0];
+            const prev = seededMock(d + analyticGroup + "ap", 28, 120, 1)[0];
+            const lfl = +(((curr - prev) / prev) * 100).toFixed(1);
+            const revenue = seededMock(d + analyticGroup + "rev", 800, 4200, 1)[0];
+            const revPrev = seededMock(d + analyticGroup + "revp", 750, 3900, 1)[0];
+            const реализациянаТочку = Math.round(revenue / curr);
+            const реализациянаТочкуПрошлый = Math.round(revPrev / prev);
+            const реализацияLfl = +(((реализациянаТочку - реализациянаТочкуПрошлый) / реализациянаТочкуПрошлый) * 100).toFixed(1);
+            return { name: d, lfl, текущий: curr, прошлый: prev, реализациянаТочку, реализациянаТочкуПрошлый, реализацияLfl };
+          }).sort((a, b) => b.lfl - a.lfl);
+
+          const AkbTrendTooltip = ({ active, payload, label }: any) => {
+            if (!active || !payload) return null;
+            const curr = payload.find((p: any) => p.dataKey === "Текущий год");
+            const prev = payload.find((p: any) => p.dataKey === "Прошлый год");
+            const lflVal = curr && prev ? +(((curr.value - prev.value) / prev.value) * 100).toFixed(1) : null;
+            return (
+              <div className="rounded-xl p-3 text-xs" style={{
+                background: isDark ? "rgba(15,20,25,0.95)" : "rgba(255,255,255,0.95)",
+                border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+                backdropFilter: "blur(20px)",
+                boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.5)" : "0 8px 32px rgba(0,0,0,0.15)",
+                color: isDark ? "white" : "black",
+              }}>
+                <p className="font-bold mb-1">{label}</p>
+                {curr && <p style={{ color: "#1A8D7A" }}>Текущий год: {curr.value} точек</p>}
+                {prev && <p style={{ color: "#4F709D" }}>Прошлый год: {prev.value} точек</p>}
+                {lflVal !== null && (
+                  <p style={{ color: lflVal >= 0 ? GREEN : RED }}>LFL: {lflVal >= 0 ? "+" : ""}{lflVal}%</p>
+                )}
+              </div>
+            );
+          };
+
+          const AkbDivTooltip = ({ active, payload }: any) => {
+            if (!active || !payload?.[0]) return null;
+            const d = payload[0].payload;
+            return (
+              <div className="rounded-xl p-3 text-xs" style={{
+                background: isDark ? "rgba(15,20,25,0.95)" : "rgba(255,255,255,0.95)",
+                border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+                backdropFilter: "blur(20px)",
+                boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.5)" : "0 8px 32px rgba(0,0,0,0.15)",
+                color: isDark ? "white" : "black",
+                minWidth: 210,
+              }}>
+                <p className="font-bold mb-1.5">{d.name}</p>
+                <p style={{ color: "#1A8D7A" }}>АКБ тек.: {d.текущий} точек</p>
+                <p style={{ color: "#4F709D" }}>АКБ пред.: {d.прошлый} точек</p>
+                <p style={{ color: d.lfl >= 0 ? GREEN : RED }}>АКБ LFL: {d.lfl >= 0 ? "+" : ""}{d.lfl}%</p>
+                <div className="mt-2 pt-2" style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}` }}>
+                  <p className="mb-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>Реализация на точку:</p>
+                  <p style={{ color: "#1A8D7A" }}>Тек.: {d.реализациянаТочку?.toLocaleString("ru-RU")} тыс. ₽</p>
+                  <p style={{ color: "#4F709D" }}>Пред.: {d.реализациянаТочкуПрошлый?.toLocaleString("ru-RU")} тыс. ₽</p>
+                  <p style={{ color: d.реализацияLfl >= 0 ? GREEN : RED }}>LFL: {d.реализацияLfl >= 0 ? "+" : ""}{d.реализацияLfl}%</p>
+                </div>
+              </div>
+            );
+          };
+
+          const divChartHeight = Math.max(180, akbDivData.length * 38);
+
+          return (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-5">
+                {/* LEFT: AKB dynamics line chart */}
+                <div className="rounded-xl p-4" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-semibold" style={{ color: textSecondary }}>АКБ — Динамика по месяцам</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold" style={{ color: textStrong }}>{currentAkb} точек</span>
+                      <span className="text-xs font-bold px-1.5 py-0.5 rounded-md" style={{
+                        color: akbLfl >= 0 ? GREEN : RED,
+                        background: akbLfl >= 0 ? "rgba(26,141,122,0.12)" : "rgba(186,36,71,0.12)",
+                        border: `1px solid ${akbLfl >= 0 ? "rgba(26,141,122,0.2)" : "rgba(186,36,71,0.2)"}`,
+                      }}>
+                        {akbLfl >= 0 ? "▲" : "▼"} {Math.abs(akbLfl)}% vs пр.год
+                      </span>
+                    </div>
+                  </div>
+                  <ResponsiveContainer width="100%" height={divChartHeight}>
+                    <LineChart data={akbMonthData} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
+                      <CartesianGrid {...chartProps(isDark).cartesianGrid} />
+                      <XAxis dataKey="month" {...chartProps(isDark).xAxis} />
+                      <YAxis {...chartProps(isDark).yAxis} />
+                      <Tooltip content={<AkbTrendTooltip />} />
+                      <Legend {...darkChartProps.legend} />
+                      <Line type="monotone" dataKey="Текущий год" stroke="#1A8D7A" strokeWidth={2.5} dot={{ r: 3, fill: "#1A8D7A", strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                      <Line type="monotone" dataKey="Прошлый год" stroke="#4F709D" strokeWidth={2} strokeDasharray="5 5" dot={false} activeDot={{ r: 4 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* RIGHT: AKB LFL by divisions */}
+                <div className="rounded-xl p-4" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                  <p className="text-xs font-semibold mb-3" style={{ color: textSecondary }}>
+                    АКБ LFL по подразделениям — {analyticGroup}, %
+                  </p>
+                  <ResponsiveContainer width="100%" height={divChartHeight}>
+                    <BarChart data={akbDivData} layout="vertical" margin={{ left: 10, right: 36, top: 4, bottom: 0 }}>
+                      <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
+                      <XAxis type="number" {...darkChartProps.xAxis} unit="%" />
+                      <YAxis
+                        dataKey="name"
+                        type="category"
+                        {...darkChartProps.yAxis}
+                        width={105}
+                        tick={{ fontSize: 12, fill: isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.6)" }}
+                      />
+                      <ReferenceLine x={0} stroke={isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.18)"} />
+                      <Tooltip content={<AkbDivTooltip />} cursor={{ fill: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)" }} />
+                      <Bar
+                        dataKey="lfl"
+                        radius={[0, 4, 4, 0]}
+                        label={{
+                          position: "right",
+                          fontSize: 11,
+                          fill: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.5)",
+                          formatter: (v: number) => `${v > 0 ? "+" : ""}${v}%`,
+                        }}
+                      >
+                        {akbDivData.map((entry, idx) => (
+                          <Cell key={idx} fill={entry.lfl >= 0 ? "#1A8D7A" : "#ba2447"} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </>
+          );
+        })()}
       </GlassCard>
 
       {/* AI placeholder with Power BI link */}
-      <div className="mb-6">
+      <div className="mb-4">
         <AIPlaceholder lines={3} linkLabel="Power BI — Продажи" isDark={isDark} />
       </div>
 
@@ -675,7 +896,7 @@ export function Sales() {
 
       {/* ── Top SKU по выполнению плана ───────────────────────────────── */}
       <div
-        className="rounded-2xl mb-4 overflow-hidden"
+        className="rounded-2xl mb-4 mt-4 overflow-hidden"
         style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)", border: `1px solid ${cardBorder}` }}
       >
         {/* Header */}
@@ -746,14 +967,14 @@ export function Sales() {
           <Dropdown
             label="Территория"
             value={catTerritory}
-            options={ТЕРРИТОРИИ}
+            options={["Все", ...ТЕРРИТОРИИ] as readonly string[]}
             onChange={setCatTerritory}
             isDark={isDark}
           />
           <Dropdown
             label="Вид бизнеса"
-            value={catBusiness || "Выберите"}
-            options={ВИДЫ_БИЗНЕСА}
+            value={catBusiness || "Все"}
+            options={["Все", ...ВИДЫ_БИЗНЕСА] as readonly string[]}
             onChange={(v) => {
               setCatBusiness(v);
               setCatProductGroup("Все");
@@ -765,25 +986,25 @@ export function Sales() {
             value={catProductGroup}
             options={["Все" as string, ...catProductGroups] as readonly string[]}
             onChange={setCatProductGroup}
-            disabled={!catBusiness}
+            disabled={!catBusiness || catBusiness === "Все"}
             isDark={isDark}
           />
           <Dropdown
             label="Группа подразделений"
-            value={catDivisionGroup || "Выберите"}
-            options={ГРУППЫ_ПОДРАЗДЕЛЕНИЙ}
+            value={catDivisionGroup || "Все"}
+            options={["Все", ...ГРУППЫ_ПОДРАЗДЕЛЕНИЙ] as readonly string[]}
             onChange={(v) => {
               setCatDivisionGroup(v);
-              setCatDivision("");
+              setCatDivision("Все");
             }}
             isDark={isDark}
           />
           <Dropdown
             label="Подразделение"
-            value={catDivision || "Выберите"}
-            options={catDivisions.length > 0 ? catDivisions : ["Выберите"] as readonly string[]}
+            value={catDivision || "Все"}
+            options={catDivisions.length > 0 ? ["Все", ...catDivisions] as readonly string[] : ["Все"] as readonly string[]}
             onChange={setCatDivision}
-            disabled={!catDivisionGroup}
+            disabled={!catDivisionGroup || catDivisionGroup === "Все"}
             isDark={isDark}
           />
         </div>
@@ -807,14 +1028,23 @@ export function Sales() {
                 </div>
               </div>
             ))}
-            <div className="p-3 rounded-xl flex items-center justify-between"
-              style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
-              <span className="text-xs" style={{ color: textSecondary }}>Уровень сервиса</span>
-              <span className="text-sm font-bold" style={{
-                color: filteredCategory.service >= 97 ? GREEN : filteredCategory.service >= 92 ? YELLOW : RED,
-              }}>
-                {filteredCategory.service}%
-              </span>
+            <div className="flex gap-2">
+              <div className="flex-1 p-3 rounded-xl flex items-center justify-between"
+                style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <span className="text-xs" style={{ color: textSecondary }}>Уровень сервиса</span>
+                <span className="text-sm font-bold" style={{
+                  color: filteredCategory.service >= 97 ? GREEN : filteredCategory.service >= 92 ? YELLOW : RED,
+                }}>
+                  {filteredCategory.service}%
+                </span>
+              </div>
+              <div className="flex-1 p-3 rounded-xl flex items-center justify-between"
+                style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
+                <span className="text-xs" style={{ color: textSecondary }}>АКБ</span>
+                <span className="text-sm font-bold" style={{ color: textStrong }}>
+                  {filteredCategory.akb} точек
+                </span>
+              </div>
             </div>
           </div>
 
@@ -827,7 +1057,7 @@ export function Sales() {
                   <CartesianGrid {...darkChartProps.cartesianGrid} />
                   <XAxis dataKey="month" {...darkChartProps.xAxis} />
                   <YAxis {...darkChartProps.yAxis} />
-                  <Tooltip content={<CustomChartTooltip />} />
+                  <Tooltip content={<CategoryTrendTooltipWithAKB />} />
                   <Legend {...darkChartProps.legend} />
                   <Line key="line-plan" type="monotone" dataKey="план" name="План" stroke="#4F709D" strokeWidth={2} strokeDasharray="5 5" dot={false} />
                   <Line key="line-fact" type="monotone" dataKey="факт" name="Факт" stroke="#1A8D7A" strokeWidth={2.5} dot={{ r: 4, fill: "#1A8D7A", strokeWidth: 0 }} />
@@ -842,7 +1072,7 @@ export function Sales() {
 
       {/* AI Analyst blocks - separate cards */}
       <div className="mb-4">
-        <AIPlaceholder lines={1} isDark={isDark} linkLabel="Power BI — Продажи" />
+        <AIPlaceholder lines={3} isDark={isDark} linkLabel="Power BI — Продажи" />
       </div>
     </div>
   );
