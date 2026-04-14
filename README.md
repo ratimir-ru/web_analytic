@@ -1,7 +1,7 @@
 
   # RTM1 (Ксюха) (Copy) (Copy) (Copy)
 
-  This is a code bundle for RTM1 (Ксюха) (Copy) (Copy) (Copy). The original project is available at https://www.figma.com/design/YlVbEIiH8OmZmq9zmXqqHV/RTM1--%D0%9A%D1%81%D1%8E%D1%85%D0%B0---Copy---Copy---Copy-.
+  This is a code bundle for RTM Analytic
 
   ## Running the code
 
