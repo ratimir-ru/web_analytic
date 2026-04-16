@@ -802,7 +802,10 @@ export function Overview() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>
-              ▲ +5.2%
+              98%
+            </span>
+            <span className="text-xs font-bold" style={{ color: GREEN }}>
+              ▲ +5,2%
             </span>
           </div>
         </div>
@@ -900,7 +903,7 @@ export function Overview() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>
-              ▲ +0.9%
+              101%
             </span>
             <span className="text-xs font-bold" style={{ color: GREEN }}>▲ 2.3%</span>
           </div>
@@ -1250,10 +1253,10 @@ export function Overview() {
                 } radius={[0, 0, 0, 0]} />
               </BarChart>
             </ResponsiveContainer> */}
-            <ResponsiveContainer width="100%" height={290}>
+            <ResponsiveContainer width="100%" height={290} key={`overview-chart-${показатель}`}>
               <AreaChart data={chartData} margin={{ right: 10 }}>
                 <defs>
-                  <linearGradient id="gradПлан" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id={`dashboard-gradПлан-${показатель}`} x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%"  stopColor={
                       ({"Маржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
                     } stopOpacity={0.18} />
@@ -1261,9 +1264,9 @@ export function Overview() {
                       ({"Маржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
                     } stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="gradФакт" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id={`dashboard-gradФакт-${показатель}`} x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%"  stopColor={
-                      ({"Маржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
+                      ({"М����ржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
                     } stopOpacity={0.45} />
                     <stop offset="95%" stopColor={
                       ({"Маржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
@@ -1291,7 +1294,7 @@ export function Overview() {
                   }
                   strokeWidth={1.5}
                   strokeDasharray="5 4"
-                  fill="url(#gradПлан)"
+                  fill={`url(#dashboard-gradПлан-${показатель})`}
                   dot={false}
                   activeDot={{ r: 4, strokeWidth: 0 }}
                 />
@@ -1306,12 +1309,12 @@ export function Overview() {
                     ({"Маржа":"rgba(26,141,122,1)","Цена":"rgba(164,125,212,1)","Объём":"rgba(79,112,157,1)","УС":"rgba(224,90,133,1)"} as Record<string,string>)[показатель]
                   }
                   strokeWidth={2}
-                  fill="url(#gradФакт)"
+                  fill={`url(#dashboard-gradФакт-${показатель})`}
                   dot={(props: any) => {
-                    const { cx, cy, stroke } = props;
+                    const { cx, cy, stroke, index, payload } = props;
                     return (
                       <circle
-                        key={`dot-${cx}-${cy}`}
+                        key={`dashboard-fact-dot-${показатель}-${payload?.month || payload?.id || index}`}
                         cx={cx} cy={cy} r={3.5}
                         fill={isDark ? "#1a1f26" : "#ffffff"}
                         stroke={stroke}
@@ -1389,7 +1392,7 @@ export function Overview() {
 
         {видБизнеса && stackedVolumeData.length > 0 && (
           <>
-            <ResponsiveContainer width="100%" height={Math.max(stackedVolumeData.length * 45, 180)}>
+            <ResponsiveContainer width="100%" height={Math.max(stackedVolumeData.length * 45, 180)} key={`stacked-volume-${видБизнеса}-${группаТоваров}`}>
               <BarChart data={stackedVolumeData} layout="vertical" margin={{ left: 10, right: 20 }}>
                 <CartesianGrid {...cp.cartesianGrid} horizontal={false} vertical={false} />
                 <XAxis type="number" {...cp.xAxis} />

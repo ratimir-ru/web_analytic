@@ -233,8 +233,8 @@ function Dropdown<T extends string>({ label, value, options, onChange, isDark, d
                 color: opt === value ? "#e57373" : isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
                 background: opt === value ? "rgba(204,0,0,0.15)" : "transparent",
               }}
-              onMouseEnter={e => { if (opt !== value) (e.target as HTMLElement).style.background = "rgba(186,36,71,0.1)"; }}
-              onMouseLeave={e => { if (opt !== value) (e.target as HTMLElement).style.background = "transparent"; }}
+              onMouseEnter={(e) => { if (isDark) e.currentTarget.style.filter = "brightness(1.04)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.filter = "brightness(1)"; }}
             >
               {opt}
             </button>
@@ -333,9 +333,9 @@ export function Delivery() {
   const utilWeekday = useMemo(() => {
     const offset = seededValue(filterSeed + "weekutil", -3, 6) - 3;
     const topDivs = divisions.slice(0, 4);
-    if (topDivs.length === 0) return utilWeekdayBase.map(d => ({ day: d.day, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
-    const result = utilWeekdayBase.map(d => {
-      const row: Record<string, any> = { day: d.day };
+    if (topDivs.length === 0) return utilWeekdayBase.map((d, idx) => ({ id: `util-week-${idx}`, day: d.day, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
+    const result = utilWeekdayBase.map((d, idx) => {
+      const row: Record<string, any> = { id: `util-week-${idx}`, day: d.day };
       topDivs.forEach((div, i) => {
         row[div] = Math.min(99, Math.max(40, (d.values[i % 4] || 70) + offset));
       });
@@ -348,9 +348,9 @@ export function Delivery() {
   const utilMonthly = useMemo(() => {
     const offset = seededValue(filterSeed + "monthutil", -3, 6) - 3;
     const topDivs = divisions.slice(0, 4);
-    if (topDivs.length === 0) return utilMonthlyBase.map(d => ({ month: d.month, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
-    const result = utilMonthlyBase.map(d => {
-      const row: Record<string, any> = { month: d.month };
+    if (topDivs.length === 0) return utilMonthlyBase.map((d, idx) => ({ id: `util-month-${idx}`, month: d.month, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
+    const result = utilMonthlyBase.map((d, idx) => {
+      const row: Record<string, any> = { id: `util-month-${idx}`, month: d.month };
       topDivs.forEach((div, i) => {
         row[div] = Math.min(99, Math.max(40, (d.values[i % 4] || 70) + offset));
       });
@@ -433,9 +433,9 @@ export function Delivery() {
   const serviceWeekday = useMemo(() => {
     const offset = (seededValue(serviceSeed + "weekserv", 0, 4) - 2) * 0.3;
     const topDivs = divisions.slice(0, 4);
-    if (topDivs.length === 0) return serviceWeekdayBase.map(d => ({ day: d.day, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
-    const result = serviceWeekdayBase.map(d => {
-      const row: Record<string, any> = { day: d.day };
+    if (topDivs.length === 0) return serviceWeekdayBase.map((d, idx) => ({ id: `serv-week-${idx}`, day: d.day, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
+    const result = serviceWeekdayBase.map((d, idx) => {
+      const row: Record<string, any> = { id: `serv-week-${idx}`, day: d.day };
       topDivs.forEach((div, i) => {
         row[div] = Math.min(99.9, Math.max(85, +(d.values[i % 4] + offset).toFixed(1)));
       });
@@ -448,9 +448,9 @@ export function Delivery() {
   const serviceMonthly = useMemo(() => {
     const offset = (seededValue(serviceSeed + "monthserv", 0, 4) - 2) * 0.3;
     const topDivs = divisions.slice(0, 4);
-    if (topDivs.length === 0) return serviceMonthlyBase.map(d => ({ month: d.month, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
-    const result = serviceMonthlyBase.map(d => {
-      const row: Record<string, any> = { month: d.month };
+    if (topDivs.length === 0) return serviceMonthlyBase.map((d, idx) => ({ id: `serv-month-${idx}`, month: d.month, "Линия 1": d.values[0] + offset, "Линия 2": d.values[1] + offset, "Линия 3": d.values[2] + offset }));
+    const result = serviceMonthlyBase.map((d, idx) => {
+      const row: Record<string, any> = { id: `serv-month-${idx}`, month: d.month };
       topDivs.forEach((div, i) => {
         row[div] = Math.min(99.9, Math.max(85, +(d.values[i % 4] + offset).toFixed(1)));
       });
@@ -466,9 +466,10 @@ export function Delivery() {
   }, [divisions]);
 
   const activeTabStyle = {
-    background: "rgba(204,0,0,0.15)",
-    color: "#e57373",
-    border: "1px solid rgba(204,0,0,0.25)",
+    background: "rgba(186,36,71,0.15)",
+    color: "#E85A7C",
+    border: "1px solid rgba(186,36,71,0.25)",
+    fontWeight: 500,
   };
   const inactiveTabStyle = {
     color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
@@ -594,17 +595,15 @@ export function Delivery() {
               <div className="p-4 rounded-xl flex flex-col items-center" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>Общая утилизация ТС</ChartTitle>
                 <Gauge value={overallUtil} label={`Средняя (цель ≥ 85%) · ${группаПодразделений}`} unit="%" size={200} />
-                <div className="w-full mt-4 grid grid-cols-3 gap-3 text-center">
-                  {[
-                    ["Минимум", `${Math.min(...territoriesUtil.map(t => t.utilization))}%`, RED],
-                    ["Среднее", `${overallUtil}%`, YELLOW],
-                    ["Максимум", `${Math.max(...territoriesUtil.map(t => t.utilization))}%`, GREEN],
-                  ].map(([lbl, val, col]) => (
-                    <div key={lbl as string} className="rounded-xl p-3" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)", border: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}>
-                      <p className="text-xs font-semibold mb-1" style={{ color: textSecondary }}>{lbl}</p>
-                      <p className="text-lg font-bold" style={{ color: col as string }}>{val}</p>
-                    </div>
-                  ))}
+                <div className="w-full mt-4 grid grid-cols-2 gap-3 text-center">
+                  <div className="rounded-xl p-3" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)", border: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}>
+                    <p className="text-xs font-semibold mb-1" style={{ color: textSecondary }}>Загрузка</p>
+                    <p className="text-lg font-bold" style={{ color: GREEN }}>1250 т</p>
+                  </div>
+                  <div className="rounded-xl p-3" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)", border: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}>
+                    <p className="text-xs font-semibold mb-1" style={{ color: textSecondary }}>Грузоподъемность</p>
+                    <p className="text-lg font-bold" style={{ color: GREEN }}>1540 т</p>
+                  </div>
                 </div>
               </div>
 
@@ -643,7 +642,7 @@ export function Delivery() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>Утилизация по дням недели (%)</ChartTitle>
-                <ResponsiveContainer width="100%" height={280}>
+                <ResponsiveContainer width="100%" height={280} key={`delivery-util-weekday-${группаПодразделений}-${видБизнеса}-${группаТоваров}`}>
                   <LineChart data={utilWeekday}>
                     <CartesianGrid {...darkChartProps.cartesianGrid} />
                     <XAxis dataKey="day" {...darkChartProps.xAxis} />
@@ -667,7 +666,7 @@ export function Delivery() {
 
               <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>Утилизация по месяцам (%)</ChartTitle>
-                <ResponsiveContainer width="100%" height={280}>
+                <ResponsiveContainer width="100%" height={280} key={`delivery-util-monthly-${группаПодразделений}-${видБизнеса}-${группаТоваров}`}>
                   <LineChart data={utilMonthly}>
                     <CartesianGrid {...darkChartProps.cartesianGrid} />
                     <XAxis dataKey="month" {...darkChartProps.xAxis} />
@@ -702,11 +701,10 @@ export function Delivery() {
               <div className="p-4 rounded-xl flex flex-col items-center" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>{усУровень} уровень сервиса</ChartTitle>
                 <Gauge value={overallService} label={`Факт: ${overallService}% · Цель: 97%`} unit="%" size={185} />
-                <div className="w-full mt-4 grid grid-cols-3 gap-3 text-center">
+                <div className="w-full mt-4 grid grid-cols-2 gap-3 text-center">
                   {[
-                    ["Минимум", `${Math.min(...subdivisionsService.map(s => s.service))}%`, RED],
-                    ["Среднее", `${overallService}%`, YELLOW],
-                    ["Максимум", `${Math.max(...subdivisionsService.map(s => s.service))}%`, GREEN],
+                    ["Заявлено", "1250 т", GREEN],
+                    ["Отгружено", "1180 т", YELLOW],
                   ].map(([lbl, val, col]) => (
                     <div key={lbl as string} className="rounded-xl p-3" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)", border: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}>
                       <p className="text-xs font-semibold mb-1" style={{ color: textSecondary }}>{lbl}</p>
@@ -745,7 +743,7 @@ export function Delivery() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>Уровень сервиса по дням недели (%)</ChartTitle>
-                <ResponsiveContainer width="100%" height={280}>
+                <ResponsiveContainer width="100%" height={280} key={`delivery-service-weekday-${группаПодразделений}-${видБизнеса}-${группаТоваров}`}>
                   <LineChart data={serviceWeekday}>
                     <CartesianGrid {...darkChartProps.cartesianGrid} />
                     <XAxis dataKey="day" {...darkChartProps.xAxis} />
@@ -769,7 +767,7 @@ export function Delivery() {
 
               <div className="p-4 rounded-xl" style={{ background: innerCardBg, border: `1px solid ${innerCardBorder}` }}>
                 <ChartTitle>Уровень сервиса по месяцам (%)</ChartTitle>
-                <ResponsiveContainer width="100%" height={280}>
+                <ResponsiveContainer width="100%" height={280} key={`delivery-service-monthly-${группаПодразделений}-${видБизнеса}-${группаТоваров}`}>
                   <LineChart data={serviceMonthly}>
                     <CartesianGrid {...darkChartProps.cartesianGrid} />
                     <XAxis dataKey="month" {...darkChartProps.xAxis} />

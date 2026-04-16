@@ -8,7 +8,7 @@ import { useTheme } from "../ThemeProvider";
 import { ВИДЫ_БИЗНЕСА, ТЕРРИТОРИИ, businessTypeToProductGroups } from "../filtersData";
 import {
   Package, Warehouse, AlertTriangle, RotateCcw,
-  ChevronDown, ChevronUp, Bot, ExternalLink, TrendingDown, PercentCircle 
+  ChevronDown, ChevronUp, Bot, ExternalLink, TrendingDown, PercentCircle, Download
 } from "lucide-react";
 
 // ── Palette ───────────────────────────────────────────────────────────────────
@@ -239,16 +239,18 @@ function OsgCombinedCard({
             <div className="w-1.5 h-1.5 rounded-full" style={{ background: GREEN }} />
             <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.38)" : "rgba(0,0,0,0.42)" }}>≥ 50% ОСГ</span>
           </div>
-          <span className="text-xl font-semibold block"
-            style={{ color: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.87)" }}>
-            {(above50Kg / 1000).toFixed(1)} т
-          </span>
-          {showBar && (
-            <span className="text-xs font-bold px-1.5 py-0.5 rounded-md inline-block mt-1.5"
-              style={{ background: "rgba(26,141,122,0.14)", color: GREEN, border: "1px solid rgba(26,141,122,0.25)" }}>
-              {above50Pct}%
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-semibold"
+              style={{ color: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.87)" }}>
+              {(above50Kg / 1000).toFixed(1)} т
             </span>
-          )}
+            {showBar && (
+              <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
+                style={{ background: "rgba(26,141,122,0.14)", color: GREEN, border: "1px solid rgba(26,141,122,0.25)" }}>
+                {above50Pct}%
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Divider */}
@@ -261,20 +263,22 @@ function OsgCombinedCard({
             <div className="w-1.5 h-1.5 rounded-full" style={{ background: belowColor }} />
             <span className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.38)" : "rgba(0,0,0,0.42)" }}>&lt; 50% ОСГ</span>
           </div>
-          <span className="text-xl font-semibold block"
-            style={{ color: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.87)" }}>
-            {(below50Kg / 1000).toFixed(1)} т
-          </span>
-          {showBar && (
-          <span className="text-xs font-bold px-1.5 py-0.5 rounded-md inline-block mt-1.5"
-            style={{
-              background: belowRatio > 0.2 ? "rgba(186,36,71,0.14)" : "rgba(26,141,122,0.14)",
-              color: belowColor,
-              border: `1px solid ${belowRatio > 0.2 ? "rgba(186,36,71,0.25)" : "rgba(26,141,122,0.25)"}`,
-            }}>
-            {below50Pct}%
-          </span>
-          )}
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-semibold"
+              style={{ color: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.87)" }}>
+              {(below50Kg / 1000).toFixed(1)} т
+            </span>
+            {showBar && (
+              <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
+                style={{
+                  background: belowRatio > 0.2 ? "rgba(186,36,71,0.14)" : "rgba(26,141,122,0.14)",
+                  color: belowColor,
+                  border: `1px solid ${belowRatio > 0.2 ? "rgba(186,36,71,0.25)" : "rgba(26,141,122,0.25)"}`,
+                }}>
+                {below50Pct}%
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -355,8 +359,8 @@ function InnerCard({ children, className = "" }: { children: React.ReactNode; cl
         WebkitBackdropFilter: "blur(20px)",
         boxShadow: isDark ? "0 2px 16px rgba(0,0,0,0.18)" : "0 2px 16px rgba(0,0,0,0.05)",
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.filter = "brightness(1.04)"; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.filter = "brightness(1)"; }}
+      onMouseEnter={(e) => { if (isDark) (e.currentTarget as HTMLElement).style.filter = "brightness(1.04)"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.filter = ""; }}
     >
       {children}
     </div>
@@ -454,11 +458,17 @@ export function StockBlock() {
   const [productGroup, setProductGroup] = useState<string>("Все");
   const [returnsCollapsed, setReturnsCollapsed] = useState(false);
   const [writeoffsCollapsed, setWriteoffsCollapsed] = useState(false);
+  const [osgTableCollapsed, setOsgTableCollapsed] = useState(false);
 
   const textSecondary = isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.45)";
   const textMuted = isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.35)";
   const textStrong = isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)";
   const divider = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.06)";
+
+  const tableTextStrong    = isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.82)";
+  const tableTextSecondary = isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.60)";
+  const tableTextMuted     = isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.50)";
+  const tableDivider       = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.10)";
 
   // Product group options
   const productGroupOptions = useMemo(() => {
@@ -670,7 +680,7 @@ export function StockBlock() {
           bottomInfo={
             <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
               style={{ background: "rgba(26,141,122,0.14)", color: GREEN, border: "1px solid rgba(26,141,122,0.25)" }}>
-              ▼ −4.3%
+              ▲ −4.3%
             </span>
           }
           icon={<RotateCcw size={14} />}
@@ -692,7 +702,10 @@ export function StockBlock() {
             {([["stock", "Остатки"], ["returns", "Возвраты и списания"]] as const).map(([key, label]) => (
               <button key={key} onClick={() => setActiveTab(key)}
                 className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
-                style={tabStyle(activeTab === key)}>
+                style={{
+                  ...tabStyle(activeTab === key),
+                  ...(activeTab === key && { color: '#E85A7C', fontWeight: 500 })
+                }}>
                 {label}
               </button>
             ))}
@@ -756,7 +769,7 @@ export function StockBlock() {
                 </p>
                 <div className="flex items-center gap-4">
                   <div style={{ flex: "0 0 200px", height: 200 }}>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" key={`osg-pie-${territory}-${business}-${productGroup}`}>
                       <PieChart>
                         <Pie
                           data={osgPieData}
@@ -874,7 +887,7 @@ export function StockBlock() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
               <InnerCard>
                 <p className="text-xs font-semibold mb-3" style={{ color: textSecondary }}>Остатки по группам товаров (кг, ОСГ)</p>
-                <ResponsiveContainer width="100%" height={220}>
+                <ResponsiveContainer width="100%" height={220} key={`stock-product-${territory}-${business}-${productGroup}`}>
                   <BarChart data={stockByProduct} layout="vertical" margin={{ left: 10, right: 10 }}>
                     <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                     <XAxis type="number" {...darkChartProps.xAxis} tickFormatter={v => `${(v / 1000).toFixed(0)}т`} />
@@ -897,7 +910,7 @@ export function StockBlock() {
               <InnerCard>
                 <p className="text-xs font-semibold mb-3" style={{ color: textSecondary }}>Остатки по складам (кг)</p>
                 <div style={{ height: 220, overflowY: "auto", overflowX: "hidden" }}>
-                  <ResponsiveContainer width="100%" height={Math.max(220, stockByWarehouse.length * 36)}>
+                  <ResponsiveContainer width="100%" height={Math.max(220, stockByWarehouse.length * 36)} key={`stock-warehouse-${territory}-${business}-${productGroup}`}>
                     <BarChart data={stockByWarehouse} layout="vertical" margin={{ left: 10, right: 40 }}>
                       <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                       <XAxis type="number" {...darkChartProps.xAxis} tickFormatter={v => `${(v / 1000).toFixed(0)}т`} />
@@ -936,30 +949,79 @@ export function StockBlock() {
 
             {/* Row 3: OSG Timeline table — grouped by territory */}
             <InnerCard>
-              <p className="text-xs font-semibold mb-1" style={{ color: textSecondary }}>
-                Динамика ОСГ по складам — еженедельные срезы (партии / кг / % ОСГ)
-              </p>
-              <p className="text-xs mb-3" style={{ color: textMuted }}>Сгруппировано по территориям</p>
-              <div style={{ overflowX: "auto" }}>
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-xs font-semibold mb-1" style={{ color: tableTextSecondary }}>
+                    Динамика ОСГ по складам — еженедельные срезы (партии / кг / % ОСГ)
+                  </p>
+                  <p className="text-xs" style={{ color: tableTextMuted   }}>Сгруппировано по территориям</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {/* Download button */}
+                  <button
+                    onClick={() => {
+                      // Mock download functionality
+                      console.log('Downloading OSG table data...');
+                    }}
+                    className="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5"
+                    style={{
+                      background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                      color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (isDark) (e.currentTarget as HTMLElement).style.filter = "brightness(1.04)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.filter = "brightness(1)";
+                    }}
+                    title="Скачать данные"
+                  >
+                    <Download size={16} />
+                    <span className="text-xs font-medium">Скачать отчет</span>
+                  </button>
+                  {/* Collapse button */}
+                  <button
+                    onClick={() => setOsgTableCollapsed(!osgTableCollapsed)}
+                    className="p-1.5 rounded-lg transition-all"
+                    style={{
+                      background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                      color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+                    }}
+                    onMouseEnter={(e) => { if (isDark) e.currentTarget.style.filter = "brightness(1.2)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.filter = ""; }}
+                    title={osgTableCollapsed ? "Развернуть" : "Свернуть"}
+                  >
+                    <ChevronUp
+                      size={16}
+                      style={{
+                        transform: osgTableCollapsed ? "rotate(180deg)" : "rotate(0deg)",
+                        transition: "transform 0.3s ease",
+                      }}
+                    />
+                  </button>
+                </div>
+              </div>
+              {!osgTableCollapsed && (
+                <div style={{ overflowX: "auto" }}>
                 <table style={{ borderCollapse: "collapse", width: "100%", fontSize: 11, minWidth: 700 }}>
                   <thead>
                     <tr>
-                      <th className="text-left" style={{ color: textMuted, fontWeight: 600, padding: "4px 8px 8px 0", minWidth: 180, borderBottom: `1px solid ${divider}` }}>
+                      <th className="text-left" style={{ color: tableTextMuted, fontWeight: 600, padding: "4px 8px 8px 0", minWidth: 180, borderBottom: `1px solid ${tableDivider}` }}>
                         Территория / Склад
                       </th>
                       {TIMELINE_DATES.map(d => (
-                        <th key={d} colSpan={3} className="text-center" style={{ color: textSecondary, fontWeight: 700, padding: "4px 4px 8px", borderBottom: `1px solid ${divider}`, borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}>
+                        <th key={d} colSpan={3} className="text-center" style={{ color: tableTextSecondary, fontWeight: 700, padding: "4px 4px 8px", borderBottom: `1px solid ${tableDivider}`, borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}` }}>
                           {d}.26
                         </th>
                       ))}
                     </tr>
                     <tr>
-                      <th style={{ padding: "2px 8px 6px 0", borderBottom: `1px solid ${divider}` }} />
+                      <th style={{ padding: "2px 8px 6px 0", borderBottom: `1px solid ${tableDivider}` }} />
                       {TIMELINE_DATES.map(d => (
                         <React.Fragment key={d}>
-                          <th style={{ color: textMuted, fontWeight: 500, padding: "2px 4px 6px", textAlign: "right", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"}`, borderBottom: `1px solid ${divider}` }}>Парт.</th>
-                          <th style={{ color: textMuted, fontWeight: 500, padding: "2px 4px 6px", textAlign: "right", borderBottom: `1px solid ${divider}` }}>кг</th>
-                          <th style={{ color: textMuted, fontWeight: 500, padding: "2px 4px 6px", textAlign: "center", borderBottom: `1px solid ${divider}` }}>ОСГ</th>
+                          <th style={{ color: tableTextMuted, fontWeight: 500, padding: "2px 4px 6px", textAlign: "right", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"}`, borderBottom: `1px solid ${tableDivider}` }}>Парт.</th>
+                          <th style={{ color: tableTextMuted, fontWeight: 500, padding: "2px 4px 6px", textAlign: "right", borderBottom: `1px solid ${tableDivider}` }}>кг</th>
+                          <th style={{ color: tableTextMuted, fontWeight: 500, padding: "2px 4px 6px", textAlign: "center", borderBottom: `1px solid ${tableDivider}` }}>ОСГ</th>
                         </React.Fragment>
                       ))}
                     </tr>
@@ -979,19 +1041,19 @@ export function StockBlock() {
                               <span style={{ color: GREEN, fontWeight: 700, fontSize: 11, letterSpacing: "0.03em" }}>
                                 {terr}
                               </span>
-                              <span style={{ color: textMuted, fontSize: 10 }}>
+                              <span style={{ color: tableTextMuted, fontSize: 10 }}>
                                 · {rows.length} {rows.length === 1 ? "склад" : rows.length < 5 ? "склада" : "складов"}
                               </span>
                             </div>
                           </td>
                         </tr>
                         {rows.map((row, ri) => (
-                          <tr key={row.warehouse} style={{ borderTop: `1px solid ${divider}` }}>
+                          <tr key={row.warehouse} style={{ borderTop: `1px solid ${tableDivider}` }}>
                             <td style={{ padding: "5px 8px 5px 12px", minWidth: 180 }}>
-                              <span style={{ display: "block", color: textStrong, fontSize: 11 }}>
+                              <span style={{ display: "block", color: tableTextStrong, fontSize: 11 }}>
                                 {row.warehouse.replace("Склад ", "").split("(")[0].trim()}
                               </span>
-                              <span style={{ color: textMuted, fontSize: 10 }}>
+                              <span style={{ color: tableTextMuted, fontSize: 10 }}>
                                 {row.warehouse.includes("(") ? "(" + row.warehouse.split("(")[1] : ""}
                               </span>
                             </td>
@@ -1000,10 +1062,10 @@ export function StockBlock() {
                               const bgOpacity = d.osgPct < 25 ? 0.18 : d.osgPct < 50 ? 0.1 : 0;
                               return (
                                 <React.Fragment key={di}>
-                                  <td style={{ padding: "5px 4px", textAlign: "right", color: textSecondary, borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"}` }}>
+                                  <td style={{ padding: "5px 4px", textAlign: "right", color: tableTextSecondary, borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"}` }}>
                                     {d.batches}
                                   </td>
-                                  <td style={{ padding: "5px 4px", textAlign: "right", color: textSecondary }}>
+                                  <td style={{ padding: "5px 4px", textAlign: "right", color: tableTextSecondary }}>
                                     {d.kg.toLocaleString("ru-RU")}
                                   </td>
                                   <td style={{ padding: "5px 4px", textAlign: "center" }}>
@@ -1030,16 +1092,19 @@ export function StockBlock() {
                   </tbody>
                 </table>
               </div>
+              )}
               {/* OSG legend */}
+              {!osgTableCollapsed && (
               <div className="flex items-center gap-4 mt-3 flex-wrap">
-                <span className="text-xs" style={{ color: textMuted }}>ОСГ:</span>
+                <span className="text-xs" style={{ color: tableTextMuted }}>ОСГ:</span>
                 {OSG_SEGMENTS.map(s => (
                   <div key={s.label} className="flex items-center gap-1">
                     <div className="w-2.5 h-2.5 rounded-sm" style={{ background: s.color }} />
-                    <span className="text-xs" style={{ color: textMuted }}>{s.label}</span>
+                    <span className="text-xs" style={{ color: tableTextMuted }}>{s.label}</span>
                   </div>
                 ))}
               </div>
+              )}
             </InnerCard>
           </>
         )}
@@ -1056,7 +1121,7 @@ export function StockBlock() {
                 bottomInfo={
                   <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
                     style={{ background: "rgba(26,141,122,0.12)", color: GREEN, border: "1px solid rgba(26,141,122,0.2)" }}>
-                    ▼ −4.3%
+                    ▲ −4.3%
                   </span>
                 }
                 icon={<RotateCcw size={14} />}
@@ -1080,7 +1145,7 @@ export function StockBlock() {
                 bottomInfo={
                   <span className="text-xs font-bold px-1.5 py-0.5 rounded-md"
                     style={{ background: "rgba(186,36,71,0.12)", color: RED, border: "1px solid rgba(186,36,71,0.2)" }}>
-                    ▲ +1.2%
+                    ▼ +1.2%
                   </span>
                 }
                 icon={<AlertTriangle size={14} />}
@@ -1111,7 +1176,7 @@ export function StockBlock() {
                 </button>
                 {!returnsCollapsed && (
                   <>
-                    <ResponsiveContainer width="100%" height={200}>
+                    <ResponsiveContainer width="100%" height={200} key={`returns-${territory}-${business}-${productGroup}`}>
                       <BarChart data={returnsData} layout="vertical" margin={{ left: 10, right: 36 }}>
                         <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                         <XAxis type="number" {...darkChartProps.xAxis} />
@@ -1173,7 +1238,7 @@ export function StockBlock() {
                 </button>
                 {!writeoffsCollapsed && (
                   <>
-                    <ResponsiveContainer width="100%" height={200}>
+                    <ResponsiveContainer width="100%" height={200} key={`writeoffs-${territory}-${business}-${productGroup}`}>
                       <BarChart data={writeoffsData} layout="vertical" margin={{ left: 10, right: 36 }}>
                         <CartesianGrid {...darkChartProps.cartesianGrid} horizontal={false} />
                         <XAxis type="number" {...darkChartProps.xAxis} />
@@ -1228,7 +1293,7 @@ export function StockBlock() {
             {/* Dynamic by month */}
             <InnerCard className="mt-4">
               <p className="text-xs font-semibold mb-3" style={{ color: textSecondary }}>Динамика возвратов и списаний по месяцам (кг)</p>
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={200} key={`monthly-${territory}-${business}-${productGroup}`}>
                 <BarChart data={["Янв","Фев","Мар","Апр","Май","Июн","Июл","Авг","Сен","Окт","Ноя","Дек"].map((m, i) => ({
                   month: m,
                   "Возвраты": Math.round((seeded(seed + m + "ret" + i, 900, 1800))),
@@ -1239,8 +1304,8 @@ export function StockBlock() {
                   <YAxis {...darkChartProps.yAxis} />
                   <Tooltip content={<StockTooltip />} />
                   <Legend {...darkChartProps.legend} />
-                  <Bar dataKey="Возвраты" fill={RED} radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="Списания" fill={ORANGE} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="Возвраты" fill={BLUE} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="Списания" fill={TEAL} radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </InnerCard>

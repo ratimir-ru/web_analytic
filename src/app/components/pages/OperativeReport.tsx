@@ -28,6 +28,12 @@ const tablesData: Record<string, TableData> = {
     margin: { plan: 194.3, fact: 193.1, pct: 99, month: -0.1, year: -19.6 },
     sl: { plan: 97.0, fact: 96.6, pct: 99, month: -1.0, year: 0 }
   },
+  "Основной бизнес": {
+    volume: { plan: 2150, fact: 2285, pct: 106, month: 5.8, year: 18 },
+    price: { plan: 412.35, fact: 408.92, pct: 99, month: -3.4, year: 0 },
+    margin: { plan: 245.8, fact: 242.5, pct: 99, month: -1.3, year: -15.2 },
+    sl: { plan: 97.0, fact: 97.2, pct: 100, month: 0.2, year: 0 }
+  },
   "Колбасные изделия": {
     volume: { plan: 826, fact: 853, pct: 103, month: 0.3, year: -24 },
     price: { plan: 402.68, fact: 401.42, pct: 100, month: -1.3, year: 0 },
@@ -156,7 +162,8 @@ function SimpleKPICard({
   yearOrMonth,
   yearOrMonthLabel = "год",
   isDark,
-  coloredFact = false
+  coloredFact = false,
+  titleHeight = "48px"
 }: {
   title: string;
   fact: string | number;
@@ -165,6 +172,7 @@ function SimpleKPICard({
   yearOrMonthLabel?: string;
   isDark: boolean;
   coloredFact?: boolean;
+  titleHeight?: string;
 }) {
   // Determine fact color based on comparison with plan
   const getFactColor = () => {
@@ -185,12 +193,13 @@ function SimpleKPICard({
   };
 
   return (
-    <div className="rounded-2xl p-4" style={{
+    <div className="rounded-2xl p-4 h-full flex flex-col" style={{
       background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
       border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`
     }}>
-      <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{
-        color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)"
+      <p className="text-xs font-semibold uppercase tracking-wider mb-3 flex items-start" style={{
+        color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
+        minHeight: titleHeight
       }}>
         {title}
       </p>
@@ -340,7 +349,7 @@ function KPIBlock({
   value: string; 
   unit: string; 
   percentMain: number; 
-  percentSecondary: number; 
+  percentSecondary?: number; 
   plan: string; 
   diff: string;
   isDark: boolean;
@@ -364,7 +373,7 @@ function KPIBlock({
         </p>
         <div className="rounded-lg px-3 py-1.5" style={{ background: mainBg, border: `1px solid ${mainBorder}` }}>
           <p className="text-sm font-bold leading-tight" style={{ color: mainColor }}>
-            {percentMain}%/{percentSecondary}%
+            {percentSecondary !== undefined ? `${percentMain}%/${percentSecondary}%` : `${percentMain}%`}
           </p>
         </div>
       </div>
@@ -493,7 +502,6 @@ function CombinedCategoriesTable({ categories, data, isDark }: { categories: str
                 background: isDark ? "rgba(15,20,25,0.95)" : "rgba(248,249,250,0.95)",
                 minWidth: "140px"
               }}>
-                Показатель
               </th>
               {categories.map(category => (
                 <th key={category} colSpan={5} className="text-center px-2 py-3 text-xs font-bold" style={{
@@ -505,9 +513,10 @@ function CombinedCategoriesTable({ categories, data, isDark }: { categories: str
               ))}
             </tr>
             <tr style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}>
-              <th className="sticky left-0" style={{
-                background: isDark ? "rgba(15,20,25,0.95)" : "rgba(248,249,250,0.95)"
-              }}></th>
+              <th className="sticky left-0 text-left px-3 py-2 text-xs font-medium" style={{
+                background: isDark ? "rgba(15,20,25,0.95)" : "rgba(248,249,250,0.95)",
+                color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)"
+              }}>Показатель</th>
               {categories.map((category, idx) => (
                 <React.Fragment key={category}>
                   <th className="text-center px-1 py-2 text-xs font-medium" style={{
@@ -665,21 +674,17 @@ export function OperativeReport() {
   });
 
   const tableCategories = [
-    "Ратимир",
-    "Проект СТ",
-    "Трейдинг",
-    "Продукция МАП",
-    "Проект Агроптица",
-    "Колбасные изделия",
-    "Замороженные полуфабрикаты",
-    "Деликатесы",
-    "Охлаждённые полуфабрикаты",
-    "Мясной проект Ратимир"
+    "Продажи",
+    "Запасы",
+    "Утилизация",
+    "Долги",
+    "Финансовые результаты",
+    "Годовые показатели"
   ];
 
   const scrollToTable = (category: string) => {
     setActiveTable(category);
-    const element = document.getElementById(`table-${category}`);
+    const element = document.getElementById(`section-${category}`);
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -735,7 +740,7 @@ export function OperativeReport() {
       {/* KPI Grid: Speedometer + 3 KPI blocks */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="rounded-2xl" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)", border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}>
-          <Speedometer value={95} label="SL" />
+          <Speedometer value={95} label="Уровень сервиса" />
         </div>
         
         <KPIBlock
@@ -756,7 +761,6 @@ export function OperativeReport() {
           value="348,24"
           unit="руб/кг"
           percentMain={95}
-          percentSecondary={0}
           plan="351,74"
           diff="-3,50"
           isDark={isDark}
@@ -768,7 +772,6 @@ export function OperativeReport() {
           value="216,6"
           unit="млн. руб"
           percentMain={100}
-          percentSecondary={0}
           plan="216,7"
           diff="-0,1"
           isDark={isDark}
@@ -784,7 +787,12 @@ export function OperativeReport() {
           {tableCategories.map(category => (
             <button
               key={category}
-              onClick={() => scrollToTable(category)}
+              onClick={() => {
+                const element = document.getElementById(`section-${category}`);
+                if (element) {
+                  element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+              }}
               className="px-4 py-2 rounded-xl text-sm font-medium transition-all"
               style={{
                 background: activeTable === category 
@@ -804,11 +812,16 @@ export function OperativeReport() {
         </div>
       </div>
 
-      {/* Tables */}
-      <div className="space-y-3">
-        {/* Ратимир - full width */}
-        <div id="table-Ратимир">
-          <DataTable data={tablesData["Ратимир"]} title="Ратимир" isDark={isDark} />
+      {/* ПРОДАЖИ SECTION */}
+      <div id="section-Продажи" className="space-y-3">
+        {/* Ратимир + Основной бизнес в одной строке */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div id="table-Ратимир">
+            <DataTable data={tablesData["Ратимир"]} title="Ратимир" isDark={isDark} />
+          </div>
+          <div id="table-Основной бизнес">
+            <DataTable data={tablesData["Основной бизнес"]} title="Основной бизнес" isDark={isDark} />
+          </div>
         </div>
 
         {/* Combined 5 categories table */}
@@ -820,10 +833,10 @@ export function OperativeReport() {
           />
         </div>
 
-        {/* Проект СТ + Трейдинг в одной строке */}
+        {/* Проект СТ + Трейдинг в одн��й строке */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           <div id="table-Проект СТ">
-            <DataTable data={tablesData["Проект СТ"]} title="Проект СТ" isDark={isDark} />
+            <DataTable data={tablesData["Проект СТ"]} title="Пр��ект СТ" isDark={isDark} />
           </div>
           <div id="table-Трейдинг">
             <DataTable data={tablesData["Трейдинг"]} title="Трейдинг" isDark={isDark} />
@@ -842,7 +855,7 @@ export function OperativeReport() {
       </div>
 
       {/* ЗАПАСЫ SECTION */}
-      <div className="mt-12 pt-8" style={{ borderTop: `2px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
+      <div id="section-Запасы" className="mt-12 pt-8" style={{ borderTop: `2px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
         <h2 className="mb-2">
           <span className="text-2xl font-black block" style={{ color: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.92)" }}>
             Запасы
@@ -951,19 +964,19 @@ export function OperativeReport() {
       </div>
 
       {/* УТИЛИЗАЦИЯ АВТОТРАНСПОРТА SECTION */}
-      <div className="mt-12 pt-8" style={{ borderTop: `2px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
+      <div id="section-Утилизация" className="mt-12 pt-8" style={{ borderTop: `2px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
         <h2 className="mb-6">
           <span className="text-2xl font-black block" style={{ color: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.92)" }}>
-            Утилизация автотранспорта
+            Утилизация автотрансп��рта
           </span>
           <span className="text-sm block" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
             Сравнение с прошлым месяцем и прошлым годом
           </span>
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
           <SimpleKPICard
-            title="Процент использования грузоподъёмности автомобилей"
+            title="Процент использования грузоподъёмности авт��мобилей"
             fact="87,5%"
             plan="85,0%"
             yearOrMonth="82,3%"
@@ -998,7 +1011,7 @@ export function OperativeReport() {
       </div>
 
       {/* ДОЛГИ SECTION */}
-      <div className="mt-12 pt-8" style={{ borderTop: `2px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
+      <div id="section-Долги" className="mt-12 pt-8" style={{ borderTop: `2px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
         <h2 className="mb-6">
           <span className="text-2xl font-black block" style={{ color: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.92)" }}>
             Долги
@@ -1009,7 +1022,7 @@ export function OperativeReport() {
         </h2>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
             <SimpleKPICard
               title="Сальдо расчётов с покупателями"
               fact="2 239"
@@ -1017,6 +1030,7 @@ export function OperativeReport() {
               yearOrMonth="1 877"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
             <SimpleKPICard
               title="Просроченная ДЗ за товар"
@@ -1025,6 +1039,7 @@ export function OperativeReport() {
               yearOrMonth="169,1"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
             <SimpleKPICard
               title="Задолженность Агрохолдинг"
@@ -1033,6 +1048,7 @@ export function OperativeReport() {
               yearOrMonth="280"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
             <SimpleKPICard
               title="Задолженность Агроптица"
@@ -1041,10 +1057,11 @@ export function OperativeReport() {
               yearOrMonth="145"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
             <SimpleKPICard
               title="Сальдо расчётов с прочими поставщиками"
               fact="591"
@@ -1052,6 +1069,7 @@ export function OperativeReport() {
               yearOrMonth="—"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
             <SimpleKPICard
               title="Банковские кредиты"
@@ -1060,13 +1078,14 @@ export function OperativeReport() {
               yearOrMonth="—"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
           </div>
         </div>
       </div>
 
       {/* ФИНАНСОВЫЕ РЕЗУЛЬТАТЫ (МЕСЯЦ) SECTION */}
-      <div className="mt-12 pt-8" style={{ borderTop: `2px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
+      <div id="section-Финансовые результаты" className="mt-12 pt-8" style={{ borderTop: `2px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
         <h2 className="mb-6">
           <span className="text-2xl font-black block" style={{ color: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.92)" }}>
             Финансовые результаты (месяц)
@@ -1074,7 +1093,7 @@ export function OperativeReport() {
         </h2>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
             <SimpleKPICard
               title="Прогнозная маржинальная прибыль"
               fact="506,5"
@@ -1082,6 +1101,7 @@ export function OperativeReport() {
               yearOrMonth="623,9"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
             <SimpleKPICard
               title="Прочие доходы и расходы + результаты проектов"
@@ -1090,6 +1110,7 @@ export function OperativeReport() {
               yearOrMonth="18,5"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
             <SimpleKPICard
               title="Условно-постоянные затраты"
@@ -1098,6 +1119,7 @@ export function OperativeReport() {
               yearOrMonth="465,2"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
             <SimpleKPICard
               title="Прогнозная прибыль"
@@ -1106,10 +1128,11 @@ export function OperativeReport() {
               yearOrMonth="177,2"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
             <SimpleKPICard
               title="Прогнозная EBITDA"
               fact="119,0"
@@ -1117,6 +1140,7 @@ export function OperativeReport() {
               yearOrMonth="80,4"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
             <SimpleKPICard
               title="Прогнозный DEBT/EBITDA"
@@ -1125,20 +1149,21 @@ export function OperativeReport() {
               yearOrMonth="3,2"
               isDark={isDark}
               coloredFact={true}
+              titleHeight="28px"
             />
           </div>
         </div>
       </div>
 
       {/* ГОДОВЫЕ ПОКАЗАТЕЛИ SECTION */}
-      <div className="mt-12 pt-8" style={{ borderTop: `2px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
+      <div id="section-Годовые показатели" className="mt-12 pt-8" style={{ borderTop: `2px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}` }}>
         <h2 className="mb-6">
           <span className="text-2xl font-black block" style={{ color: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.92)" }}>
             Годовые показатели
           </span>
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
           <SimpleKPICard
             title="Реализация проектов на 12.03.2026"
             fact="16,9"
@@ -1146,6 +1171,7 @@ export function OperativeReport() {
             yearOrMonth="—"
             isDark={isDark}
             coloredFact={true}
+            titleHeight="28px"
           />
           <SimpleKPICard
             title="Годовой прогноз по прибыли"
@@ -1154,6 +1180,7 @@ export function OperativeReport() {
             yearOrMonth="—"
             isDark={isDark}
             coloredFact={true}
+            titleHeight="28px"
           />
         </div>
       </div>

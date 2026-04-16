@@ -817,15 +817,15 @@ export function Sales() {
                       </span>
                     </div>
                   </div>
-                  <ResponsiveContainer width="100%" height={divChartHeight}>
+                  <ResponsiveContainer width="100%" height={divChartHeight} key={`sales-akb-trend-${analyticGroup}`}>
                     <LineChart data={akbMonthData} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
                       <CartesianGrid {...chartProps(isDark).cartesianGrid} />
                       <XAxis dataKey="month" {...chartProps(isDark).xAxis} />
                       <YAxis {...chartProps(isDark).yAxis} />
                       <Tooltip content={<AkbTrendTooltip />} />
                       <Legend {...darkChartProps.legend} />
-                      <Line type="monotone" dataKey="Текущий год" stroke="#1A8D7A" strokeWidth={2.5} dot={{ r: 3, fill: "#1A8D7A", strokeWidth: 0 }} activeDot={{ r: 5 }} />
-                      <Line type="monotone" dataKey="Прошлый год" stroke="#4F709D" strokeWidth={2} strokeDasharray="5 5" dot={false} activeDot={{ r: 4 }} />
+                      <Line key="line-current-year" type="monotone" dataKey="Текущий год" stroke="#1A8D7A" strokeWidth={2.5} dot={{ r: 3, fill: "#1A8D7A", strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                      <Line key="line-last-year" type="monotone" dataKey="Прошлый год" stroke="#4F709D" strokeWidth={2} strokeDasharray="5 5" dot={false} activeDot={{ r: 4 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -1052,7 +1052,7 @@ export function Sales() {
           <div className="flex flex-col">
             <p className="text-xs mb-3" style={{ color: textMuted }}>Динамика объёма — план vs факт</p>
             <div className="flex-1 min-h-0" style={{ minHeight: 220 }}>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" key={`sales-category-trend-${catTerritory}-${catBusiness}-${catProductGroup}-${catDivisionGroup}-${catDivision}`}>
                 <LineChart data={filteredCategory.trend}>
                   <CartesianGrid {...darkChartProps.cartesianGrid} />
                   <XAxis dataKey="month" {...darkChartProps.xAxis} />

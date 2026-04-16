@@ -68,12 +68,12 @@ const receivables = [
 ];
 
 const receivablesChart = [
-  { month: "Окт", сумма: 9.2 },
-  { month: "Ноя", сумма: 10.8 },
-  { month: "Дек", сумма: 12.4 },
-  { month: "Янв", сумма: 11.9 },
-  { month: "Фев", сумма: 13.2 },
-  { month: "Мар", сумма: 14.7 },
+  { id: "recv-0", month: "Окт", сумма: 9.2 },
+  { id: "recv-1", month: "Ноя", сумма: 10.8 },
+  { id: "recv-2", month: "Дек", сумма: 12.4 },
+  { id: "recv-3", month: "Янв", сумма: 11.9 },
+  { id: "recv-4", month: "Фев", сумма: 13.2 },
+  { id: "recv-5", month: "Мар", сумма: 14.7 },
 ];
 
 const agingData = [
@@ -85,33 +85,33 @@ const agingData = [
 
 // Data for Dashboard charts (from Dashboard.tsx)
 const revenueMarginDataBase = [
-  { month: "Янв", выручка: 84.1, маржа: 21.9 },
-  { month: "Фев", выручка: 95.0, маржа: 25.3 },
-  { month: "Мар", выручка: 97.4, маржа: 26.1 },
-  { month: "Апр", выручка: 91.2, маржа: 23.5 },
-  { month: "Май", выручка: 94.8, маржа: 24.8 },
-  { month: "Июн", выручка: 99.1, маржа: 27.0 },
-  { month: "Июл", выручка: 96.3, маржа: 25.9 },
-  { month: "Авг", выручка: 101.2, маржа: 28.1 },
-  { month: "Сен", выручка: 98.7, маржа: 26.8 },
-  { month: "Окт", выручка: 81.2, маржа: 22.4 },
-  { month: "Ноя", выручка: 86.5, маржа: 23.1 },
-  { month: "Дек", выручка: 92.3, маржа: 24.8 },
+  { id: "revmar-0", month: "Янв", выручка: 84.1, маржа: 21.9 },
+  { id: "revmar-1", month: "Фев", выручка: 95.0, маржа: 25.3 },
+  { id: "revmar-2", month: "Мар", выручка: 97.4, маржа: 26.1 },
+  { id: "revmar-3", month: "Апр", выручка: 91.2, маржа: 23.5 },
+  { id: "revmar-4", month: "Май", выручка: 94.8, маржа: 24.8 },
+  { id: "revmar-5", month: "Июн", выручка: 99.1, маржа: 27.0 },
+  { id: "revmar-6", month: "Июл", выручка: 96.3, маржа: 25.9 },
+  { id: "revmar-7", month: "Авг", выручка: 101.2, маржа: 28.1 },
+  { id: "revmar-8", month: "Сен", выручка: 98.7, маржа: 26.8 },
+  { id: "revmar-9", month: "Окт", выручка: 81.2, маржа: 22.4 },
+  { id: "revmar-10", month: "Ноя", выручка: 86.5, маржа: 23.1 },
+  { id: "revmar-11", month: "Дек", выручка: 92.3, маржа: 24.8 },
 ];
 
 const priceCostDataBase = [
-  { month: "Янв", цена: 146.3, себестоимость: 108.2 },
-  { month: "Фев", цена: 151.0, себестоимость: 111.4 },
-  { month: "Мар", цена: 153.4, себестоимость: 113.2 },
-  { month: "Апр", цена: 149.8, себестоимость: 110.5 },
-  { month: "Май", цена: 152.1, себестоимость: 112.8 },
-  { month: "Июн", цена: 155.3, себестоимость: 113.4 },
-  { month: "Июл", цена: 153.8, себестоимость: 113.9 },
-  { month: "Авг", цена: 156.2, себестоимость: 112.5 },
-  { month: "Сен", цена: 154.7, себестоимость: 113.1 },
-  { month: "Окт", цена: 142.5, себестоимость: 105.8 },
-  { month: "Ноя", цена: 145.8, себестоимость: 107.2 },
-  { month: "Дек", цена: 148.2, себестоимость: 109.4 },
+  { id: "pricecost-0", month: "Янв", цена: 146.3, себестоимость: 108.2 },
+  { id: "pricecost-1", month: "Фев", цена: 151.0, себестоимость: 111.4 },
+  { id: "pricecost-2", month: "Мар", цена: 153.4, себестоимость: 113.2 },
+  { id: "pricecost-3", month: "Апр", цена: 149.8, себестоимость: 110.5 },
+  { id: "pricecost-4", month: "Май", цена: 152.1, себестоимость: 112.8 },
+  { id: "pricecost-5", month: "Июн", цена: 155.3, себестоимость: 113.4 },
+  { id: "pricecost-6", month: "Июл", цена: 153.8, себестоимость: 113.9 },
+  { id: "pricecost-7", month: "Авг", цена: 156.2, себестоимость: 112.5 },
+  { id: "pricecost-8", month: "Сен", цена: 154.7, себестоимость: 113.1 },
+  { id: "pricecost-9", month: "Окт", цена: 142.5, себестоимость: 105.8 },
+  { id: "pricecost-10", month: "Ноя", цена: 145.8, себестоимость: 107.2 },
+  { id: "pricecost-11", month: "Дек", цена: 148.2, себестоимость: 109.4 },
 ];
 
 
@@ -327,7 +327,7 @@ function AIPlaceholder({ lines = 4, linkLabel }: { lines?: number; linkLabel?: s
           </div>
           <div className="flex items-center justify-between mt-2">
             <p className="text-xs" style={{ color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)" }}>
-              Текст ИИ-аналитика будет отображён здесь
+              Текст ИИИИИ-аналитика будет отображён здесь
             </p>
             {linkLabel && (
               <a
@@ -553,7 +553,7 @@ function FinKpiCard({ title, fact, plan, forecast, icon, color, change }: {
                 border: change >= 0 ? "1px solid rgba(26,141,122,0.2)" : "1px solid rgba(186,36,71,0.2)"
               }}
             >
-              {change >= 0 ? "+" : ""}{change}%
+              {change >= 0 ? "▲" : "▼"} {change >= 0 ? "+" : ""}{change}%
             </span>
           )}
         </div>
@@ -951,8 +951,9 @@ export function Finance() {
   // Tab styles (matching Delivery.tsx)
   const activeTabStyle = {
     background: "rgba(204,0,0,0.15)",
-    color: "#e57373",
+    color: "#E85A7C",
     border: "1px solid rgba(204,0,0,0.25)",
+    fontWeight: 500,
   };
   const inactiveTabStyle = {
     color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
@@ -986,14 +987,21 @@ export function Finance() {
       {/* Tabs */}
       <div
         className="flex gap-1 p-1 rounded-xl w-fit mx-[0px] mt-[0px] mb-[25px]"
-        style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}
+        style={{
+          background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)",
+          border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
+        }}
       >
         {tabKeys.map((key, i) => (
           <button
             key={key}
             onClick={() => setActiveTab(key)}
-            className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
-            style={activeTab === key ? activeTabStyle : inactiveTabStyle}
+            className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
+            style={
+              activeTab === key
+                ? { background: "rgba(186,36,71,0.15)", color: "#E85A7C", border: "1px solid rgba(186,36,71,0.25)", fontWeight: 500 }
+                : { color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)", border: "1px solid transparent" }
+            }
           >
             {key === "powerbi" ? (
               <span className="flex items-center gap-1.5">
@@ -1050,14 +1058,14 @@ export function Finance() {
               {/* Chart 1: Выручка и маржа */}
               <GlassCard className="p-5 my-4" glow="#008183">
                 <ChartTitle>Выручка и маржа (млн ₽)</ChartTitle>
-                <ResponsiveContainer width="100%" height={220}>
+                <ResponsiveContainer width="100%" height={220} key="finance-revenue-margin-chart">
                   <AreaChart data={revenueMarginData} margin={{ right: 10 }}>
                     <defs>
-                      <linearGradient id="dashRevGrad" x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id="finDashRevGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop key="stop-rev-1" offset="5%" stopColor="#008183" stopOpacity={0.08} />
                         <stop key="stop-rev-2" offset="95%" stopColor="#008183" stopOpacity={0} />
                       </linearGradient>
-                      <linearGradient id="dashMarGrad" x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id="finDashMarGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop key="stop-mar-1" offset="5%" stopColor="#BA2447" stopOpacity={0.08} />
                         <stop key="stop-mar-2" offset="95%" stopColor="#BA2447" stopOpacity={0} />
                       </linearGradient>
@@ -1067,8 +1075,8 @@ export function Finance() {
                     <YAxis {...cp.yAxis} width={45} />
                     <Tooltip content={<CustomChartTooltip />} />
                     <Legend {...cp.legend} />
-                    <Area key="area-revenue" type="monotone" dataKey="выручка" name="Выручка" stroke="#008183" fill="url(#dashRevGrad)" strokeWidth={2.5} />
-                    <Area key="area-margin" type="monotone" dataKey="маржа" name="Маржа" stroke="#BA2447" fill="url(#dashMarGrad)" strokeWidth={2.5} />
+                    <Area key="area-revenue" type="monotone" dataKey="выручка" name="Выручка" stroke="#008183" fill="url(#finDashRevGrad)" strokeWidth={2.5} />
+                    <Area key="area-margin" type="monotone" dataKey="маржа" name="Маржа" stroke="#BA2447" fill="url(#finDashMarGrad)" strokeWidth={2.5} />
                   </AreaChart>
                 </ResponsiveContainer>
               </GlassCard>
@@ -1076,14 +1084,14 @@ export function Finance() {
               {/* Chart 2: Цена реализации и себестоимость */}
               <GlassCard className="p-5 my-4" glow="#1A8D7A">
                 <ChartTitle>Цена реализации и себестоимость (₽/кг)</ChartTitle>
-                <ResponsiveContainer width="100%" height={220}>
+                <ResponsiveContainer width="100%" height={220} key="finance-price-cost-chart">
                   <AreaChart data={priceCostData} margin={{ right: 10 }}>
                     <defs>
-                      <linearGradient id="dashPriceGrad" x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id="finDashPriceGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop key="stop-price-1" offset="5%" stopColor="#1A8D7A" stopOpacity={0.08} />
                         <stop key="stop-price-2" offset="95%" stopColor="#1A8D7A" stopOpacity={0} />
                       </linearGradient>
-                      <linearGradient id="dashCostGrad" x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id="finDashCostGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop key="stop-cost-1" offset="5%" stopColor="#ba2447" stopOpacity={0.08} />
                         <stop key="stop-cost-2" offset="95%" stopColor="#ba2447" stopOpacity={0} />
                       </linearGradient>
@@ -1093,8 +1101,8 @@ export function Finance() {
                     <YAxis {...cp.yAxis} width={45} />
                     <Tooltip content={<CustomChartTooltip />} />
                     <Legend {...cp.legend} />
-                    <Area key="area-price" type="monotone" dataKey="цена" name="Цена" stroke="#1A8D7A" fill="url(#dashPriceGrad)" strokeWidth={2.5} />
-                    <Area key="area-cost" type="monotone" dataKey="себестоимость" name="Себестоимость" stroke="#ba2447" fill="url(#dashCostGrad)" strokeWidth={2.5} />
+                    <Area key="area-price" type="monotone" dataKey="цена" name="Цена" stroke="#1A8D7A" fill="url(#finDashPriceGrad)" strokeWidth={2.5} />
+                    <Area key="area-cost" type="monotone" dataKey="себестоимость" name="Себестоимость" stroke="#ba2447" fill="url(#finDashCostGrad)" strokeWidth={2.5} />
                   </AreaChart>
                 </ResponsiveContainer>
               </GlassCard>
@@ -1419,10 +1427,10 @@ export function Finance() {
           {/* Dynamics chart */}
           <GlassCard className="p-5 my-4" glow={RED}>
             <ChartTitle>Динамика дебиторской задолженности (млн ₽)</ChartTitle>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={200} key="finance-receivables-chart">
               <AreaChart data={receivablesChart} margin={{ left: -20, right: 10, top: 10, bottom: 10 }}>
                 <defs>
-                  <linearGradient id="debGrad" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="finDebGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop key="stop-deb-1" offset="5%" stopColor="#ba2447" stopOpacity={0.3} />
                     <stop key="stop-deb-2" offset="95%" stopColor="#ba2447" stopOpacity={0} />
                   </linearGradient>
@@ -1431,7 +1439,7 @@ export function Finance() {
                 <XAxis dataKey="month" {...cp.xAxis} />
                 <YAxis {...cp.yAxis} />
                 <Tooltip content={<CustomChartTooltip />} cursor={false} />
-                <Area key="area-receivables" type="monotone" dataKey="сумма" name="Дебиторка" stroke="#ba2447" fill="url(#debGrad)" strokeWidth={2.5} />
+                <Area key="area-receivables" type="monotone" dataKey="сумма" name="Дебиторка" stroke="#ba2447" fill="url(#finDebGrad)" strokeWidth={2.5} />
               </AreaChart>
             </ResponsiveContainer>
           </GlassCard>

@@ -5,16 +5,16 @@
 }
 
 .rdp-container .custom-calendar .rdp-day_selected {
-  background-color: var(--rdp-accent-color) !important;
+  background-color: #1A8D7A !important;
   color: white !important;
 }
 
 .rdp-container .custom-calendar .rdp-day:hover:not(.rdp-day_selected):not(.rdp-day_disabled) {
-  background-color: var(--rdp-background-color) !important;
+  background-color: rgba(26, 141, 122, 0.15) !important;
 }
 
 .rdp-container .custom-calendar .rdp-button:hover:not([disabled]) {
-  background-color: var(--rdp-background-color) !important;
+  background-color: rgba(26, 141, 122, 0.15) !important;
 }
 
 .rdp-container .custom-calendar .rdp-day_today {

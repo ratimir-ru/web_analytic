@@ -86,10 +86,9 @@ const KPICard: React.FC<KPICardProps> = ({ title, current, previous, formatValue
             border: `1px solid ${isPositive ? "rgba(26,141,122,0.3)" : "rgba(186,36,71,0.3)"}`,
           }}
         >
-          {isPositive
-            ? <TrendingUp size={10} color="#1A8D7A" />
-            : <TrendingDown size={10} color="#BA2447" />
-          }
+          <span className="text-xs font-bold" style={{ color: isPositive ? "#1A8D7A" : "#BA2447" }}>
+            {isPositive ? "▲" : "▼"}
+          </span>
           <span className="text-xs font-bold" style={{ color: isPositive ? "#1A8D7A" : "#BA2447" }}>
             {isPositive ? "+" : ""}{change.toFixed(1)}%
           </span>
@@ -374,7 +373,7 @@ export function Frs() {
             className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
             style={
               activeTab === tab
-                ? { background: "rgba(186,36,71,0.15)", color: "#e57373", border: "1px solid rgba(186,36,71,0.25)" }
+                ? { background: "rgba(186,36,71,0.15)", color: "#E85A7C", border: "1px solid rgba(186,36,71,0.25)", fontWeight: 500 }
                 : { color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)", border: "1px solid transparent" }
             }
           >

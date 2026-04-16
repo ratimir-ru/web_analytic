@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Layout } from "./components/Layout";
 import { Login } from "./components/pages/Login";
@@ -40,9 +45,17 @@ export default function App() {
       <ThemeProvider>
         <Routes>
           <Route
-            element={<Layout onLogout={handleLogout} userName={userName} />}
+            element={
+              <Layout
+                onLogout={handleLogout}
+                userName={userName}
+              />
+            }
           >
-            <Route index element={<Navigate to="/home" replace />} />
+            <Route
+              index
+              element={<Navigate to="/home" replace />}
+            />
             <Route path="/home" element={<Home />} />
             <Route path="/overview" element={<Overview />} />
             <Route path="/finance" element={<Finance />} />
@@ -50,13 +63,22 @@ export default function App() {
             <Route path="/delivery" element={<Delivery />} />
             <Route path="/stock" element={<StockBlock />} />
             <Route path="/tasks" element={<Tasks />} />
-            <Route path="/instructions" element={<Instructions />} />
+            <Route
+              path="/instructions"
+              element={<Instructions />}
+            />
             <Route path="/assistant" element={<Assistant />} />
             <Route path="/reports" element={<Reports />} />
-            <Route path="/operative-report" element={<OperativeReport />} />
+            <Route
+              path="/operative-report"
+              element={<OperativeReport />}
+            />
             <Route path="/profile" element={<Profile />} />
             <Route path="/frs" element={<Frs />} />
-            <Route path="*" element={<Navigate to="/home" replace />} />
+            <Route
+              path="*"
+              element={<Navigate to="/home" replace />}
+            />
           </Route>
         </Routes>
       </ThemeProvider>

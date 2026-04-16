@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Download, FileText, BarChart2, TrendingUp, Package, Truck, ClipboardList, FileSpreadsheet, Calendar, ChevronDown } from "lucide-react";
-import { GlassCard, SectionHeader } from "../StatCard";
+import { GlassCard, SectionHeader, GlassCardInstructions} from "../StatCard";
 import { useTheme } from "../ThemeProvider";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
@@ -106,7 +106,8 @@ export function Reports() {
     ...optionBtnBase,
     background: "rgba(186,36,71,0.15)",
     border: "1px solid rgba(186,36,71,0.35)",
-    color: isDark ? "#ff6b8a" : "#BA2447",
+    color: "#E85A7C",
+    fontWeight: 500,
   };
 
   const handleNext = () => {
@@ -141,7 +142,7 @@ export function Reports() {
     padding: "8px 24px",
     borderRadius: 10,
     fontSize: 13,
-    fontWeight: 600,
+    fontWeight: activeTab === tab ? 500 : 600,
     cursor: "pointer",
     transition: "all 0.2s ease",
     background: activeTab === tab
@@ -151,7 +152,7 @@ export function Reports() {
       ? "1px solid rgba(186,36,71,0.3)"
       : "1px solid transparent",
     color: activeTab === tab
-      ? (isDark ? "#ff6b8a" : "#BA2447")
+      ? "#E85A7C"
       : (isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)"),
   });
 
@@ -327,16 +328,24 @@ export function Reports() {
       <div
         className="flex gap-1 p-1 rounded-xl mb-6 w-fit"
         style={{
-          background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
-          border: isDark ? "1px solid rgba(255,255,255,0.07)" : "1px solid rgba(0,0,0,0.08)",
+          background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)",
+          border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
         }}
       >
-        <button style={tabStyle("custom")} onClick={() => setActiveTab("custom")}>
-          Кастомизация отчётов
-        </button>
-        <button style={tabStyle("auto")} onClick={() => setActiveTab("auto")}>
-          Авто отчёты
-        </button>
+        {(["custom", "auto"] as const).map((key, i) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
+            style={
+              activeTab === key
+                ? { background: "rgba(186,36,71,0.15)", color: "#E85A7C", border: "1px solid rgba(186,36,71,0.25)", fontWeight: 500 }
+                : { color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)", border: "1px solid transparent" }
+            }
+          >
+            {["Кастомизация отчётов", "Авто отчёты"][i]}
+          </button>
+        ))}
       </div>
 
       {/* Custom report wizard */}
@@ -345,7 +354,7 @@ export function Reports() {
           {!showPreview ? (
             <GlassCard className="p-6 my-4 transition-all duration-300">
               {/* Steps indicator */}
-              <div className="flex items-center gap-2 mb-8">
+              <div className="flex items-center gap-2 mb-4">
                 {[1, 2, 3, 4, 5].map(s => (
                   <React.Fragment key={s}>
                     <div
@@ -373,7 +382,7 @@ export function Reports() {
               {/* Step 1: Report type */}
               {step === 1 && (
                 <div className="animate-fadeIn">
-                  <h3 className="font-bold text-base mb-5" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
+                  <h3 className="font-bold text-base mb-4" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
                     Выберите тип отчёта
                   </h3>
                   <div className="flex gap-3 flex-wrap">
@@ -393,7 +402,7 @@ export function Reports() {
               {/* Step 2: Period */}
               {step === 2 && (
                 <div className="animate-fadeIn">
-                  <h3 className="font-bold text-base mb-5" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
+                  <h3 className="font-bold text-base mb-4" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)" }}>
                     Выберите временной период
                   </h3>
                   
@@ -432,7 +441,7 @@ export function Reports() {
                   </div>
                   
                   {/* Row 3: July-December */}
-                  <div className="flex gap-2 mb-6">
+                  <div className="flex gap-2 mb-5">
                     {["Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"].map(p => (
                       <button
                         key={p}
@@ -450,7 +459,7 @@ export function Reports() {
                   
                   {/* Calendar section */}
                   <div 
-                    className="rounded-xl p-4 mb-4"
+                    className="rounded-xl p-4 mb-4 w-fit min-w-[750px]"
                     style={{
                       background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
                       border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)",
@@ -466,7 +475,7 @@ export function Reports() {
                     <div className="flex flex-wrap gap-6 lg:gap-[100px]">
                       {/* Start date */}
                       <div className="flex-shrink-0">
-                        <label className="block text-xs font-medium mb-2" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
+                        <label className="block text-xs font-medium mb-1" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
                           Дата начала
                         </label>
                         <div
@@ -509,7 +518,7 @@ export function Reports() {
                       
                       {/* End date */}
                       <div className="flex-shrink-0">
-                        <label className="block text-xs font-medium mb-2" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
+                        <label className="block text-xs font-medium mb-1" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" }}>
                           Дата окончания
                         </label>
                         <div
@@ -551,14 +560,14 @@ export function Reports() {
                     {/* Selected dates display */}
                     {(startDate || endDate) && (
                       <div 
-                        className="mt-4 p-3 rounded-lg text-xs animate-fadeIn"
+                        className="mt-0 p-3 rounded-lg text-xs animate-fadeIn"
                         style={{
                           background: isDark ? "rgba(186,36,71,0.08)" : "rgba(186,36,71,0.06)",
                           border: "1px solid rgba(186,36,71,0.2)",
                           color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)",
                         }}
                       >
-                        <span className="font-semibold" style={{ color: isDark ? "#ff6b8a" : "#BA2447" }}>Выбранный период: </span>
+                        <span className="font-semibold" style={{ color: "#E85A7C" }}>Выбранный период: </span>
                         {startDate && format(startDate, "dd.MM.yyyy", { locale: ru })}
                         {startDate && endDate && " — "}
                         {endDate && format(endDate, "dd.MM.yyyy", { locale: ru })}
@@ -902,7 +911,7 @@ export function Reports() {
               )}
 
               {/* Navigation */}
-              <div className="flex gap-3 mt-8">
+              <div className="flex gap-3 mt-5">
                 {step > 1 && (
                   <button
                     onClick={() => setStep(step - 1)}
@@ -932,7 +941,7 @@ export function Reports() {
             </GlassCard>
           ) : (
             /* Preview */
-            <GlassCard className="p-6 max-w-2xl">
+            <GlassCardInstructions className="p-6 max-w-2xl">
               <div
                 className="rounded-xl p-4 mb-6 text-sm leading-relaxed"
                 style={{
@@ -941,7 +950,7 @@ export function Reports() {
                   color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)",
                 }}
               >
-                <p className="font-bold mb-3" style={{ color: isDark ? "#ff6b8a" : "#BA2447" }}>
+                <p className="font-bold mb-3" style={{ color: "#E85A7C" }}>
                   Для создания отчёта будут применены фильтры:
                 </p>
                 <ul className="space-y-1.5">
@@ -978,7 +987,7 @@ export function Reports() {
                   Сформировать
                 </button>
               </div>
-            </GlassCard>
+            </GlassCardInstructions>
           )}
         </div>
       )}
@@ -987,7 +996,7 @@ export function Reports() {
       {activeTab === "auto" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {autoReports.map(report => (
-            <GlassCard key={report.id} className="p-5">
+            <GlassCardInstructions key={report.id} className="p-5">
               <div className="flex items-start gap-4 mb-4">
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -1034,7 +1043,7 @@ export function Reports() {
                   Скачать
                 </button>
               </div>
-            </GlassCard>
+            </GlassCardInstructions>
           ))}
         </div>
       )}

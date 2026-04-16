@@ -1,5 +1,5 @@
 
-  # RTM1 (Ксюха) (Copy) (Copy) (Copy)
+  # RTM - Analyst Web
 
   This is a code bundle for RTM Analytic
 

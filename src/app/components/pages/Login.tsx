@@ -1,5 +1,5 @@
-import image_6d19dd7a1c06f38e92a17d43316b77621712beae from '../../../assets/6d19dd7a1c06f38e92a17d43316b77621712beae.png'
-import image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df from '../../../assets/57bc1ed8c53e14ed69b8d98b78f63b24a1f830df.png'
+import ratimir_logo_official from "@/assets/ratimir-logo-official.png"; // текст
+import ratimir_logo from "@/assets/ratimir-logo.png"; // логотип
 import React, { useState } from "react";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 
@@ -35,120 +35,107 @@ export function Login({ onLogin }: LoginProps) {
       style={{
         background:
           "radial-gradient(ellipse at 20% 20%, rgba(158,35,59,0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(186,36,71,0.05) 0%, transparent 50%), #0f1419",
-        fontFamily: "Montserrat, system-ui, -apple-system, sans-serif",
+        fontFamily:
+          "Montserrat, system-ui, -apple-system, sans-serif",
       }}
     >
       <div className="min-h-screen flex items-center justify-center p-4">
-      {/* Background decorations */}
-      <div
-        className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden"
-        style={{ zIndex: 0 }}
-      >
+        {/* Background decorations */}
         <div
-          className="absolute top-10 left-10 w-72 h-72 rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(158,35,59,0.06) 0%, transparent 70%)",
-            filter: "blur(60px)",
-          }}
-        />
-        <div
-          className="absolute bottom-10 right-10 w-64 h-64 rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(186,36,71,0.05) 0%, transparent 70%)",
-            filter: "blur(50px)",
-          }}
-        />
-      </div>
-
-      <div className="w-full max-w-md relative" style={{ zIndex: 1 }}>
-        {/* Logo block */}
-        <div className="text-center mb-10">
-          <div className="mx-auto mb-4 flex items-center justify-center">
-            <img
-              src={image_6d19dd7a1c06f38e92a17d43316b77621712beae}
-              alt="Логотип"
-              className="h-16"
-              style={{
-                filter: "drop-shadow(0 0 20px rgba(158,35,59,0.3))",
-              }}
-            />
-          </div>
-          <img
-            src={image_57bc1ed8c53e14ed69b8d98b78f63b24a1f830df}
-            alt="РАТИМИР"
-            className="mx-auto"
+          className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden"
+          style={{ zIndex: 0 }}
+        >
+          <div
+            className="absolute top-10 left-10 w-72 h-72 rounded-full"
             style={{
-              maxHeight: "48px",
-              filter: "drop-shadow(0 0 30px rgba(158,35,59,0.4))",
+              background:
+                "radial-gradient(circle, rgba(158,35,59,0.06) 0%, transparent 70%)",
+              filter: "blur(60px)",
             }}
           />
-          <p className="text-sm mt-2" style={{ color: "rgba(255,255,255,0.35)" }}>
-            Система корпоративной аналитики
-          </p>
+          <div
+            className="absolute bottom-10 right-10 w-64 h-64 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(186,36,71,0.05) 0%, transparent 70%)",
+              filter: "blur(50px)",
+            }}
+          />
         </div>
 
-        {/* Card */}
         <div
-          className="rounded-2xl p-8"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
-          }}
+          className="w-full max-w-md relative"
+          style={{ zIndex: 1 }}
         >
-          <p
-            className="text-sm leading-relaxed mb-8 text-center"
-            style={{ color: "rgba(255,255,255,0.45)" }}
-          >
-            Добро пожаловать. Для входа в систему корпоративной отчётности Ратимир введите системный логин и пароль.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label
-                className="text-xs font-medium mb-2 block uppercase tracking-wider"
-                style={{ color: "rgba(255,255,255,0.4)" }}
-              >
-                Имя пользователя
-              </label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Введите логин"
-                autoComplete="username"
+          {/* Logo block */}
+          <div className="text-center mb-10">
+            <div className="mx-auto mb-4 flex items-center justify-center">
+              <img
+                src={
+                  ratimir_logo_official
+                }
+                alt="Логотип"
+                className="h-16"
                 style={{
-                  width: "100%",
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: 12,
-                  color: "rgba(255,255,255,0.85)",
-                  fontSize: 14,
-                  padding: "12px 16px",
-                  outline: "none",
-                  transition: "border-color 0.2s",
+                  filter:
+                    "drop-shadow(0 0 20px rgba(158,35,59,0.3))",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "rgba(186,36,71,0.5)")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")}
               />
             </div>
+            <img
+              src={
+                ratimir_logo
+              }
+              alt="РАТИМИР"
+              className="mx-auto"
+              style={{
+                maxHeight: "48px",
+                filter:
+                  "drop-shadow(0 0 30px rgba(158,35,59,0.4))",
+              }}
+            />
+            <p
+              className="text-sm mt-2"
+              style={{ color: "rgba(255,255,255,0.35)" }}
+            >
+              Система корпоративной аналитики
+            </p>
+          </div>
 
-            <div>
-              <label
-                className="text-xs font-medium mb-2 block uppercase tracking-wider"
-                style={{ color: "rgba(255,255,255,0.4)" }}
-              >
-                Пароль
-              </label>
-              <div className="relative">
+          {/* Card */}
+          <div
+            className="rounded-2xl p-8"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
+            }}
+          >
+            <p
+              className="text-sm leading-relaxed mb-8 text-center"
+              style={{ color: "rgba(255,255,255,0.45)" }}
+            >
+              Добро пожаловать. Для входа в систему
+              корпоративной отчётности Ратимир введите системный
+              логин и пароль.
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label
+                  className="text-xs font-medium mb-2 block uppercase tracking-wider"
+                  style={{ color: "rgba(255,255,255,0.4)" }}
+                >
+                  Имя пользователя
+                </label>
                 <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Введите пароль"
-                  autoComplete="current-password"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Введите логин"
+                  autoComplete="username"
                   style={{
                     width: "100%",
                     background: "rgba(255,255,255,0.06)",
@@ -156,71 +143,122 @@ export function Login({ onLogin }: LoginProps) {
                     borderRadius: 12,
                     color: "rgba(255,255,255,0.85)",
                     fontSize: 14,
-                    padding: "12px 44px 12px 16px",
+                    padding: "12px 16px",
                     outline: "none",
                     transition: "border-color 0.2s",
                   }}
-                  onFocus={(e) => (e.target.style.borderColor = "rgba(186,36,71,0.5)")}
-                  onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")}
+                  onFocus={(e) =>
+                    (e.target.style.borderColor =
+                      "rgba(186,36,71,0.5)")
+                  }
+                  onBlur={(e) =>
+                    (e.target.style.borderColor =
+                      "rgba(255,255,255,0.1)")
+                  }
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                  style={{ color: "rgba(255,255,255,0.3)" }}
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
               </div>
-            </div>
 
-            {error && (
-              <div
-                className="rounded-xl px-4 py-3 text-sm"
+              <div>
+                <label
+                  className="text-xs font-medium mb-2 block uppercase tracking-wider"
+                  style={{ color: "rgba(255,255,255,0.4)" }}
+                >
+                  Пароль
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) =>
+                      setPassword(e.target.value)
+                    }
+                    placeholder="Введите пароль"
+                    autoComplete="current-password"
+                    style={{
+                      width: "100%",
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: 12,
+                      color: "rgba(255,255,255,0.85)",
+                      fontSize: 14,
+                      padding: "12px 44px 12px 16px",
+                      outline: "none",
+                      transition: "border-color 0.2s",
+                    }}
+                    onFocus={(e) =>
+                      (e.target.style.borderColor =
+                        "rgba(186,36,71,0.5)")
+                    }
+                    onBlur={(e) =>
+                      (e.target.style.borderColor =
+                        "rgba(255,255,255,0.1)")
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPassword(!showPassword)
+                    }
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    style={{ color: "rgba(255,255,255,0.3)" }}
+                  >
+                    {showPassword ? (
+                      <EyeOff size={16} />
+                    ) : (
+                      <Eye size={16} />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {error && (
+                <div
+                  className="rounded-xl px-4 py-3 text-sm"
+                  style={{
+                    background: "rgba(186,36,71,0.1)",
+                    border: "1px solid rgba(186,36,71,0.25)",
+                    color: "#ff8080",
+                  }}
+                >
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white transition-all mt-6"
                 style={{
-                  background: "rgba(186,36,71,0.1)",
-                  border: "1px solid rgba(186,36,71,0.25)",
-                  color: "#ff8080",
+                  background: loading
+                    ? "rgba(158,35,59,0.5)"
+                    : "linear-gradient(135deg, #ba2447, #9e233b)",
+                  boxShadow: loading
+                    ? "none"
+                    : "0 0 24px rgba(186,36,71,0.4)",
+                  cursor: loading ? "not-allowed" : "pointer",
                 }}
               >
-                {error}
-              </div>
-            )}
+                {loading ? (
+                  <span>Вход...</span>
+                ) : (
+                  <>
+                    <LogIn size={16} />
+                    Войти в систему
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white transition-all mt-6"
-              style={{
-                background: loading
-                  ? "rgba(158,35,59,0.5)"
-                  : "linear-gradient(135deg, #ba2447, #9e233b)",
-                boxShadow: loading ? "none" : "0 0 24px rgba(186,36,71,0.4)",
-                cursor: loading ? "not-allowed" : "pointer",
-              }}
-            >
-              {loading ? (
-                <span>Вход...</span>
-              ) : (
-                <>
-                  <LogIn size={16} />
-                  Войти в систему
-                </>
-              )}
-            </button>
-          </form>
+          {/* Feedback button */}
+
+          <p
+            className="text-center text-xs mt-6"
+            style={{ color: "rgba(255,255,255,0.2)" }}
+          >
+            © 2026 ООО «Ратимир». Все права защищены.
+          </p>
         </div>
-
-        {/* Feedback button */}
-        
-
-        <p
-          className="text-center text-xs mt-6"
-          style={{ color: "rgba(255,255,255,0.2)" }}
-        >
-          © 2026 ООО «Ратимир». Все права защищены.
-        </p>
-      </div>
       </div>
     </div>
   );
